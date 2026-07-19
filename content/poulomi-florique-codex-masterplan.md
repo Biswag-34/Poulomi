@@ -1,10 +1,31 @@
 # Poulomi Florique Landing Page — Codex Design & Implementation Masterplan
 
-Version: 1.0  
+Version: 2.0 — post-deployment audit revision  
 Prepared: 19 July 2026  
 Project: Poulomi Florique lead-generation landing page  
 Primary goal: Generate qualified brochure, pricing and private site-visit enquiries  
 Selected visual direction: **Botanical Editorial Luxury**
+
+> This version supersedes Version 1.0. It incorporates a fresh live audit of `https://poulomi.vercel.app/` and must be read together with `poulomi-florique-live-audit-and-remediation.md`. Where the earlier aspirational specification conflicts with the live-audit remediation, the live-audit remediation takes priority.
+
+## 0. Current deployment status and controlling corrections
+
+The current live page already implements the core direction and supplied assets. Codex must refine the existing implementation rather than rebuild indiscriminately. Preserve working components and integrations unless a required correction cannot be achieved safely in place.
+
+Mandatory corrections before design polish:
+
+1. Reconcile or hide the live residence ranges (`1,585–2,050`, `1,905–2,460`, `2,340–2,740 sq ft`) until approved documentation confirms them.
+2. Precisely label the current plan asset; do not present a typical floor/tower plan as a unit plan.
+3. Replace unqualified commute-minute claims with verified distances or clearly dated non-peak estimates.
+4. Remove unsupported trust claims such as “On-time delivery” unless documentary evidence is provided.
+5. Fix the clipped “Homes that bloom with possibility” desktop card.
+6. Remove the hero `/10` counter until a real approved ten-slide experience exists.
+7. Add Bloomscapes and Plans to navigation where they map to genuine content.
+8. Improve hero art direction and remove the unintended deep-green dead band.
+9. Expand amenity cards/gallery and add the missing supplied amenity assets.
+10. Add approved consent wording, privacy link and robust form success/error behavior.
+
+Do not discard the existing palette, typography, editorial panels, numbered sections, responsive `<picture>` assets, mobile action bar, residence tabs, plan/master-plan views, location tabs, FAQ or final form. Correct and deepen them.
 
 ---
 
@@ -1053,4 +1074,3 @@ The page is complete only when:
 Use the following as the controlling instruction when implementation begins:
 
 > Build the Poulomi Florique lead-generation landing page according to this masterplan and the supplied Botanical Editorial Luxury assets. Start with the complete 360–430 px experience and verify it before adding tablet and desktop enhancements. Use official images for the hero, tower, plans, master plan and maps; use generated images only as supporting artistic lifestyle imagery. Keep all essential text, CTAs and facts in semantic HTML. Implement calm, high-quality motion with reduced-motion support. Store project facts in one typed content source and do not publish any field marked `needs-confirmation`. Preserve or improve the existing lead integration, add reliable validation and attribution, and test all responsive, accessibility, performance and failure states. Do not substitute generic real-estate templates, excessive cards, gold gradients, scroll-jacking or unverified claims.
-

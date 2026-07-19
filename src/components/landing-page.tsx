@@ -10,11 +10,11 @@ import {
   Check,
   Download,
   Eye,
+  FileText,
   Leaf,
   Mail,
   Menu,
   Phone,
-  ShieldCheck,
   X,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -64,18 +64,27 @@ const actionLabels: Record<LeadIntent, string> = {
   site_visit: "Schedule My Visit",
   price_sheet: "Request Current Price",
   brochure: "Download Brochure",
-  floor_plan: "View Plan Details",
+  floor_plan: "Request Plan Details",
   general_enquiry: "Send Enquiry",
 };
 
 const masterPlanPoints = [
-  "Arrival Plaza",
-  "Clubhouse",
-  "Central Greens",
-  "Pool & Deck",
-  "Sports Zone",
-  "Children's Play Area",
-  "Walking Trail",
+  { label: "Arrival Plaza", category: "Arrival", x: 12, y: 78, description: "A composed entry sequence that opens into the garden-led plan." },
+  { label: "Clubhouse", category: "Clubhouse", x: 30, y: 28, description: "The social heart with indoor leisure, gathering and wellness amenities." },
+  { label: "Central Greens", category: "Greens", x: 48, y: 48, description: "Landscape courts and open greens placed between residential clusters." },
+  { label: "Pool & Deck", category: "Pool", x: 72, y: 58, description: "Pool, deck and pavilion spaces positioned within the amenity landscape." },
+  { label: "Sports Zone", category: "Sports", x: 82, y: 34, description: "Outdoor active recreation planned as a dedicated sports precinct." },
+  { label: "Children's Play Area", category: "Children", x: 66, y: 72, description: "Family-friendly play zones woven into the safer internal landscape." },
+  { label: "Walking Trail", category: "Walking", x: 42, y: 82, description: "A connected walking experience through gardens and resident amenities." },
+] as const;
+
+const navItems = [
+  { id: "residences", label: "Residences" },
+  { id: "bloomscapes", label: "Bloomscapes" },
+  { id: "bloomscapes", label: "Amenities" },
+  { id: "masterplan", label: "Plans" },
+  { id: "location", label: "Location" },
+  { id: "trust", label: "About Poulomi" },
 ] as const;
 
 function normalisePhone(phone: string) {
@@ -311,7 +320,9 @@ function LeadForm({
 
       <label className="consent-line">
         <input type="checkbox" {...register("consent")} />
-        <span>{consentText}</span>
+        <span>
+          {consentText} <a href="#legal">Privacy, terms and disclaimer</a>.
+        </span>
       </label>
       {errors.consent ? <small className="form-error">{errors.consent.message}</small> : null}
 
@@ -340,6 +351,7 @@ export function LandingPage() {
   const [leadOverlay, setLeadOverlay] = useState<LeadOverlay | null>(null);
   const [planOpen, setPlanOpen] = useState(false);
   const [masterPlanOpen, setMasterPlanOpen] = useState(false);
+  const [selectedMasterPoint, setSelectedMasterPoint] = useState<(typeof masterPlanPoints)[number]>(masterPlanPoints[2]);
   const [locationTab, setLocationTab] = useState<(typeof locationClusters)[number]["label"]>(
     locationClusters[0].label,
   );
@@ -385,10 +397,11 @@ export function LandingPage() {
             <BrandWordmark />
           </button>
           <nav className="desktop-nav" aria-label="Primary navigation">
-            <button type="button" onClick={() => scrollTo("residences", "nav-residences")}>Residences</button>
-            <button type="button" onClick={() => scrollTo("amenities", "nav-amenities")}>Amenities</button>
-            <button type="button" onClick={() => scrollTo("location", "nav-location")}>Location</button>
-            <button type="button" onClick={() => scrollTo("trust", "nav-about")}>About Poulomi</button>
+            {navItems.map((item) => (
+              <button key={`${item.id}-${item.label}`} type="button" onClick={() => scrollTo(item.id, `nav-${item.label.toLowerCase()}`)}>
+                {item.label}
+              </button>
+            ))}
           </nav>
           <button
             type="button"
@@ -448,11 +461,11 @@ export function LandingPage() {
             </div>
             <div className="mobile-quick-facts">
               <span><Building2 /> 3 BHK-led homes</span>
-              <span><ShieldCheck /> 1,585-2,740 sq ft</span>
+              <span><FileText /> Private price sheet</span>
               <span><Leaf /> Curated landscapes</span>
             </div>
           </div>
-          <div className="hero-index" aria-hidden="true"><span>01</span><i /> <small>/10</small></div>
+          <div className="hero-index" aria-hidden="true"><span>01</span><i /></div>
           <button
             type="button"
             className="enquire-tab"
@@ -495,7 +508,7 @@ export function LandingPage() {
             </button>
           </div>
           <div className="story-media">
-            <Image src={projectFacts.images.arrivalDesktop} alt="Poulomi Florique arrival landscape artistic impression" fill sizes="(min-width: 1024px) 54vw, 100vw" className="story-main" />
+            <Image src={projectFacts.images.elevation} alt="Poulomi Florique official residential tower elevation" fill sizes="(min-width: 1024px) 54vw, 100vw" className="story-main" />
             <Image src={projectFacts.images.botanicalMacro} alt="" width={180} height={230} className="story-inset" aria-hidden="true" />
           </div>
         </section>
@@ -539,21 +552,30 @@ export function LandingPage() {
           </article>
         </section>
 
-        <section id="amenities" className="editorial-section amenities-section">
+        <section id="bloomscapes" className="editorial-section amenities-section">
           <SectionLabel index="04" eyebrow="Amenities bloomscape" />
           <div className="amenity-copy">
             <h2>Spaces that nourish every part of you.</h2>
           </div>
           <div className="amenity-track">
-            {amenityHighlights.slice(0, 4).map((amenity) => (
+            {amenityHighlights.map((amenity, index) => (
               <article key={amenity.label} className="amenity-card">
                 <Image src={amenity.image} alt={amenity.label} fill sizes="(min-width: 1024px) 22vw, 70vw" className="object-cover" />
                 <div>
+                  <small>{String(index + 1).padStart(2, "0")} / {String(amenityHighlights.length).padStart(2, "0")}</small>
                   <strong>{amenity.label}</strong>
                   <span>{amenity.text}</span>
+                  <ul>
+                    {amenity.features.map((feature) => (
+                      <li key={feature}>{feature}</li>
+                    ))}
+                  </ul>
                 </div>
               </article>
             ))}
+          </div>
+          <div className="gallery-dots" aria-hidden="true">
+            {amenityHighlights.map((amenity, index) => <span key={amenity.label} className={index === 0 ? "active" : ""} />)}
           </div>
         </section>
 
@@ -570,16 +592,45 @@ export function LandingPage() {
               Explore Master Plan <Download size={15} />
             </button>
           </div>
+          <div className="master-image-wrap">
           <button type="button" className="master-image" onClick={() => setMasterPlanOpen(true)}>
             <Image src={projectFacts.images.masterPlan} alt="Poulomi Florique official master plan" fill sizes="(min-width: 1024px) 58vw, 100vw" className="object-cover" />
           </button>
-          <aside className="master-legend">
             {masterPlanPoints.map((point, index) => (
-              <button key={point} type="button" onClick={() => trackEvent("masterplan_hotspot_select", { point })}>
-                <span>{index + 1}</span>
-                {point}
+              <button
+                key={point.label}
+                type="button"
+                className={`master-hotspot ${selectedMasterPoint.label === point.label ? "active" : ""}`}
+                style={{ left: `${point.x}%`, top: `${point.y}%` }}
+                aria-label={`Show ${point.label} on master plan`}
+                onClick={() => {
+                  setSelectedMasterPoint(point);
+                  trackEvent("masterplan_hotspot_select", { point: point.label });
+                }}
+              >
+                {index + 1}
               </button>
             ))}
+          </div>
+          <aside className="master-legend">
+            {masterPlanPoints.map((point, index) => (
+              <button
+                key={point.label}
+                type="button"
+                className={selectedMasterPoint.label === point.label ? "active" : ""}
+                onClick={() => {
+                  setSelectedMasterPoint(point);
+                  trackEvent("masterplan_hotspot_select", { point: point.label });
+                }}
+              >
+                <span>{index + 1}</span>
+                {point.label}
+              </button>
+            ))}
+            <p className="master-detail">
+              <strong>{selectedMasterPoint.category}</strong>
+              {selectedMasterPoint.description}
+            </p>
             <button type="button" className="legend-view" onClick={() => setMasterPlanOpen(true)}>View Legend <Eye size={14} /></button>
           </aside>
         </section>
@@ -596,7 +647,7 @@ export function LandingPage() {
             <Image src={projectFacts.images.locationDesktop} alt="Poulomi Florique location map" fill sizes="(min-width: 1024px) 46vw, 100vw" className="hidden object-contain lg:block" />
           </div>
           <aside className="commute-card">
-            <p>Commute from Florique</p>
+            <p>Indicative non-peak access</p>
             <div className="commute-tabs">
               {locationClusters.map((cluster) => (
                 <button
@@ -620,6 +671,7 @@ export function LandingPage() {
                 </span>
               ))}
             </div>
+            <small>Shown for orientation only. Please verify current routes, distances and travel times on a live map before booking.</small>
           </aside>
         </section>
 
@@ -627,7 +679,7 @@ export function LandingPage() {
           <SectionLabel index="07" eyebrow="Built on trust" />
           <div className="trust-brand">
             <BrandWordmark />
-            <p>Poulomi is committed to crafting thoughtful communities defined by design, quality and trust.</p>
+            <p>Poulomi Florique enquiries should be cross-checked with official project material, legal documents and Karnataka RERA before any booking decision.</p>
           </div>
           <div className="trust-icons">
             {trustItems.map((item) => (
@@ -683,7 +735,7 @@ export function LandingPage() {
         </section>
       </main>
 
-      <footer className="footer">
+      <footer id="legal" className="footer">
         <div>
           <BrandWordmark light />
           <p>{projectFacts.locationShort}</p>
@@ -696,10 +748,12 @@ export function LandingPage() {
         </div>
         <nav>
           <button type="button" onClick={() => scrollTo("residences", "footer-residences")}>Residences</button>
-          <button type="button" onClick={() => scrollTo("amenities", "footer-amenities")}>Amenities</button>
+          <button type="button" onClick={() => scrollTo("bloomscapes", "footer-bloomscapes")}>Bloomscapes</button>
+          <button type="button" onClick={() => scrollTo("masterplan", "footer-plans")}>Plans</button>
           <button type="button" onClick={() => scrollTo("location", "footer-location")}>Location</button>
           <button type="button" onClick={() => scrollTo("trust", "footer-about")}>About</button>
           <a href={`mailto:${projectFacts.contactEmail}`}>Contact</a>
+          <Link href={projectFacts.rera.url} target="_blank" rel="noreferrer">RERA</Link>
         </nav>
         <div className="footer-actions">
           <button
@@ -731,7 +785,12 @@ export function LandingPage() {
             Download Brochure <Download size={15} />
           </button>
         </div>
-        <p className="footer-disclaimer">{micrositeDisclaimer}</p>
+        <p className="footer-disclaimer">
+          <span>Privacy Policy</span>
+          <span>Terms & Conditions</span>
+          <span>Disclaimer</span>
+          {micrositeDisclaimer}
+        </p>
       </footer>
 
       <div className="mobile-action-bar">
@@ -760,9 +819,9 @@ export function LandingPage() {
         <div className="menu-overlay" role="dialog" aria-modal="true" aria-label="Navigation menu">
           <button type="button" aria-label="Close menu" onClick={() => setMenuOpen(false)}><X /></button>
           <BrandWordmark />
-          {["residences", "amenities", "masterplan", "location", "trust"].map((id) => (
-            <button key={id} type="button" onClick={() => scrollTo(id, `menu-${id}`)}>
-              {id === "trust" ? "About Poulomi" : id.charAt(0).toUpperCase() + id.slice(1)}
+          {navItems.map((item) => (
+            <button key={`menu-${item.id}-${item.label}`} type="button" onClick={() => scrollTo(item.id, `menu-${item.label.toLowerCase()}`)}>
+              {item.label}
             </button>
           ))}
           <button

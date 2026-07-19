@@ -1,4 +1,4 @@
-import { amenityHighlights, faqItems, locationClusters, micrositeDisclaimer, projectFacts, units } from "@/data/poulomi-florique";
+import { amenityHighlights, faqItems, locationClusters, micrositeDisclaimer, projectFacts } from "@/data/poulomi-florique";
 import { absoluteUrl, siteDescription, siteName, siteUrl } from "@/lib/site";
 
 export function getBreadcrumbSchema() {
@@ -54,7 +54,7 @@ export function getProjectSchema() {
       cluster.items.slice(0, 4).map((item) => ({
         "@type": "Place",
         name: item.name,
-        description: `${item.time} from ${projectFacts.name}`,
+        description: `${cluster.label} destination near ${projectFacts.name}; verify current routes and travel times on live maps.`,
       })),
     ),
     url: siteUrl,
@@ -75,7 +75,7 @@ export function getWebPageSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: "Poulomi Florique Thanisandra Price, Brochure and Floor Plans",
+    name: "Poulomi Florique Thanisandra Residences, Brochure and Site Visit",
     url: siteUrl,
     description: siteDescription,
     primaryImageOfPage: {
@@ -88,36 +88,6 @@ export function getWebPageSchema() {
       "@type": "Residence",
       name: projectFacts.publicTitle,
     },
-  };
-}
-
-export function getOfferCatalogSchema() {
-  return {
-    "@context": "https://schema.org",
-    "@type": "OfferCatalog",
-    name: "Poulomi Florique apartment options",
-    url: absoluteUrl("/#floorplans"),
-    itemListElement: units.map((unit) => ({
-      "@type": "Offer",
-      name: unit.label,
-      category: "Apartment",
-      availability: "https://schema.org/InStock",
-      url: absoluteUrl("/#floorplans"),
-      itemOffered: {
-        "@type": "Accommodation",
-        name: `${unit.label} apartment at ${projectFacts.name}`,
-        floorSize: {
-          "@type": "QuantitativeValue",
-          value: unit.saleableArea,
-          unitText: "sq ft",
-        },
-      },
-      priceSpecification: {
-        "@type": "PriceSpecification",
-        priceCurrency: "INR",
-        description: "Current price sheet available on request.",
-      },
-    })),
   };
 }
 

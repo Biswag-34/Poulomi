@@ -3,7 +3,6 @@ import {
   getBreadcrumbSchema,
   getDisclosureSchema,
   getFaqSchema,
-  getOfferCatalogSchema,
   getProjectSchema,
   getWebPageSchema,
 } from "@/lib/schema";
@@ -13,7 +12,6 @@ export default function Page() {
     getBreadcrumbSchema(),
     getWebPageSchema(),
     getProjectSchema(),
-    getOfferCatalogSchema(),
     getFaqSchema(),
     getDisclosureSchema(),
   ];

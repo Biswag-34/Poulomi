@@ -5,7 +5,7 @@ export const siteUrl = (
 export const siteName = "Poulomi Florique Thanisandra";
 
 export const siteDescription =
-  "Poulomi Florique by Poulomi Estates in Thanisandra, Bengaluru offers premium 3 BHK and 3.5 BHK residences from 1,585 to 2,740 sq ft with 8.66 acres, 85% open spaces, a 37,800 sq ft clubhouse, 27,500 sq ft sports zone and strong North Bengaluru connectivity.";
+  "Explore Poulomi Florique in Thanisandra, North Bengaluru: premium 3 BHK-led residences, botanical landscapes, curated amenities, official brochure access and private site visits.";
 
 export const siteKeywords = [
   "Poulomi Florique",

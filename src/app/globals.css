@@ -163,25 +163,25 @@ textarea:focus-visible {
 }
 
 .hero picture img {
-  height: 34svh;
-  min-height: 220px;
-  max-height: 300px;
+  height: 50svh;
+  min-height: 280px;
+  max-height: 420px;
   object-fit: cover;
-  object-position: center;
+  object-position: center top;
 }
 
 .hero-card {
   position: relative;
   z-index: 2;
   width: min(calc(100% - 28px), 44rem);
-  margin: -26px auto 0;
+  margin: -28px auto 0;
   overflow: hidden;
   border: 1px solid rgba(201, 187, 168, 0.5);
   border-radius: 28px 28px 8px 8px;
   background:
     linear-gradient(140deg, rgba(255, 253, 252, 0.97), rgba(245, 240, 231, 0.98)),
     var(--florique-ivory-soft);
-  padding: 24px 22px 20px;
+  padding: 25px 22px 20px;
   box-shadow: 0 20px 52px rgba(12, 41, 33, 0.12);
 }
 
@@ -298,7 +298,7 @@ textarea:focus-visible {
   gap: 6px;
   border-right: 1px solid var(--line);
   color: var(--florique-forest);
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 800;
   text-align: center;
   text-transform: uppercase;
@@ -314,13 +314,20 @@ textarea:focus-visible {
   stroke-width: 1.4;
 }
 
-.hero-index,
 .enquire-tab {
   display: none;
 }
 
+.hero-index {
+  display: none;
+}
+
 .proof-ribbon {
+  width: min(calc(100% - 20px), 44rem);
+  margin: 8px auto 0;
   border-block: 1px solid rgba(201, 187, 168, 0.55);
+  border-inline: 1px solid rgba(201, 187, 168, 0.48);
+  border-radius: 10px;
   background: rgba(255, 253, 252, 0.72);
   padding: 12px 0;
 }
@@ -376,9 +383,22 @@ textarea:focus-visible {
   padding: 34px 18px;
 }
 
+.trust-section,
+.faq-form-section {
+  width: min(calc(100% - 20px), 44rem);
+  margin: 8px auto 0;
+  border: 1px solid rgba(201, 187, 168, 0.46);
+  border-radius: 10px;
+}
+
 .editorial-section {
   display: grid;
   gap: 18px;
+  width: min(calc(100% - 20px), 44rem);
+  margin: 8px auto 0;
+  border: 1px solid rgba(201, 187, 168, 0.46);
+  border-radius: 10px;
+  background: rgba(255, 253, 252, 0.48);
   border-bottom: 1px solid rgba(201, 187, 168, 0.45);
 }
 
@@ -579,6 +599,14 @@ textarea:focus-visible {
   color: white;
 }
 
+.amenity-card small {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.67rem;
+  font-weight: 800;
+}
+
 .amenity-card strong {
   display: block;
   max-width: 14ch;
@@ -594,6 +622,42 @@ textarea:focus-visible {
   color: rgba(255, 255, 255, 0.72);
   font-size: 0.76rem;
   line-height: 1.4;
+}
+
+.amenity-card ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.amenity-card li {
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  padding: 3px 7px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.63rem;
+  line-height: 1.2;
+}
+
+.gallery-dots {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin-top: -4px;
+}
+
+.gallery-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid rgba(181, 111, 120, 0.42);
+}
+
+.gallery-dots .active {
+  width: 18px;
+  border-radius: 999px;
+  background: var(--florique-rose);
 }
 
 .masterplan-section,
@@ -621,6 +685,7 @@ textarea:focus-visible {
   color: var(--florique-success);
 }
 
+.master-image-wrap,
 .master-image,
 .location-map {
   position: relative;
@@ -629,6 +694,39 @@ textarea:focus-visible {
   border: 1px solid rgba(201, 187, 168, 0.62);
   border-radius: 8px;
   background: var(--florique-white);
+}
+
+.master-image-wrap {
+  border: 0;
+  background: transparent;
+}
+
+.master-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+}
+
+.master-hotspot {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 2px solid rgba(255, 253, 252, 0.86);
+  border-radius: 50%;
+  background: var(--florique-rose);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(12, 41, 33, 0.24);
+  transform: translate(-50%, -50%);
+}
+
+.master-hotspot.active {
+  background: var(--florique-forest);
+  transform: translate(-50%, -50%) scale(1.12);
 }
 
 .master-legend {
@@ -650,6 +748,11 @@ textarea:focus-visible {
   text-align: left;
 }
 
+.master-legend button.active {
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .master-legend span {
   display: grid;
   width: 22px;
@@ -665,6 +768,24 @@ textarea:focus-visible {
   justify-content: space-between;
   border-top: 1px solid rgba(255, 255, 255, 0.18);
   padding-top: 10px;
+  text-transform: uppercase;
+}
+
+.master-detail {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  padding-top: 12px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.master-detail strong {
+  display: block;
+  margin-bottom: 4px;
+  color: white;
+  font-size: 0.72rem;
   text-transform: uppercase;
 }
 
@@ -725,6 +846,14 @@ textarea:focus-visible {
 .commute-list strong {
   color: var(--florique-ink);
   white-space: nowrap;
+}
+
+.commute-card > small {
+  display: block;
+  margin-top: 14px;
+  color: #787168;
+  font-size: 0.72rem;
+  line-height: 1.45;
 }
 
 .trust-section {
@@ -826,7 +955,8 @@ textarea:focus-visible {
   position: relative;
   overflow: hidden;
   background: var(--florique-forest);
-  padding: 28px 24px;
+  min-height: 230px;
+  padding: 30px 24px;
   color: white;
 }
 
@@ -839,7 +969,7 @@ textarea:focus-visible {
 }
 
 .green-quote h2 {
-  max-width: 9ch;
+  max-width: 11ch;
   color: white;
 }
 
@@ -900,6 +1030,14 @@ textarea:focus-visible {
   line-height: 1.4;
 }
 
+.consent-line a {
+  color: var(--florique-forest);
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
 .consent-line input {
   width: 15px;
   min-height: 15px;
@@ -926,6 +1064,15 @@ textarea:focus-visible {
   color: rgba(255, 255, 255, 0.68);
   font-size: 0.82rem;
   line-height: 1.6;
+}
+
+.footer-disclaimer span {
+  display: inline-flex;
+  margin-right: 18px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
 .social-line,
@@ -1164,12 +1311,12 @@ textarea:focus-visible {
   .desktop-nav {
     display: flex;
     align-items: center;
-    gap: clamp(20px, 3vw, 52px);
+    gap: clamp(14px, 2vw, 34px);
   }
 
   .desktop-nav button {
     color: rgba(255, 255, 255, 0.78);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 800;
     text-transform: uppercase;
   }
@@ -1194,9 +1341,17 @@ textarea:focus-visible {
     min-height: calc(100svh - 114px);
   }
 
+  .hero picture {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
   .hero picture img {
-    height: calc(100svh - 114px);
-    min-height: 640px;
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+    object-position: center;
   }
 
   .hero::after {
@@ -1293,10 +1448,21 @@ textarea:focus-visible {
     padding-inline: 28px;
   }
 
+  .proof-ribbon {
+    width: 100%;
+    margin-top: 0;
+    border-inline: 0;
+    border-radius: 0;
+  }
+
   .editorial-section,
   .trust-section,
   .faq-form-section,
   .footer {
+    width: 100%;
+    margin: 0;
+    border-inline: 0;
+    border-radius: 0;
     padding: clamp(58px, 6vw, 96px) clamp(48px, 6vw, 104px);
   }
 
@@ -1351,9 +1517,9 @@ textarea:focus-visible {
   }
 
   .amenity-track {
-    grid-auto-columns: minmax(210px, 1fr);
-    grid-template-columns: repeat(4, 1fr);
-    overflow: visible;
+    grid-auto-columns: minmax(220px, 24%);
+    grid-template-columns: none;
+    overflow-x: auto;
   }
 
   .amenity-card {
@@ -1364,6 +1530,7 @@ textarea:focus-visible {
     grid-template-columns: 58px minmax(220px, 0.48fr) minmax(0, 1.18fr) 180px;
   }
 
+  .master-image-wrap,
   .master-image {
     min-height: 420px;
   }

@@ -22,9 +22,9 @@ export const projectFacts = {
   },
   mapUrl: "https://www.google.com/maps/search/Poulomi+Florique+Thanisandra+Bengaluru",
   images: {
-    heroDesktop: "/florique/official/hero-official-desktop.jpg",
-    heroTablet: "/florique/official/hero-official-tablet.jpg",
-    heroMobile: "/florique/official/hero-official-mobile.jpg",
+    heroDesktop: "/florique/optimized/arrival-entrance-desktop.webp",
+    heroTablet: "/florique/optimized/arrival-entrance-desktop.webp",
+    heroMobile: "/florique/optimized/arrival-entrance-mobile.webp",
     elevation: "/florique/optimized/tower-elevation-official.webp",
     arrivalDesktop: "/florique/optimized/arrival-entrance-desktop.webp",
     arrivalMobile: "/florique/optimized/arrival-entrance-mobile.webp",
@@ -38,24 +38,24 @@ export const projectFacts = {
 } as const;
 
 export const micrositeDisclaimer =
-  "This promotional microsite is operated for project enquiries. RERA, pricing, inventory, views, approvals, timelines and specifications must be verified with Poulomi Estates and the official Karnataka RERA portal before booking.";
+  "This promotional microsite is operated for project enquiries. RERA, pricing, inventory, views, approvals, timelines, area statements and specifications must be verified with Poulomi Estates and the official Karnataka RERA portal before booking.";
 
 export const consentText =
-  "I agree to receive updates from Poulomi Florique.";
+  "I agree to receive updates about Poulomi Florique and understand the";
 
 export const proofFacts = [
-  { value: "8.66", label: "Acres", sourceLabel: "Official project material", verifiedAt: "2026-07-19" },
-  { value: "85%", label: "Open space", sourceLabel: "Official project material", verifiedAt: "2026-07-19" },
-  { value: "720", label: "Residences", sourceLabel: "Official project material", verifiedAt: "2026-07-19" },
-  { value: "37,800 sq ft", label: "Clubhouse", sourceLabel: "Official project material", verifiedAt: "2026-07-19" },
-  { value: "27,500 sq ft", label: "Sports zone", sourceLabel: "Official project material", verifiedAt: "2026-07-19" },
+  { value: "8.66", label: "Acres", sourceLabel: "Official project material", verifiedAt: "2026-07-19", status: "needs-confirmation" },
+  { value: "85%", label: "Open space", sourceLabel: "Official project material", verifiedAt: "2026-07-19", status: "needs-confirmation" },
+  { value: "720", label: "Residences", sourceLabel: "Official project material", verifiedAt: "2026-07-19", status: "needs-confirmation" },
+  { value: "37,800 sq ft", label: "Clubhouse", sourceLabel: "Official project material", verifiedAt: "2026-07-19", status: "needs-confirmation" },
+  { value: "27,500 sq ft", label: "Sports zone", sourceLabel: "Official project material", verifiedAt: "2026-07-19", status: "needs-confirmation" },
 ] as const;
 
 export const residenceFamilies = [
   {
     slug: "3-bhk",
     label: "3 BHK",
-    areaRange: "1,585-2,050 sq ft",
+    areaRange: "Request official area sheet",
     summary: "Elegant 3 BHK-led homes planned for private family living.",
     variants: ["3 BHK + 2T", "3 BHK + 3T"],
     image: projectFacts.images.floorPlan,
@@ -63,7 +63,7 @@ export const residenceFamilies = [
   {
     slug: "3-bhk-maid",
     label: "3 BHK + Maid",
-    areaRange: "1,905-2,460 sq ft",
+    areaRange: "Request official area sheet",
     summary: "Larger residences with staff-room convenience and practical zoning.",
     variants: ["3 BHK + Maid", "Select east and west variants"],
     image: projectFacts.images.floorPlan,
@@ -71,7 +71,7 @@ export const residenceFamilies = [
   {
     slug: "3-5-bhk-study-maid",
     label: "3.5 BHK + Study + Maid",
-    areaRange: "2,340-2,740 sq ft",
+    areaRange: "Request official area sheet",
     summary: "Signature work-from-home family residences with added flexibility.",
     variants: ["3.5 BHK", "Study", "Maid room"],
     image: projectFacts.images.floorPlan,
@@ -174,36 +174,43 @@ export const amenityHighlights = [
   {
     label: "37,800 sq ft Clubhouse",
     text: "Multipurpose hall, party lounge, co-working spaces, indoor games, badminton and squash.",
+    features: ["Multipurpose hall", "Indoor games", "Badminton & squash"],
     image: "/florique/optimized/clubhouse-exterior-mobile.webp",
   },
   {
     label: "27,500 sq ft Sports Zone",
     text: "Dedicated courts for futsal, pickleball, basketball, tennis and cricket practice.",
+    features: ["Tennis", "Pickleball", "Cricket practice"],
     image: "/florique/optimized/sports-zone-mobile.webp",
   },
   {
     label: "Resort-style Pool",
     text: "Pool deck, pool pavilion, kids' pool, bubbling pool and 25M lap pool.",
+    features: ["Lap pool", "Kids' pool", "Pool pavilion"],
     image: "/florique/official/pool-deck-official.jpg",
   },
   {
     label: "Wellness & Mindful Spaces",
     text: "Calmer spaces for yoga, reflection, co-working and everyday reset.",
+    features: ["Yoga deck", "Reflection zones", "Co-working"],
     image: "/florique/optimized/wellness-coworking-mobile.webp",
   },
   {
     label: "Children & Family",
     text: "Adventure playground, children's play areas and creche spaces for younger residents.",
+    features: ["Adventure play", "Creche", "Family lawns"],
     image: "/florique/optimized/childrens-nature-play-mobile.webp",
   },
   {
     label: "Signature Gardens",
     text: "Butterfly, fragrant, pebble, ginger, herb and reflexology gardens.",
+    features: ["Butterfly garden", "Herb garden", "Reflexology trail"],
     image: "/florique/optimized/signature-garden-mobile.webp",
   },
   {
     label: "Landscaped Amenities",
     text: "Arrival garden, gathering courtyard, event lawn and quieter sit-out decks.",
+    features: ["Arrival garden", "Event lawn", "Sit-out decks"],
     image: "/florique/official/landscape-highlights-official.jpg",
   },
 ] as const;
@@ -247,31 +254,51 @@ export const locationClusters = [
 ] as const;
 
 export const trustItems = [
-  "Thoughtful design",
-  "Quality construction",
-  "Customer first",
-  "Sustainable living",
+  "RERA registered project",
+  "Official project details",
+  "Poulomi Estates enquiry",
+  "Verify approvals before booking",
 ] as const;
 
 export const faqItems = [
   {
-    question: "What is the starting price?",
+    question: "Where is Poulomi Florique located?",
     answer:
-      "Current pricing is shared on request so the team can provide the latest cost sheet, floor-wise details and applicable charges.",
+      "Poulomi Florique is presented for Thanisandra, North Bengaluru. The registered project address and survey details should be checked against Karnataka RERA before booking.",
   },
   {
-    question: "What configurations are available?",
+    question: "What residence configurations are available?",
     answer:
-      "The project is planned around 3 BHK-led residences, including 3 BHK, 3 BHK + Maid and 3.5 BHK + Study + Maid homes.",
+      "The current working presentation is for 3 BHK-led homes, including 3 BHK, 3 BHK + Maid and 3.5 BHK + Study + Maid families. Exact inventory should be reconfirmed with the sales team.",
   },
   {
-    question: "What is the possession timeline?",
+    question: "What are the available apartment sizes?",
     answer:
-      "Possession and approval timelines should be verified on the official Karnataka RERA portal using the listed RERA number.",
+      "Area ranges are shared through the official area sheet and approved floor-plan material. Request the latest sheet before comparing plans.",
   },
   {
-    question: "How do I book a private viewing?",
+    question: "Is Poulomi Florique RERA registered?",
+    answer:
+      "The displayed RERA registration number is PRM/KA/RERA/1251/446/PR/180326/008539. Verify the latest project details directly on Karnataka RERA.",
+  },
+  {
+    question: "How can I receive the current price sheet?",
+    answer:
+      "Submit the enquiry form with your preferred configuration. Current pricing is shared on request so floor-wise charges and applicable costs remain up to date.",
+  },
+  {
+    question: "How can I schedule a private site visit?",
     answer:
       "Submit the private-viewing form or call the enquiry number. The project team will coordinate brochure, floor-plan and site-visit details.",
+  },
+  {
+    question: "What additional charges should a buyer verify?",
+    answer:
+      "Buyers should verify floor-rise, parking, maintenance, statutory charges, taxes, corpus, registration and any other applicable charges in the official cost sheet.",
+  },
+  {
+    question: "Where can I obtain approved floor plans and the brochure?",
+    answer:
+      "Use the brochure or plan CTAs to request the latest official material. Do not rely on cropped images or third-party reposts for booking decisions.",
   },
 ] as const;

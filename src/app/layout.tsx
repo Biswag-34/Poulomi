@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   applicationName: siteName,
   title: {
-    default: "Poulomi Florique Thanisandra | Price, Brochure, Floor Plans & Site Visit",
+    default: "Poulomi Florique Thanisandra | 3 BHK Residences & Site Visit",
     template: "%s | Poulomi Florique Thanisandra",
   },
   description: siteDescription,
@@ -36,14 +36,14 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Poulomi Florique Thanisandra | Price, Brochure, Floor Plans & Site Visit",
+    title: "Poulomi Florique Thanisandra | 3 BHK Residences & Site Visit",
     description: siteDescription,
     images: [
       {
-        url: absoluteUrl("/florique/official/hero-official-desktop.jpg"),
-        width: 1440,
-        height: 810,
-        alt: "Poulomi Florique Thanisandra residential towers and clubhouse",
+        url: absoluteUrl("/florique/optimized/arrival-entrance-desktop.webp"),
+        width: 1920,
+        height: 1080,
+        alt: "Poulomi Florique Thanisandra garden arrival and residential tower",
       },
     ],
     locale: "en_IN",
@@ -53,9 +53,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Poulomi Florique Thanisandra | Price, Brochure, Floor Plans & Site Visit",
+    title: "Poulomi Florique Thanisandra | 3 BHK Residences & Site Visit",
     description: siteDescription,
-    images: [absoluteUrl("/florique/official/hero-official-desktop.jpg")],
+    images: [absoluteUrl("/florique/optimized/arrival-entrance-desktop.webp")],
   },
   category: "real estate",
   other: {
