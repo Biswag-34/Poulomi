@@ -40,7 +40,7 @@ export function getProjectSchema() {
       name: projectFacts.developer,
     },
     image: [
-      absoluteUrl(projectFacts.images.hero),
+      absoluteUrl(projectFacts.images.heroDesktop),
       absoluteUrl(projectFacts.images.elevation),
       absoluteUrl(projectFacts.images.masterPlan),
     ],
@@ -80,7 +80,7 @@ export function getWebPageSchema() {
     description: siteDescription,
     primaryImageOfPage: {
       "@type": "ImageObject",
-      url: absoluteUrl(projectFacts.images.hero),
+      url: absoluteUrl(projectFacts.images.heroDesktop),
       width: 1672,
       height: 941,
     },
@@ -115,7 +115,7 @@ export function getOfferCatalogSchema() {
       priceSpecification: {
         "@type": "PriceSpecification",
         priceCurrency: "INR",
-        description: unit.price,
+        description: "Current price sheet available on request.",
       },
     })),
   };

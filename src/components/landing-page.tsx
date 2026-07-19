@@ -2,24 +2,19 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowRight,
   Building2,
-  CalendarDays,
   Check,
-  ChevronDown,
   Download,
-  Droplets,
-  Flower2,
+  Eye,
   Leaf,
-  MapPin,
+  Mail,
   Menu,
   Phone,
   ShieldCheck,
-  Sparkles,
-  Trees,
-  Waves,
   X,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -32,154 +27,69 @@ import {
   locationClusters,
   micrositeDisclaimer,
   projectFacts,
-  units,
+  proofFacts,
+  residenceFamilies,
+  trustItems,
   uspHighlights,
 } from "@/data/poulomi-florique";
 import { getLeadMetadata, trackEvent } from "@/lib/analytics";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
-type Unit = (typeof units)[number];
-type LeadAction = "price_sheet" | "brochure" | "floor_plan" | "site_visit";
+type LeadIntent = "site_visit" | "price_sheet" | "brochure" | "floor_plan" | "general_enquiry";
+type ResidenceFamily = (typeof residenceFamilies)[number];
 
-type HiddenLeadFields = {
-  utm_source: string;
-  utm_medium: string;
-  utm_campaign: string;
-  utm_term: string;
-  utm_content: string;
-  gclid: string;
-  fbclid: string;
-  msclkid: string;
-  landing_page: string;
-  referrer: string;
-  cta_source: string;
-  form_name: string;
-  device_type: string;
-  timestamp: string;
-};
-
-type LeadModal = {
-  action: LeadAction;
+type LeadOverlay = {
+  intent: LeadIntent;
   ctaSource: string;
   title: string;
   description: string;
-  unit: Unit;
+  selectedResidence?: ResidenceFamily;
 };
 
-const hiddenDefaults: HiddenLeadFields = {
-  utm_source: "",
-  utm_medium: "",
-  utm_campaign: "",
-  utm_term: "",
-  utm_content: "",
-  gclid: "",
-  fbclid: "",
-  msclkid: "",
-  landing_page: "",
-  referrer: "",
-  cta_source: "",
-  form_name: "",
-  device_type: "",
-  timestamp: "",
-};
-
-const leadFormSchema = z.object({
-  lead_name: z.string().trim().min(2, "Please enter your name."),
-  lead_phone: z
+const leadSchema = z.object({
+  name: z.string().trim().min(2, "Please enter your full name."),
+  phone: z
     .string()
     .trim()
-    .min(7, "Please enter a valid phone number.")
-    .regex(/^[0-9+\-\s()]+$/, "Use numbers only."),
-  lead_unit_type: z.string().min(1, "Please choose a residence."),
-  consent: z.boolean().refine(Boolean, "Please confirm consent to continue."),
+    .regex(/^(\+91[\s-]?)?[6-9]\d{9}$/, "Enter a valid Indian mobile number."),
+  email: z.string().trim().email("Enter a valid email.").optional().or(z.literal("")),
+  configuration: z.string().min(1, "Choose a configuration."),
+  preferredDate: z.string().optional(),
+  message: z.string().trim().max(400, "Keep the message under 400 characters.").optional(),
+  consent: z.boolean().refine(Boolean, "Please confirm consent."),
 });
 
-type LeadFormValues = z.infer<typeof leadFormSchema>;
+type LeadFormValues = z.infer<typeof leadSchema>;
 
-const primaryUnit = units.find((unit) => unit.primary) ?? units[0];
-
-const navItems = [
-  ["Residences", "residences"],
-  ["Amenities", "amenities"],
-  ["Location", "location"],
-  ["Plans", "masterplan"],
-  ["Enquire", "enquire"],
-] as const;
-
-const heroProof = [
-  { value: "8.66", label: "Acres" },
-  { value: "85%", label: "Open spaces" },
-  { value: "720", label: "Residences" },
-  { value: "G+27", label: "Tower height" },
-] as const;
-
-const researchSignals = [
-  {
-    title: "Official brand feel",
-    text: "Botanical, calm and landscape-led: a world shaped by sunlight, flowers and daily wonder.",
-  },
-  {
-    title: "Buyer proof",
-    text: "Fast facts, RERA, floor-plan evidence, location context and brochure-led enquiries stay visible.",
-  },
-  {
-    title: "Luxury shift",
-    text: "Less listing clutter, more editorial pacing, deeper imagery and quieter high-value interactions.",
-  },
-] as const;
-
-const bloomSpecies = [
-  "Lotus",
-  "Tangidi Puvvu",
-  "Firecracker Flower",
-  "Crape Jasmine",
-  "Star Flower",
-  "Peace Lily",
-  "Moss Rose",
-  "Blue Jacaranda",
-] as const;
-
-const gallery = [
-  {
-    src: "/florique/images/official-section-three.png",
-    alt: "Poulomi Florique tower elevation and clubhouse",
-    label: "Architecture",
-  },
-  {
-    src: "/florique/images/pool-deck.jpg",
-    alt: "Poulomi Florique pool deck with leaf pavilion",
-    label: "Pool deck",
-  },
-  {
-    src: "/florique/images/highlights.jpg",
-    alt: "Poulomi Florique landscaped amenity impression",
-    label: "Bloomscape",
-  },
-] as const;
-
-const actionCopy: Record<LeadAction, string> = {
-  price_sheet: "Request Price Sheet",
-  brochure: "Get Brochure",
-  floor_plan: "View Floor Plan",
-  site_visit: "Book Site Visit",
+const actionLabels: Record<LeadIntent, string> = {
+  site_visit: "Schedule My Visit",
+  price_sheet: "Request Current Price",
+  brochure: "Download Brochure",
+  floor_plan: "View Plan Details",
+  general_enquiry: "Send Enquiry",
 };
 
-function collectLeadContext(ctaSource: string, formName: string): HiddenLeadFields {
+const masterPlanPoints = [
+  "Arrival Plaza",
+  "Clubhouse",
+  "Central Greens",
+  "Pool & Deck",
+  "Sports Zone",
+  "Children's Play Area",
+  "Walking Trail",
+] as const;
+
+function normalisePhone(phone: string) {
+  const digits = phone.replace(/\D/g, "");
+  const number = digits.length > 10 ? digits.slice(-10) : digits;
+  return `+91${number}`;
+}
+
+function captureAttribution(ctaSource: string, formName: string) {
   if (typeof window === "undefined") {
-    return hiddenDefaults;
+    return {};
   }
 
   const params = new URLSearchParams(window.location.search);
-  const width = window.innerWidth;
-  const deviceType = width < 768 ? "mobile" : width < 1024 ? "tablet" : "desktop";
-
   return {
     utm_source: params.get("utm_source") ?? "",
     utm_medium: params.get("utm_medium") ?? "",
@@ -193,7 +103,7 @@ function collectLeadContext(ctaSource: string, formName: string): HiddenLeadFiel
     referrer: document.referrer,
     cta_source: ctaSource,
     form_name: formName,
-    device_type: deviceType,
+    device_type: window.innerWidth < 768 ? "mobile" : window.innerWidth < 1024 ? "tablet" : "desktop",
     timestamp: new Date().toISOString(),
   };
 }
@@ -201,9 +111,7 @@ function collectLeadContext(ctaSource: string, formName: string): HiddenLeadFiel
 async function submitLead(payload: Record<string, unknown>) {
   const response = await fetch("/api/leads", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
@@ -214,64 +122,51 @@ async function submitLead(payload: Record<string, unknown>) {
   return response.json();
 }
 
-function BrandMark({ light = false }: { light?: boolean }) {
+function BrandWordmark({ light = false }: { light?: boolean }) {
   return (
-    <div className={`brand-mark ${light ? "text-white" : "text-[var(--florique-ink)]"}`}>
-      <span className="brand-mark__symbol" aria-hidden="true">
-        <Flower2 className="size-5" />
-      </span>
-      <span>
-        <span className="block font-semibold leading-none">Poulomi</span>
-        <span className="block text-[0.76rem] font-semibold leading-none text-[var(--florique-red)]">
-          Florique
-        </span>
-      </span>
-    </div>
+    <span className={`brand-wordmark ${light ? "brand-wordmark--light" : ""}`}>
+      <span>Poulomi</span>
+      <span>Florique</span>
+    </span>
   );
 }
 
-function SectionIntro({
-  eyebrow,
-  title,
-  text,
-  center = false,
-}: {
-  eyebrow: string;
-  title: string;
-  text?: string;
-  center?: boolean;
-}) {
+function BotanicalMark() {
   return (
-    <div className={center ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}>
-      <p className="eyebrow">{eyebrow}</p>
-      <h2 className="mt-3 text-balance font-[family-name:var(--font-display)] text-[2.2rem] leading-[0.98] text-[var(--florique-ink)] sm:text-[2.8rem] lg:text-[4.4rem]">
-        {title}
-      </h2>
-      {text ? (
-        <p className="mt-4 text-pretty text-base leading-7 text-[var(--florique-muted)] lg:text-lg lg:leading-8">
-          {text}
-        </p>
-      ) : null}
+    <Image
+      src="/florique/decorative/florique-flower-outline.svg"
+      alt=""
+      width={22}
+      height={22}
+      aria-hidden="true"
+    />
+  );
+}
+
+function SectionLabel({ index, eyebrow }: { index: string; eyebrow: string }) {
+  return (
+    <div className="section-label">
+      <span>{index}</span>
+      <i />
+      <p>{eyebrow}</p>
     </div>
   );
 }
 
 function LeadForm({
-  action,
+  intent,
   ctaSource,
   formName,
-  selectedUnit,
+  selectedResidence,
   compact = false,
-  redirectOnSuccess = false,
-  onDone,
+  onSuccess,
 }: {
-  action: LeadAction;
+  intent: LeadIntent;
   ctaSource: string;
   formName: string;
-  selectedUnit: Unit;
+  selectedResidence?: ResidenceFamily;
   compact?: boolean;
-  redirectOnSuccess?: boolean;
-  onDone?: () => void;
+  onSuccess?: () => void;
 }) {
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [started, setStarted] = useState(false);
@@ -282,18 +177,23 @@ function LeadForm({
     reset,
     setValue,
   } = useForm<LeadFormValues>({
-    resolver: zodResolver(leadFormSchema),
+    resolver: zodResolver(leadSchema),
     defaultValues: {
-      lead_name: "",
-      lead_phone: "",
-      lead_unit_type: selectedUnit.label,
+      name: "",
+      phone: "",
+      email: "",
+      configuration: selectedResidence?.label ?? residenceFamilies[0].label,
+      preferredDate: "",
+      message: "",
       consent: true,
     },
   });
 
   useEffect(() => {
-    setValue("lead_unit_type", selectedUnit.label);
-  }, [selectedUnit.label, setValue]);
+    if (selectedResidence) {
+      setValue("configuration", selectedResidence.label);
+    }
+  }, [selectedResidence, setValue]);
 
   const onFocus = () => {
     if (started) {
@@ -304,677 +204,615 @@ function LeadForm({
     trackEvent("lead_form_start", {
       form_name: formName,
       cta_source: ctaSource,
-      lead_action: action,
-      unit_type: selectedUnit.label,
+      lead_action: intent,
+      configuration: selectedResidence?.label,
     });
   };
 
   const onSubmit = async (values: LeadFormValues) => {
     setStatus("idle");
-    const context = collectLeadContext(ctaSource, formName);
-
-    trackEvent("lead_form_submit", {
-      form_name: formName,
-      cta_source: ctaSource,
-      lead_action: action,
-      unit_type: values.lead_unit_type,
-    });
 
     try {
+      const phone = normalisePhone(values.phone);
       await submitLead({
-        ...context,
-        timestamp: new Date().toISOString(),
-        lead_action: action,
-        lead_name: values.lead_name,
-        lead_phone: values.lead_phone,
-        lead_unit_type: values.lead_unit_type,
-        name: values.lead_name,
-        phone: values.lead_phone,
-        interestedIn: values.lead_unit_type,
-        preferredAction: action,
+        ...captureAttribution(ctaSource, formName),
+        lead_action: intent,
+        lead_name: values.name,
+        lead_phone: phone,
+        lead_unit_type: values.configuration,
+        lead_callback_time: values.preferredDate,
+        name: values.name,
+        phone,
+        email: values.email,
+        interestedIn: values.configuration,
+        preferredAction: intent,
+        callbackTime: values.preferredDate,
+        note: values.message,
         source: ctaSource,
         consent: values.consent,
         metadata: getLeadMetadata({
           ctaSource,
           pageSection: formName,
-          preferredAction: action,
-          unitSelected: values.lead_unit_type,
+          preferredAction: intent,
+          unitSelected: values.configuration,
         }),
+      });
+
+      trackEvent("lead_submit_success", {
+        form_name: formName,
+        cta_source: ctaSource,
+        lead_action: intent,
+        configuration: values.configuration,
       });
 
       setStatus("success");
       reset({
-        lead_name: "",
-        lead_phone: "",
-        lead_unit_type: selectedUnit.label,
+        name: "",
+        phone: "",
+        email: "",
+        configuration: selectedResidence?.label ?? residenceFamilies[0].label,
+        preferredDate: "",
+        message: "",
         consent: true,
       });
-      onDone?.();
-
-      if (redirectOnSuccess) {
-        window.location.assign("/thank-you");
-      }
+      onSuccess?.();
     } catch {
+      trackEvent("lead_submit_error", {
+        form_name: formName,
+        cta_source: ctaSource,
+        lead_action: intent,
+      });
       setStatus("error");
     }
   };
 
   return (
-    <form className={`lead-form ${compact ? "lead-form--compact" : ""}`} onFocus={onFocus} onSubmit={handleSubmit(onSubmit)}>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <label className="field-label">
-          <span>Name</span>
-          <input className="lux-input" autoComplete="name" {...register("lead_name")} />
-          {errors.lead_name ? <small>{errors.lead_name.message}</small> : null}
+    <form className={`visit-form ${compact ? "visit-form--compact" : ""}`} onFocus={onFocus} onSubmit={handleSubmit(onSubmit)}>
+      <div className="form-grid">
+        <label>
+          <span>Full Name</span>
+          <input autoComplete="name" {...register("name")} />
+          {errors.name ? <small>{errors.name.message}</small> : null}
         </label>
-        <label className="field-label">
-          <span>Phone</span>
-          <input className="lux-input" autoComplete="tel" inputMode="tel" type="tel" {...register("lead_phone")} />
-          {errors.lead_phone ? <small>{errors.lead_phone.message}</small> : null}
+        <label>
+          <span>Phone Number</span>
+          <input autoComplete="tel" inputMode="tel" type="tel" {...register("phone")} />
+          {errors.phone ? <small>{errors.phone.message}</small> : null}
+        </label>
+        <label>
+          <span>Email Address</span>
+          <input autoComplete="email" inputMode="email" type="email" {...register("email")} />
+          {errors.email ? <small>{errors.email.message}</small> : null}
+        </label>
+        <label>
+          <span>Preferred Date</span>
+          <input type="date" {...register("preferredDate")} />
         </label>
       </div>
 
-      <label className="field-label">
-        <span>Interested in</span>
-        <span className="relative block">
-          <select className="lux-input appearance-none pr-11" {...register("lead_unit_type")}>
-            {units.map((unit) => (
-              <option key={unit.slug} value={unit.label}>
-                {unit.label} - {unit.saleableArea.toLocaleString("en-IN")} sq ft
+      <div className="form-grid form-grid--wide">
+        <label>
+          <span>I&apos;m interested in</span>
+          <select {...register("configuration")}>
+            {residenceFamilies.map((family) => (
+              <option key={family.slug} value={family.label}>
+                {family.label}
               </option>
             ))}
           </select>
-          <ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-[var(--florique-red)]" />
-        </span>
-        {errors.lead_unit_type ? <small>{errors.lead_unit_type.message}</small> : null}
-      </label>
+          {errors.configuration ? <small>{errors.configuration.message}</small> : null}
+        </label>
+        <label>
+          <span>Message (Optional)</span>
+          <input {...register("message")} />
+          {errors.message ? <small>{errors.message.message}</small> : null}
+        </label>
+      </div>
 
-      <label className="consent-row">
+      <label className="consent-line">
         <input type="checkbox" {...register("consent")} />
         <span>{consentText}</span>
       </label>
-      {errors.consent ? <small className="form-small-error">{errors.consent.message}</small> : null}
+      {errors.consent ? <small className="form-error">{errors.consent.message}</small> : null}
 
-      <Button type="submit" className="lux-button w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Sending..." : actionCopy[action]}
-        <ArrowRight className="size-4" />
-      </Button>
+      <button type="submit" className="rose-cta" disabled={isSubmitting}>
+        <BotanicalMark />
+        {isSubmitting ? "Scheduling..." : actionLabels[intent]}
+      </button>
 
-      {status === "success" && !redirectOnSuccess ? (
-        <p className="form-status">Thank you. The Florique team will connect shortly.</p>
+      {status === "success" ? (
+        <p className="form-success" role="status">
+          Thank you. Your request has been received.
+        </p>
       ) : null}
       {status === "error" ? (
-        <p className="form-status form-status--error">We could not submit this just now. Please try again.</p>
+        <p className="form-error" role="status">
+          We could not submit right now. Please try again.
+        </p>
       ) : null}
     </form>
   );
 }
 
 export function LandingPage() {
-  const [selectedUnit, setSelectedUnit] = useState<Unit>(primaryUnit);
-  const [leadModal, setLeadModal] = useState<LeadModal | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [selectedResidence, setSelectedResidence] = useState<ResidenceFamily>(residenceFamilies[0]);
+  const [leadOverlay, setLeadOverlay] = useState<LeadOverlay | null>(null);
+  const [planOpen, setPlanOpen] = useState(false);
   const [masterPlanOpen, setMasterPlanOpen] = useState(false);
+  const [locationTab, setLocationTab] = useState<(typeof locationClusters)[number]["label"]>(
+    locationClusters[0].label,
+  );
+  const [openFaq, setOpenFaq] = useState<string>(faqItems[0].question);
 
-  const featuredAmenities = useMemo(() => amenityHighlights.slice(0, 8), []);
+  const selectedLocation = useMemo(
+    () => locationClusters.find((cluster) => cluster.label === locationTab) ?? locationClusters[0],
+    [locationTab],
+  );
 
-  const openLeadModal = (
-    action: LeadAction,
-    ctaSource: string,
-    title: string,
-    description: string,
-    unit = selectedUnit,
-  ) => {
-    trackEvent("lead_modal_open", {
-      lead_action: action,
-      cta_source: ctaSource,
-      unit_type: unit.label,
-    });
-    setLeadModal({ action, ctaSource, title, description, unit });
-  };
+  useEffect(() => {
+    document.body.style.overflow = menuOpen || leadOverlay || planOpen || masterPlanOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [leadOverlay, masterPlanOpen, menuOpen, planOpen]);
 
-  const scrollToSection = (id: string, ctaSource: string) => {
-    setMobileMenuOpen(false);
-    trackEvent("navigation_click", { target_section: id, cta_source: ctaSource });
+  const scrollTo = (id: string, source: string) => {
+    setMenuOpen(false);
+    trackEvent("navigation_click", { target_section: id, cta_source: source });
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const openLead = (overlay: LeadOverlay) => {
+    setMenuOpen(false);
+    trackEvent("lead_sheet_open", {
+      lead_action: overlay.intent,
+      cta_source: overlay.ctaSource,
+      configuration: overlay.selectedResidence?.label,
+    });
+    setLeadOverlay(overlay);
+  };
+
   return (
-    <div className="lux-page">
-      <header className="site-header">
-        <div className="site-shell flex min-h-16 items-center justify-between gap-4">
-          <button type="button" className="text-left" onClick={() => scrollToSection("top", "brand")}>
-            <BrandMark />
+    <div className="florique-page">
+      <header className="florique-header">
+        <div className="announcement">
+          <span>Exclusive preview for a select few. Private appointments only.</span>
+          <span>RERA Reg. No. {projectFacts.rera.registration}</span>
+        </div>
+        <div className="nav-shell">
+          <button type="button" className="brand-button" onClick={() => scrollTo("top", "brand")}>
+            <BrandWordmark />
           </button>
-
-          <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
-            {navItems.map(([label, id]) => (
-              <button key={id} type="button" className="nav-link" onClick={() => scrollToSection(id, `nav-${id}`)}>
-                {label}
-              </button>
-            ))}
+          <nav className="desktop-nav" aria-label="Primary navigation">
+            <button type="button" onClick={() => scrollTo("residences", "nav-residences")}>Residences</button>
+            <button type="button" onClick={() => scrollTo("amenities", "nav-amenities")}>Amenities</button>
+            <button type="button" onClick={() => scrollTo("location", "nav-location")}>Location</button>
+            <button type="button" onClick={() => scrollTo("trust", "nav-about")}>About Poulomi</button>
           </nav>
-
-          <div className="hidden items-center gap-3 lg:flex">
-            <a className="phone-pill" href="tel:+919119239119">
-              <Phone className="size-4" />
-              +91 91192 39119
-            </a>
-            <Button className="lux-button" onClick={() => scrollToSection("enquire", "header-enquiry")}>
-              Enquire
-            </Button>
-          </div>
-
           <button
             type="button"
-            className="icon-button lg:hidden"
-            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-            onClick={() => setMobileMenuOpen((open) => !open)}
+            className="outline-nav-cta"
+            onClick={() =>
+              openLead({
+                intent: "site_visit",
+                ctaSource: "desktop-header",
+                title: "Book a private viewing",
+                description: "Share your preferred details and the Florique team will coordinate your visit.",
+                selectedResidence,
+              })
+            }
           >
-            {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+            Book a Private Viewing
+          </button>
+          <button type="button" className="menu-button" aria-label="Open menu" onClick={() => setMenuOpen(true)}>
+            <Menu />
           </button>
         </div>
-
-        {mobileMenuOpen ? (
-          <div className="site-shell pb-4 lg:hidden">
-            <div className="mobile-menu">
-              {navItems.map(([label, id]) => (
-                <button key={id} type="button" onClick={() => scrollToSection(id, `mobile-nav-${id}`)}>
-                  {label}
-                </button>
-              ))}
-              <a href="tel:+919119239119">Call +91 91192 39119</a>
-            </div>
-          </div>
-        ) : null}
       </header>
 
       <main id="top">
-        <section className="hero-section">
-          <div className="absolute inset-0">
-            <Image
-              src="/florique/hero/official-mobile.jpg"
-              alt="Poulomi Florique landscaped courtyard and pool"
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover sm:hidden"
-            />
-            <Image
-              src="/florique/hero/official-tablet.jpg"
-              alt="Poulomi Florique landscaped courtyard and pool"
-              fill
-              priority
-              sizes="100vw"
-              className="hidden object-cover sm:block lg:hidden"
-            />
-            <Image
-              src="/florique/hero/official-desktop.jpg"
-              alt="Poulomi Florique landscaped courtyard and pool"
-              fill
-              priority
-              sizes="100vw"
-              className="hidden object-cover lg:block"
-            />
-            <div className="hero-scrim" />
-          </div>
-
-          <div className="site-shell relative z-10 grid min-h-[calc(100svh-4rem)] items-end gap-6 pb-8 pt-24 lg:grid-cols-[1.08fr_0.72fr] lg:items-center lg:pb-16 lg:pt-28">
-            <div className="max-w-4xl text-white">
-              <div className="hero-kicker">
-                <ShieldCheck className="size-4" />
-                RERA {projectFacts.rera.registration}
-              </div>
-              <h1 className="mt-5 text-balance font-[family-name:var(--font-display)] text-[3.15rem] leading-[0.9] sm:text-[4.8rem] lg:text-[7.6rem]">
-                A World that Blossoms Around You.
-              </h1>
-              <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-white/86 sm:text-lg lg:text-xl lg:leading-8">
-                Premium 3 BHK and 3.5 BHK residences in Thanisandra, Bengaluru, shaped around open landscapes, refined amenities and North Bengaluru connectivity.
-              </p>
-
-              <div className="mt-7 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-                {heroProof.map((stat) => (
-                  <div key={stat.label} className="hero-stat">
-                    <strong>{stat.value}</strong>
-                    <span>{stat.label}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                <Button className="lux-button lux-button--light" onClick={() => scrollToSection("enquire", "hero-site-visit")}>
-                  Book Site Visit
-                  <CalendarDays className="size-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  className="glass-button"
-                  onClick={() =>
-                    openLeadModal(
-                      "brochure",
-                      "hero-brochure",
-                      "Get the Florique brochure",
-                      "Share your details to receive the brochure and current project information.",
-                    )
-                  }
-                >
-                  Download Brochure
-                  <Download className="size-4" />
-                </Button>
-              </div>
+        <section className="hero">
+          <picture>
+            <source media="(min-width: 1024px)" srcSet={projectFacts.images.heroDesktop} />
+            <source media="(min-width: 768px)" srcSet={projectFacts.images.heroTablet} />
+            <img src={projectFacts.images.heroMobile} alt="Poulomi Florique landscaped residential tower at dusk" />
+          </picture>
+          <div className="hero-card">
+            <Image className="card-botanical" src="/florique/decorative/botanical-corner-top-right.svg" alt="" width={260} height={260} aria-hidden="true" />
+            <p>Thanisandra · North Bengaluru</p>
+            <h1>Where architecture blooms.</h1>
+            <i />
+            <span>Botanical living, thoughtfully designed. Homes that feel private. Spaces that inspire.</span>
+            <div className="hero-actions">
+              <button type="button" className="rose-cta" onClick={() => scrollTo("residences", "hero-explore-residences")}>
+                <BotanicalMark />
+                Explore Residences
+              </button>
+              <button
+                type="button"
+                className="text-cta"
+                onClick={() =>
+                  openLead({
+                    intent: "brochure",
+                    ctaSource: "hero-brochure",
+                    title: "Download brochure",
+                    description: "Share your details to receive the latest Florique brochure.",
+                    selectedResidence,
+                  })
+                }
+              >
+                Download Brochure
+                <Download size={16} />
+              </button>
             </div>
-
-            <aside className="hero-enquiry" id="main-enquiry-form">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="eyebrow">Private enquiry desk</p>
-                  <h2 className="mt-2 text-[1.65rem] font-semibold leading-tight text-[var(--florique-ink)]">
-                    Receive price, floor plan and availability.
-                  </h2>
-                </div>
-                <Sparkles className="mt-1 size-6 text-[var(--florique-red)]" />
-              </div>
-              <LeadForm
-                action="price_sheet"
-                ctaSource="hero-form"
-                formName="hero"
-                selectedUnit={selectedUnit}
-                compact
-                redirectOnSuccess
-              />
-            </aside>
+            <div className="mobile-quick-facts">
+              <span><Building2 /> 3 BHK-led homes</span>
+              <span><ShieldCheck /> 1,585-2,740 sq ft</span>
+              <span><Leaf /> Curated landscapes</span>
+            </div>
           </div>
+          <div className="hero-index" aria-hidden="true"><span>01</span><i /> <small>/10</small></div>
+          <button
+            type="button"
+            className="enquire-tab"
+            onClick={() =>
+              openLead({
+                intent: "general_enquiry",
+                ctaSource: "hero-enquire-tab",
+                title: "Enquire now",
+                description: "Tell us what you would like to know about Poulomi Florique.",
+                selectedResidence,
+              })
+            }
+          >
+            <BotanicalMark />
+            Enquire Now
+          </button>
         </section>
 
-        <section className="research-band">
-          <div className="site-shell grid gap-4 lg:grid-cols-3">
-            {researchSignals.map((item) => (
-              <article key={item.title} className="research-note">
-                <p>{item.title}</p>
-                <span>{item.text}</span>
+        <section className="proof-ribbon" aria-label="Project proof points">
+          <div className="proof-track">
+            {proofFacts.map((fact) => (
+              <article key={fact.label}>
+                <Leaf />
+                <strong>{fact.value}</strong>
+                <span>{fact.label}</span>
               </article>
             ))}
           </div>
         </section>
 
-        <section className="section-pad">
-          <div className="site-shell grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-            <div>
-              <SectionIntro
-                eyebrow="Design map"
-                title="A premium journey built around calm proof."
-                text="Florique should feel like a cultivated estate first and a sales page second. The design keeps buyer-critical details near the surface while letting the project imagery, landscape planning and bloomscape idea carry the emotion."
-              />
-              <div className="mt-7 grid gap-3">
-                {uspHighlights.slice(0, 4).map((item) => (
-                  <div key={item.title} className="proof-row">
-                    <Check className="size-5" />
-                    <div>
-                      <strong>{item.title}</strong>
-                      <span>{item.text}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="image-stack">
-              <div className="image-stack__main">
-                <Image
-                  src="/florique/images/official-section-three.png"
-                  alt="Poulomi Florique residential towers"
-                  fill
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                  className="object-cover"
-                />
-              </div>
-              <div className="image-stack__caption">
-                <Building2 className="size-5" />
-                Four residential towers with a landscape-first podium and standalone clubhouse life.
-              </div>
-            </div>
+        <section className="editorial-section story-section">
+          <SectionLabel index="02" eyebrow="The Florique Life" />
+          <div className="story-copy">
+            <h2>A world that blossoms around you.</h2>
+            <p>
+              Poulomi Florique is a sanctuary of green and light. Where modern architecture rises gently from landscaped gardens, and every space is designed to help you live well, every day.
+            </p>
+            <button type="button" className="text-cta" onClick={() => scrollTo("masterplan", "story-discover")}>
+              Discover the Story <ArrowRight size={16} />
+            </button>
+          </div>
+          <div className="story-media">
+            <Image src={projectFacts.images.arrivalDesktop} alt="Poulomi Florique arrival landscape artistic impression" fill sizes="(min-width: 1024px) 54vw, 100vw" className="story-main" />
+            <Image src={projectFacts.images.botanicalMacro} alt="" width={180} height={230} className="story-inset" aria-hidden="true" />
           </div>
         </section>
 
-        <section id="residences" className="section-pad bg-[var(--florique-cream)]">
-          <div className="site-shell">
-            <SectionIntro
-              eyebrow="Residences"
-              title="Spacious homes for families who have outgrown compromise."
-              text="The unit mix is focused on larger 3 BHK, 3 BHK + Maid and 3.5 BHK + Study + Maid residences from 1,585 to 2,740 sq ft."
-            />
-
-            <div className="mt-8 grid gap-5 lg:grid-cols-[0.82fr_1.18fr]">
-              <div className="unit-list" role="list" aria-label="Available residences">
-                {units.map((unit) => (
-                  <button
-                    key={unit.slug}
-                    type="button"
-                    className={`unit-option ${selectedUnit.slug === unit.slug ? "is-selected" : ""}`}
-                    onClick={() => setSelectedUnit(unit)}
-                  >
-                    <span>
-                      <strong>{unit.label}</strong>
-                      <small>{unit.buyerFit}</small>
-                    </span>
-                    <span>{unit.saleableArea.toLocaleString("en-IN")} sq ft</span>
-                  </button>
-                ))}
-              </div>
-
-              <article className="unit-feature">
-                <div className="relative min-h-[19rem] overflow-hidden rounded-[1.2rem] bg-white sm:min-h-[28rem]">
-                  <Image
-                    src={selectedUnit.image}
-                    alt={`${selectedUnit.label} floor plan at Poulomi Florique`}
-                    fill
-                    sizes="(min-width: 1024px) 54vw, 100vw"
-                    className="object-contain p-3"
-                  />
-                </div>
-                <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
-                  <div>
-                    <p className="eyebrow">Selected residence</p>
-                    <h3 className="mt-2 text-3xl font-semibold text-[var(--florique-ink)]">{selectedUnit.label}</h3>
-                    <p className="mt-2 text-sm leading-6 text-[var(--florique-muted)]">
-                      {selectedUnit.saleableArea.toLocaleString("en-IN")} sq ft super built-up area. {selectedUnit.buyerFit}.
-                    </p>
-                  </div>
-                  <div className="rounded-[1rem] bg-[var(--florique-ink)] p-4 text-white">
-                    <small className="block text-white/70">Indicative price</small>
-                    <strong className="mt-1 block text-2xl">{selectedUnit.price}</strong>
-                  </div>
-                </div>
-                <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                  <Button
-                    className="lux-button"
-                    onClick={() =>
-                      openLeadModal(
-                        "floor_plan",
-                        "unit-floor-plan",
-                        `View ${selectedUnit.label} floor plan`,
-                        "Share your details to receive the selected floor plan and current availability.",
-                        selectedUnit,
-                      )
-                    }
-                  >
-                    View Floor Plan
-                    <ArrowRight className="size-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="outline-lux"
-                    onClick={() =>
-                      openLeadModal(
-                        "price_sheet",
-                        "unit-price-sheet",
-                        "Request current price sheet",
-                        "Get the latest floor-wise pricing, preferred location charges and availability.",
-                        selectedUnit,
-                      )
-                    }
-                  >
-                    Request Price Sheet
-                  </Button>
-                </div>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section id="amenities" className="section-pad">
-          <div className="site-shell">
-            <div className="grid gap-8 lg:grid-cols-[0.74fr_1.26fr] lg:items-end">
-              <SectionIntro
-                eyebrow="Bloomscapes and amenities"
-                title="A resort-like everyday, set inside flowering landscapes."
-                text="The official brand story gives nature center stage: 20 different floral species, open courtyards, water-sensitive planning, wellness spaces and an active sports zone."
-              />
-              <div className="bloom-panel">
-                <Leaf className="size-7 text-[var(--florique-red)]" />
-                <p>Featured bloomscape palette</p>
-                <div>
-                  {bloomSpecies.map((flower) => (
-                    <span key={flower}>{flower}</span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {featuredAmenities.map((item, index) => {
-                const Icon = index % 3 === 0 ? Waves : index % 3 === 1 ? Trees : Droplets;
-
-                return (
-                  <article key={item.label} className="amenity-card">
-                    <Icon className="size-7 text-[var(--florique-red)]" />
-                    <h3>{item.label}</h3>
-                    <p>{item.text}</p>
-                  </article>
-                );
-              })}
-            </div>
-
-            <div className="gallery-strip mt-8">
-              {gallery.map((item) => (
-                <figure key={item.src}>
-                  <Image src={item.src} alt={item.alt} fill sizes="(min-width: 1024px) 33vw, 86vw" className="object-cover" />
-                  <figcaption>{item.label}</figcaption>
-                </figure>
+        <section id="residences" className="editorial-section residences-section">
+          <SectionLabel index="03" eyebrow="Choose your home" />
+          <div className="residence-intro">
+            <h2>Residences, crafted to complement your life.</h2>
+            <div className="residence-tabs" role="tablist" aria-label="Residence families">
+              {residenceFamilies.map((family) => (
+                <button
+                  key={family.slug}
+                  type="button"
+                  role="tab"
+                  aria-selected={family.slug === selectedResidence.slug}
+                  className={family.slug === selectedResidence.slug ? "active" : ""}
+                  onClick={() => {
+                    setSelectedResidence(family);
+                    trackEvent("residence_family_select", { residence: family.slug });
+                  }}
+                >
+                  <strong>{family.label}</strong>
+                  <span>{family.areaRange}</span>
+                </button>
               ))}
             </div>
           </div>
+          <article className="plan-card">
+            <Image src="/florique/decorative/botanical-branch-vertical.svg" alt="" width={118} height={260} className="plan-botanical" aria-hidden="true" />
+            <div>
+              <p>{selectedResidence.label}</p>
+              <h3>{selectedResidence.areaRange}</h3>
+              <span>{selectedResidence.summary}</span>
+              <button type="button" className="text-cta" onClick={() => setPlanOpen(true)}>
+                View Plan Details <ArrowRight size={16} />
+              </button>
+            </div>
+            <button type="button" className="plan-image-button" onClick={() => setPlanOpen(true)}>
+              <Image src={selectedResidence.image} alt={`${selectedResidence.label} floor plan`} fill sizes="(min-width: 1024px) 48vw, 100vw" className="object-contain" />
+            </button>
+          </article>
         </section>
 
-        <section id="masterplan" className="section-pad bg-[var(--florique-green)] text-white">
-          <div className="site-shell grid gap-8 lg:grid-cols-[0.86fr_1.14fr] lg:items-center">
-            <div>
-              <p className="eyebrow eyebrow--light">Master plan</p>
-              <h2 className="mt-3 text-balance font-[family-name:var(--font-display)] text-[2.25rem] leading-[0.98] sm:text-[3rem] lg:text-[4.8rem]">
-                Balance, movement and quiet corners in one landscape.
-              </h2>
-              <p className="mt-5 text-base leading-7 text-white/78 lg:text-lg lg:leading-8">
-                The plan places towers around a central amenity garden, with pool decks, sports courts, play areas, gardens, plazas and gathering spaces arranged as a daily walking circuit.
-              </p>
-              <div className="mt-7 grid gap-3">
-                {[
-                  "Vehicle-free elevated podium",
-                  "25M lap pool and pool pavilion",
-                  "Dedicated futsal, tennis, basketball and pickleball courts",
-                  "Butterfly, fragrant, pebble, herb and reflexology gardens",
-                ].map((item) => (
-                  <div key={item} className="dark-proof-row">
-                    <Check className="size-5" />
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+        <section id="amenities" className="editorial-section amenities-section">
+          <SectionLabel index="04" eyebrow="Amenities bloomscape" />
+          <div className="amenity-copy">
+            <h2>Spaces that nourish every part of you.</h2>
+          </div>
+          <div className="amenity-track">
+            {amenityHighlights.slice(0, 4).map((amenity) => (
+              <article key={amenity.label} className="amenity-card">
+                <Image src={amenity.image} alt={amenity.label} fill sizes="(min-width: 1024px) 22vw, 70vw" className="object-cover" />
+                <div>
+                  <strong>{amenity.label}</strong>
+                  <span>{amenity.text}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
 
-            <button type="button" className="masterplan-frame" onClick={() => setMasterPlanOpen(true)}>
-              <Image
-                src="/florique/images/masterplan.jpg"
-                alt="Poulomi Florique master plan"
-                fill
-                sizes="(min-width: 1024px) 54vw, 100vw"
-                className="object-cover object-top"
-              />
-              <span>Tap to enlarge master plan</span>
+        <section id="masterplan" className="editorial-section masterplan-section">
+          <SectionLabel index="05" eyebrow="Master plan" />
+          <div className="master-copy">
+            <h2>Designed with green at the heart.</h2>
+            <ul>
+              {uspHighlights.map((item) => (
+                <li key={item.title}><Check size={15} /> {item.title}</li>
+              ))}
+            </ul>
+            <button type="button" className="text-cta" onClick={() => setMasterPlanOpen(true)}>
+              Explore Master Plan <Download size={15} />
             </button>
           </div>
+          <button type="button" className="master-image" onClick={() => setMasterPlanOpen(true)}>
+            <Image src={projectFacts.images.masterPlan} alt="Poulomi Florique official master plan" fill sizes="(min-width: 1024px) 58vw, 100vw" className="object-cover" />
+          </button>
+          <aside className="master-legend">
+            {masterPlanPoints.map((point, index) => (
+              <button key={point} type="button" onClick={() => trackEvent("masterplan_hotspot_select", { point })}>
+                <span>{index + 1}</span>
+                {point}
+              </button>
+            ))}
+            <button type="button" className="legend-view" onClick={() => setMasterPlanOpen(true)}>View Legend <Eye size={14} /></button>
+          </aside>
         </section>
 
-        <section id="location" className="section-pad">
-          <div className="site-shell">
-            <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
-              <div>
-                <SectionIntro
-                  eyebrow="Location"
-                  title="Rooted in North Bengaluru convenience."
-                  text="Florique is located at Kannur, Thanisandra, with access to schools, healthcare, shopping, tech parks, ORR and the airport corridor."
-                />
-                <div className="map-frame mt-7">
-                  <Image
-                    src="/florique/location/map-mobile.jpg"
-                    alt="Poulomi Florique location map"
-                    fill
-                    sizes="100vw"
-                    className="object-contain sm:hidden"
-                  />
-                  <Image
-                    src="/florique/location/map-tablet.jpg"
-                    alt="Poulomi Florique location map"
-                    fill
-                    sizes="100vw"
-                    className="hidden object-contain sm:block lg:hidden"
-                  />
-                  <Image
-                    src="/florique/location/map-desktop.jpg"
-                    alt="Poulomi Florique location map"
-                    fill
-                    sizes="(min-width: 1024px) 52vw, 100vw"
-                    className="hidden object-contain lg:block"
-                  />
-                </div>
-              </div>
-
-              <div className="location-list">
-                {locationClusters.map((cluster) => (
-                  <details key={cluster.label} open={cluster.label === "Education"}>
-                    <summary>
-                      <span>
-                        <MapPin className="size-4" />
-                        {cluster.label}
-                      </span>
-                      <ChevronDown className="size-4" />
-                    </summary>
-                    <div>
-                      {cluster.items.map((item) => (
-                        <p key={item.name}>
-                          <span>{item.name}</span>
-                          <strong>{item.time}</strong>
-                        </p>
-                      ))}
-                    </div>
-                  </details>
-                ))}
-              </div>
+        <section id="location" className="editorial-section location-section">
+          <SectionLabel index="06" eyebrow="North Bengaluru" />
+          <div className="location-copy">
+            <h2>Well connected. Well placed.</h2>
+            <p>Located in Thanisandra, close to major business hubs, schools, healthcare and everyday conveniences.</p>
+          </div>
+          <div className="location-map">
+            <Image src={projectFacts.images.locationMobile} alt="Poulomi Florique location map" fill sizes="100vw" className="object-contain sm:hidden" />
+            <Image src={projectFacts.images.locationTablet} alt="Poulomi Florique location map" fill sizes="100vw" className="hidden object-contain sm:block lg:hidden" />
+            <Image src={projectFacts.images.locationDesktop} alt="Poulomi Florique location map" fill sizes="(min-width: 1024px) 46vw, 100vw" className="hidden object-contain lg:block" />
+          </div>
+          <aside className="commute-card">
+            <p>Commute from Florique</p>
+            <div className="commute-tabs">
+              {locationClusters.map((cluster) => (
+                <button
+                  key={cluster.label}
+                  type="button"
+                  className={cluster.label === locationTab ? "active" : ""}
+                  onClick={() => {
+                    setLocationTab(cluster.label);
+                    trackEvent("location_category_select", { category: cluster.label });
+                  }}
+                >
+                  {cluster.label}
+                </button>
+              ))}
             </div>
+            <div className="commute-list">
+              {selectedLocation.items.map((item) => (
+                <span key={item.name}>
+                  {item.name}
+                  <strong>{item.time}</strong>
+                </span>
+              ))}
+            </div>
+          </aside>
+        </section>
+
+        <section id="trust" className="trust-section">
+          <SectionLabel index="07" eyebrow="Built on trust" />
+          <div className="trust-brand">
+            <BrandWordmark />
+            <p>Poulomi is committed to crafting thoughtful communities defined by design, quality and trust.</p>
+          </div>
+          <div className="trust-icons">
+            {trustItems.map((item) => (
+              <span key={item}><Leaf /> {item}</span>
+            ))}
+          </div>
+          <div className="rera-card">
+            <p>RERA Reg. No.</p>
+            <strong>{projectFacts.rera.registration}</strong>
+            <Link href={projectFacts.rera.url} target="_blank" rel="noreferrer" onClick={() => trackEvent("rera_link_click", {})}>
+              View RERA Details <ArrowRight size={16} />
+            </Link>
           </div>
         </section>
 
-        <section id="enquire" className="section-pad bg-[var(--florique-cream)]">
-          <div className="site-shell grid gap-8 lg:grid-cols-[0.82fr_1.18fr]">
-            <div>
-              <SectionIntro
-                eyebrow="Questions and visit"
-                title="Plan a private walkthrough of Florique."
-                text="Use the form to request current pricing, a guided site visit or the complete brochure. Project details are subject to verification with Poulomi and the official RERA portal."
-              />
-              <div className="faq-list mt-7">
-                {faqItems.map((item) => (
-                  <details key={item.question}>
-                    <summary>
-                      {item.question}
-                      <ChevronDown className="size-4" />
-                    </summary>
-                    <p>{item.answer}</p>
-                  </details>
-                ))}
-              </div>
-            </div>
-
-            <aside className="final-form">
-              <BrandMark />
-              <h2>Schedule project site visit</h2>
-              <p>Share your details and the Florique enquiry team will help with brochure, pricing and available floor plans.</p>
-              <LeadForm
-                action="site_visit"
-                ctaSource="final-form"
-                formName="final"
-                selectedUnit={selectedUnit}
-                redirectOnSuccess
-              />
-            </aside>
+        <section id="private-viewing" className="faq-form-section">
+          <SectionLabel index="08" eyebrow="Frequently asked questions" />
+          <div className="faq-list">
+            {faqItems.map((faq) => {
+              const open = openFaq === faq.question;
+              return (
+                <article key={faq.question}>
+                  <button
+                    type="button"
+                    aria-expanded={open}
+                    onClick={() => {
+                      setOpenFaq(open ? "" : faq.question);
+                      trackEvent("faq_open", { question: faq.question });
+                    }}
+                  >
+                    {faq.question}
+                    <span>{open ? "-" : "+"}</span>
+                  </button>
+                  {open ? <p>{faq.answer}</p> : null}
+                </article>
+              );
+            })}
           </div>
+          <div className="green-quote">
+            <Image src="/florique/decorative/botanical-cluster-large.svg" alt="" width={210} height={210} aria-hidden="true" />
+            <h2>Homes that bloom with possibility.</h2>
+            <p>Book your private viewing today.</p>
+          </div>
+          <aside className="final-form-card">
+            <p>Book a Private Viewing</p>
+            <LeadForm
+              intent="site_visit"
+              ctaSource="final-form"
+              formName="private-viewing"
+              selectedResidence={selectedResidence}
+            />
+          </aside>
         </section>
       </main>
 
-      <footer className="site-footer">
-        <div className="site-shell grid gap-7 lg:grid-cols-[1.2fr_0.8fr]">
-          <div>
-            <BrandMark light />
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-white/70">
-              Poulomi Florique, {projectFacts.locationLong}. RERA {projectFacts.rera.registration}. Contact: floriquesales@poulomi.in, +91 91192 39119.
-            </p>
-            <p className="mt-4 text-xs leading-6 text-white/52">{micrositeDisclaimer}</p>
-          </div>
-          <div className="footer-links">
-            {navItems.map(([label, id]) => (
-              <button key={id} type="button" onClick={() => scrollToSection(id, `footer-${id}`)}>
-                {label}
-              </button>
-            ))}
+      <footer className="footer">
+        <div>
+          <BrandWordmark light />
+          <p>{projectFacts.locationShort}</p>
+          <div className="social-line">
+            <span>Instagram</span>
+            <span>Facebook</span>
+            <span>YouTube</span>
+            <span>LinkedIn</span>
           </div>
         </div>
+        <nav>
+          <button type="button" onClick={() => scrollTo("residences", "footer-residences")}>Residences</button>
+          <button type="button" onClick={() => scrollTo("amenities", "footer-amenities")}>Amenities</button>
+          <button type="button" onClick={() => scrollTo("location", "footer-location")}>Location</button>
+          <button type="button" onClick={() => scrollTo("trust", "footer-about")}>About</button>
+          <a href={`mailto:${projectFacts.contactEmail}`}>Contact</a>
+        </nav>
+        <div className="footer-actions">
+          <button
+            type="button"
+            onClick={() =>
+              openLead({
+                intent: "site_visit",
+                ctaSource: "footer-viewing",
+                title: "Book a private viewing",
+                description: "Share your details and preferred configuration.",
+                selectedResidence,
+              })
+            }
+          >
+            Book a Private Viewing
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              openLead({
+                intent: "brochure",
+                ctaSource: "footer-brochure",
+                title: "Download brochure",
+                description: "Share your details to receive the latest brochure.",
+                selectedResidence,
+              })
+            }
+          >
+            Download Brochure <Download size={15} />
+          </button>
+        </div>
+        <p className="footer-disclaimer">{micrositeDisclaimer}</p>
       </footer>
 
-      <div className="mobile-sticky">
-        <button type="button" onClick={() => scrollToSection("main-enquiry-form", "sticky-enquiry")}>
-          <Phone className="size-5" />
-          Enquire
-        </button>
+      <div className="mobile-action-bar">
         <button
           type="button"
           onClick={() =>
-            openLeadModal(
-              "brochure",
-              "sticky-brochure",
-              "Get the Florique brochure",
-              "Share your details to receive the brochure and project information.",
-            )
+            openLead({
+              intent: "general_enquiry",
+              ctaSource: "mobile-sticky-enquire",
+              title: "Enquire now",
+              description: "Tell us what you would like to know about Poulomi Florique.",
+              selectedResidence,
+            })
           }
         >
-          <Download className="size-5" />
-          Brochure
+          <Mail size={18} />
+          Enquire
         </button>
+        <a href={projectFacts.contactPhoneHref} onClick={() => trackEvent("call_click", { cta_source: "mobile-sticky-call" })}>
+          <Phone size={18} />
+          Call
+        </a>
       </div>
 
-      <Dialog open={Boolean(leadModal)} onOpenChange={(open) => !open && setLeadModal(null)}>
-        <DialogContent>
-          {leadModal ? (
-            <>
-              <DialogHeader>
-                <BrandMark />
-                <DialogTitle>{leadModal.title}</DialogTitle>
-                <DialogDescription>{leadModal.description}</DialogDescription>
-              </DialogHeader>
-              <LeadForm
-                action={leadModal.action}
-                ctaSource={leadModal.ctaSource}
-                formName="modal"
-                selectedUnit={leadModal.unit}
-                onDone={() => setLeadModal(null)}
-              />
-            </>
-          ) : null}
-        </DialogContent>
-      </Dialog>
+      {menuOpen ? (
+        <div className="menu-overlay" role="dialog" aria-modal="true" aria-label="Navigation menu">
+          <button type="button" aria-label="Close menu" onClick={() => setMenuOpen(false)}><X /></button>
+          <BrandWordmark />
+          {["residences", "amenities", "masterplan", "location", "trust"].map((id) => (
+            <button key={id} type="button" onClick={() => scrollTo(id, `menu-${id}`)}>
+              {id === "trust" ? "About Poulomi" : id.charAt(0).toUpperCase() + id.slice(1)}
+            </button>
+          ))}
+          <button
+            type="button"
+            className="rose-cta"
+            onClick={() =>
+              openLead({
+                intent: "brochure",
+                ctaSource: "mobile-menu-brochure",
+                title: "Download brochure",
+                description: "Share your details to receive the latest brochure.",
+                selectedResidence,
+              })
+            }
+          >
+            Download Brochure
+          </button>
+        </div>
+      ) : null}
+
+      {leadOverlay ? (
+        <div className="lead-overlay" role="dialog" aria-modal="true" aria-labelledby="lead-title">
+          <button type="button" className="overlay-backdrop" aria-label="Close enquiry form" onClick={() => setLeadOverlay(null)} />
+          <aside className="lead-panel">
+            <button type="button" className="panel-close" aria-label="Close enquiry form" onClick={() => setLeadOverlay(null)}><X size={18} /></button>
+            <p>{projectFacts.name}</p>
+            <h2 id="lead-title">{leadOverlay.title}</h2>
+            <span>{leadOverlay.description}</span>
+            <LeadForm
+              intent={leadOverlay.intent}
+              ctaSource={leadOverlay.ctaSource}
+              formName="lead-overlay"
+              selectedResidence={leadOverlay.selectedResidence}
+              compact
+            />
+          </aside>
+        </div>
+      ) : null}
+
+      {planOpen ? (
+        <div className="image-lightbox" role="dialog" aria-modal="true" aria-label="Floor plan viewer">
+          <button type="button" aria-label="Close floor plan" onClick={() => setPlanOpen(false)}><X /></button>
+          <Image src={selectedResidence.image} alt={`${selectedResidence.label} floor plan enlarged`} fill sizes="100vw" className="object-contain" />
+        </div>
+      ) : null}
 
       {masterPlanOpen ? (
-        <div className="plan-lightbox" role="dialog" aria-modal="true" aria-label="Poulomi Florique master plan">
-          <button type="button" aria-label="Close master plan" onClick={() => setMasterPlanOpen(false)}>
-            <X className="size-5" />
-          </button>
-          <div>
-            <Image
-              src="/florique/images/masterplan.jpg"
-              alt="Poulomi Florique enlarged master plan"
-              fill
-              sizes="100vw"
-              className="object-contain"
-            />
-          </div>
+        <div className="image-lightbox" role="dialog" aria-modal="true" aria-label="Master plan viewer">
+          <button type="button" aria-label="Close master plan" onClick={() => setMasterPlanOpen(false)}><X /></button>
+          <Image src={projectFacts.images.masterPlan} alt="Poulomi Florique master plan enlarged" fill sizes="100vw" className="object-contain" />
         </div>
       ) : null}
     </div>

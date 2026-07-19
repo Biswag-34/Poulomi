@@ -2,35 +2,81 @@ export const projectFacts = {
   name: "Poulomi Florique",
   publicTitle: "Poulomi Florique Thanisandra",
   developer: "Poulomi Estates",
-  locationShort: "Thanisandra, Bengaluru",
+  locationShort: "Thanisandra, North Bengaluru",
   locationLong: "Sy No. 16, Kannur Village, Bidarahalli Hobli, Bengaluru 560077",
-  totalUnits: "720 apartments",
+  totalUnits: "720 residences",
   towerStack: "4 towers with 2B + G + 27 floors",
-  enquiryLabel: "Project Enquiry",
-  enquiryHref: "#final-enquiry",
+  enquiryLabel: "Private Viewing",
+  enquiryHref: "#private-viewing",
+  contactPhone: "+91 91192 39119",
+  contactPhoneHref: "tel:+919119239119",
+  contactEmail: "floriquesales@poulomi.in",
   socials: {
     facebook: "https://www.facebook.com/poulomiestates/",
     instagram: "https://www.instagram.com/poulomiestates/",
   },
-  possession: "Expected 2030*",
+  possession: "Verify with Karnataka RERA",
   rera: {
     registration: "PRM/KA/RERA/1251/446/PR/180326/008539",
+    url: "https://rera.karnataka.gov.in/",
   },
-  mapUrl:
-    "https://www.google.com/maps/search/Poulomi+Florique+Thanisandra+Bengaluru",
+  mapUrl: "https://www.google.com/maps/search/Poulomi+Florique+Thanisandra+Bengaluru",
   images: {
-    hero: "/florique/hero/official-desktop.jpg",
-    elevation: "/florique/images/elevation.jpg",
-    township: "/florique/images/clubhouse.jpg",
-    masterPlan: "/florique/images/masterplan.jpg",
+    heroDesktop: "/florique/official/hero-official-desktop.jpg",
+    heroTablet: "/florique/official/hero-official-tablet.jpg",
+    heroMobile: "/florique/official/hero-official-mobile.jpg",
+    elevation: "/florique/optimized/tower-elevation-official.webp",
+    arrivalDesktop: "/florique/optimized/arrival-entrance-desktop.webp",
+    arrivalMobile: "/florique/optimized/arrival-entrance-mobile.webp",
+    botanicalMacro: "/florique/optimized/botanical-macro-mobile.webp",
+    masterPlan: "/florique/official/masterplan-official.jpg",
+    locationDesktop: "/florique/official/location-map-official-desktop.jpg",
+    locationTablet: "/florique/official/location-map-official-tablet.jpg",
+    locationMobile: "/florique/official/location-map-official-mobile.jpg",
+    floorPlan: "/florique/optimized/floor-plan-blossom-cascade-official.webp",
   },
 } as const;
 
 export const micrositeDisclaimer =
-  "This promotional microsite is operated for project enquiries. RERA, pricing, inventory, views, approvals, timelines and specifications must be verified with the developer and the official RERA portal before booking.";
+  "This promotional microsite is operated for project enquiries. RERA, pricing, inventory, views, approvals, timelines and specifications must be verified with Poulomi Estates and the official Karnataka RERA portal before booking.";
 
 export const consentText =
-  "I agree to receive Poulomi Florique project updates and enquiry follow-up.";
+  "I agree to receive updates from Poulomi Florique.";
+
+export const proofFacts = [
+  { value: "8.66", label: "Acres", sourceLabel: "Official project material", verifiedAt: "2026-07-19" },
+  { value: "85%", label: "Open space", sourceLabel: "Official project material", verifiedAt: "2026-07-19" },
+  { value: "720", label: "Residences", sourceLabel: "Official project material", verifiedAt: "2026-07-19" },
+  { value: "37,800 sq ft", label: "Clubhouse", sourceLabel: "Official project material", verifiedAt: "2026-07-19" },
+  { value: "27,500 sq ft", label: "Sports zone", sourceLabel: "Official project material", verifiedAt: "2026-07-19" },
+] as const;
+
+export const residenceFamilies = [
+  {
+    slug: "3-bhk",
+    label: "3 BHK",
+    areaRange: "1,585-2,050 sq ft",
+    summary: "Elegant 3 BHK-led homes planned for private family living.",
+    variants: ["3 BHK + 2T", "3 BHK + 3T"],
+    image: projectFacts.images.floorPlan,
+  },
+  {
+    slug: "3-bhk-maid",
+    label: "3 BHK + Maid",
+    areaRange: "1,905-2,460 sq ft",
+    summary: "Larger residences with staff-room convenience and practical zoning.",
+    variants: ["3 BHK + Maid", "Select east and west variants"],
+    image: projectFacts.images.floorPlan,
+  },
+  {
+    slug: "3-5-bhk-study-maid",
+    label: "3.5 BHK + Study + Maid",
+    areaRange: "2,340-2,740 sq ft",
+    summary: "Signature work-from-home family residences with added flexibility.",
+    variants: ["3.5 BHK", "Study", "Maid room"],
+    image: projectFacts.images.floorPlan,
+  },
+] as const;
 
 export const units = [
   {
@@ -38,9 +84,9 @@ export const units = [
     label: "3 BHK + 2T (East)",
     saleableArea: 1585,
     carpetArea: null,
-    price: "Rs. 1.94 Cr onwards*",
+    price: "Request current price",
     buyerFit: "Efficient premium family home",
-    image: "/florique/plans/blossom-cascade.jpg",
+    image: projectFacts.images.floorPlan,
     primary: true,
   },
   {
@@ -48,9 +94,9 @@ export const units = [
     label: "3 BHK + 3T (West)",
     saleableArea: 1780,
     carpetArea: null,
-    price: "Rs. 2.18 Cr onwards*",
+    price: "Request current price",
     buyerFit: "Balanced three-bedroom layout",
-    image: "/florique/plans/blossom-cascade.jpg",
+    image: projectFacts.images.floorPlan,
     primary: false,
   },
   {
@@ -58,59 +104,19 @@ export const units = [
     label: "3 BHK + 3T (East)",
     saleableArea: 1830,
     carpetArea: null,
-    price: "Rs. 2.24 Cr onwards*",
+    price: "Request current price",
     buyerFit: "Spacious family residence",
-    image: "/florique/plans/alpine-dewdrop.jpg",
+    image: projectFacts.images.floorPlan,
     primary: true,
-  },
-  {
-    slug: "3bhk-3t-west-1830",
-    label: "3 BHK + 3T (West)",
-    saleableArea: 1830,
-    carpetArea: null,
-    price: "Rs. 2.24 Cr onwards*",
-    buyerFit: "Spacious family residence",
-    image: "/florique/plans/alpine-dewdrop.jpg",
-    primary: false,
-  },
-  {
-    slug: "3bhk-3t-west-1890",
-    label: "3 BHK + 3T (West)",
-    saleableArea: 1890,
-    carpetArea: null,
-    price: "Rs. 2.34 Cr onwards*",
-    buyerFit: "Larger Cascade layout",
-    image: "/florique/plans/blossom-cascade.jpg",
-    primary: false,
-  },
-  {
-    slug: "3bhk-3t-east-1905",
-    label: "3 BHK + 3T (East)",
-    saleableArea: 1905,
-    carpetArea: null,
-    price: "Rs. 2.35 Cr onwards*",
-    buyerFit: "Corner-format family home",
-    image: "/florique/plans/blossom-cascade.jpg",
-    primary: false,
   },
   {
     slug: "3bhk-3t-west-2000",
     label: "3 BHK + 3T (West)",
     saleableArea: 2000,
     carpetArea: null,
-    price: "Rs. 2.47 Cr onwards*",
+    price: "Request current price",
     buyerFit: "Roomier three-bedroom plan",
-    image: "/florique/plans/blossom-cascade.jpg",
-    primary: false,
-  },
-  {
-    slug: "3bhk-3t-east-2030",
-    label: "3 BHK + 3T (East)",
-    saleableArea: 2030,
-    carpetArea: null,
-    price: "Rs. 2.50 Cr onwards*",
-    buyerFit: "Largest Cascade 3 BHK",
-    image: "/florique/plans/blossom-cascade.jpg",
+    image: projectFacts.images.floorPlan,
     primary: false,
   },
   {
@@ -118,9 +124,9 @@ export const units = [
     label: "3 BHK + Maid (East)",
     saleableArea: 2210,
     carpetArea: null,
-    price: "Rs. 2.72 Cr onwards*",
+    price: "Request current price",
     buyerFit: "Family home with staff room",
-    image: "/florique/plans/alpine-dewdrop.jpg",
+    image: projectFacts.images.floorPlan,
     primary: true,
   },
   {
@@ -128,19 +134,9 @@ export const units = [
     label: "3 BHK + Maid (West)",
     saleableArea: 2380,
     carpetArea: null,
-    price: "Rs. 2.93 Cr onwards*",
+    price: "Request current price",
     buyerFit: "Premium 3 BHK plus staff",
-    image: "/florique/plans/alpine-dewdrop.jpg",
-    primary: false,
-  },
-  {
-    slug: "3bhk-maid-east-2535",
-    label: "3 BHK + Maid (East)",
-    saleableArea: 2535,
-    carpetArea: null,
-    price: "Rs. 3.12 Cr onwards*",
-    buyerFit: "Expansive family residence",
-    image: "/florique/plans/alpine-dewdrop.jpg",
+    image: projectFacts.images.floorPlan,
     primary: false,
   },
   {
@@ -148,37 +144,29 @@ export const units = [
     label: "3.5 BHK + Study + Maid",
     saleableArea: 2740,
     carpetArea: null,
-    price: "Rs. 3.37 Cr onwards*",
+    price: "Request current price",
     buyerFit: "Signature work-from-home plan",
-    image: "/florique/plans/alpine-dewdrop.jpg",
+    image: projectFacts.images.floorPlan,
     primary: true,
   },
 ] as const;
 
 export const uspHighlights = [
   {
-    title: "8.66 Acres",
-    text: "A four-tower residential community planned with 85% open spaces and a landscape-led master plan.",
+    title: "Lush central greens",
+    text: "A landscape-led master plan with themed gardens and quiet outdoor rooms.",
   },
   {
-    title: "3 BHK Homes",
-    text: "Premium 3 BHK, 3 BHK + Maid and 3.5 BHK + Study + Maid residences from 1,585 to 2,740 sq ft.",
+    title: "Private clusters",
+    text: "Residential planning shaped for privacy, daily movement and calmer shared spaces.",
   },
   {
-    title: "37,800 sq ft Clubhouse",
-    text: "A large social and wellness clubhouse with multipurpose hall, party lounge, indoor games and co-working spaces.",
+    title: "Walking trails",
+    text: "A garden-first experience with trails, nature pockets and seamless amenity access.",
   },
   {
-    title: "27,500 sq ft Sports Zone",
-    text: "Dedicated courts for futsal, pickleball, basketball, tennis and cricket practice, planned around daily activity.",
-  },
-  {
-    title: "Water-Sensitive Design",
-    text: "The landscape strategy captures rain, restores groundwater, reduces energy use and supports long-term water security.",
-  },
-  {
-    title: "Privacy & Vastu",
-    text: "Residences are planned with no common walls, 100% Vastu compliance, 8 ft doors and exclusive maid toilets on every floor.",
+    title: "Curated landscapes",
+    text: "Botanical spaces, pool decks, play zones and community lawns across the podium.",
   },
 ] as const;
 
@@ -186,54 +174,51 @@ export const amenityHighlights = [
   {
     label: "37,800 sq ft Clubhouse",
     text: "Multipurpose hall, party lounge, co-working spaces, indoor games, badminton and squash.",
+    image: "/florique/optimized/clubhouse-exterior-mobile.webp",
   },
   {
     label: "27,500 sq ft Sports Zone",
-    text: "A dedicated active zone for futsal, pickleball, basketball, tennis and cricket practice.",
+    text: "Dedicated courts for futsal, pickleball, basketball, tennis and cricket practice.",
+    image: "/florique/optimized/sports-zone-mobile.webp",
   },
   {
-    label: "25M Lap Pool",
-    text: "Pool deck, pool pavilion, kids' pool, bubbling pool and jacuzzi pool for everyday leisure.",
+    label: "Resort-style Pool",
+    text: "Pool deck, pool pavilion, kids' pool, bubbling pool and 25M lap pool.",
+    image: "/florique/official/pool-deck-official.jpg",
   },
   {
-    label: "Outdoor Yoga Deck",
-    text: "Calmer spaces for yoga, reflection and quiet reset within the landscaped podium.",
+    label: "Wellness & Mindful Spaces",
+    text: "Calmer spaces for yoga, reflection, co-working and everyday reset.",
+    image: "/florique/optimized/wellness-coworking-mobile.webp",
   },
   {
-    label: "Co-working Lounge",
-    text: "Integrated work-friendly spaces inside the clubhouse for flexible routines.",
+    label: "Children & Family",
+    text: "Adventure playground, children's play areas and creche spaces for younger residents.",
+    image: "/florique/optimized/childrens-nature-play-mobile.webp",
   },
   {
-    label: "Indoor Games & AV Room",
-    text: "Indoor recreation spaces, audio-visual room and family entertainment zones.",
+    label: "Signature Gardens",
+    text: "Butterfly, fragrant, pebble, ginger, herb and reflexology gardens.",
+    image: "/florique/optimized/signature-garden-mobile.webp",
   },
   {
-    label: "Children's Play & Creche",
-    text: "Adventure playground, children's play areas and creche spaces planned for younger residents.",
-  },
-  {
-    label: "Butterfly Garden",
-    text: "Themed outdoor gardens including butterfly, fragrant, pebble, ginger and herb gardens.",
-  },
-  {
-    label: "Reflexology Garden",
-    text: "An elderly garden with reflexology, sit-out decks and shaded gathering pockets.",
-  },
-  {
-    label: "Pet Garden",
-    text: "A pet-friendly garden with walking track for daily community use.",
-  },
-  {
-    label: "Event Lawn",
-    text: "Event plaza, event lawn, amphitheatre and gathering courtyard for community moments.",
-  },
-  {
-    label: "Vehicle-Free Podium",
-    text: "An elevated, pedestrian-first podium supports safer movement and calmer open spaces.",
+    label: "Landscaped Amenities",
+    text: "Arrival garden, gathering courtyard, event lawn and quieter sit-out decks.",
+    image: "/florique/official/landscape-highlights-official.jpg",
   },
 ] as const;
 
 export const locationClusters = [
+  {
+    label: "Work",
+    items: [
+      { name: "Manyata Tech Park", time: "10 min" },
+      { name: "Elements Mall", time: "12 min" },
+      { name: "Hebbal", time: "15 min" },
+      { name: "Bangalore Intl. Airport", time: "25 min" },
+      { name: "MG Road", time: "30 min" },
+    ],
+  },
   {
     label: "Education",
     items: [
@@ -241,8 +226,6 @@ export const locationClusters = [
       { name: "Delhi Public School Bangalore North", time: "10 min" },
       { name: "REVA University", time: "10 min" },
       { name: "Orchids The International School", time: "10 min" },
-      { name: "Wisdom Montfort International School", time: "15 min" },
-      { name: "Oasis International School", time: "15 min" },
     ],
   },
   {
@@ -251,7 +234,6 @@ export const locationClusters = [
       { name: "Kriyashila Hospitals, Kothanur", time: "15 min" },
       { name: "North Bangalore Hospital", time: "20 min" },
       { name: "Aster CMI Hospital", time: "30 min" },
-      { name: "Bangalore Baptist Hospital", time: "40 min" },
     ],
   },
   {
@@ -262,42 +244,34 @@ export const locationClusters = [
       { name: "Bhartiya Mall of Bengaluru", time: "30 min" },
     ],
   },
-  {
-    label: "Tech Parks",
-    items: [
-      { name: "Bharatiya Centre of Information Technology", time: "15 min" },
-      { name: "Manyata Tech Park", time: "30 min" },
-    ],
-  },
-  {
-    label: "Transit",
-    items: [
-      { name: "Kempegowda International Airport", time: "40 min" },
-      { name: "Outer Ring Road access", time: "Swift access" },
-      { name: "Hennur Junction", time: "Nearby" },
-    ],
-  },
+] as const;
+
+export const trustItems = [
+  "Thoughtful design",
+  "Quality construction",
+  "Customer first",
+  "Sustainable living",
 ] as const;
 
 export const faqItems = [
   {
-    question: "Where is Poulomi Florique located?",
+    question: "What is the starting price?",
     answer:
-      "Poulomi Florique is located in Thanisandra, Bengaluru, near Kannur Village and the Bhartiya City - Manyata Tech Park corridor in North Bengaluru.",
+      "Current pricing is shared on request so the team can provide the latest cost sheet, floor-wise details and applicable charges.",
   },
   {
-    question: "What apartment configurations are available?",
+    question: "What configurations are available?",
     answer:
-      "The project offers premium 3 BHK, 3 BHK + Maid and 3.5 BHK + Study + Maid residences ranging from 1,585 sq ft to 2,740 sq ft.",
+      "The project is planned around 3 BHK-led residences, including 3 BHK, 3 BHK + Maid and 3.5 BHK + Study + Maid homes.",
   },
   {
-    question: "What are the key amenities at Poulomi Florique?",
+    question: "What is the possession timeline?",
     answer:
-      "Highlights include a 37,800 sq ft clubhouse, 27,500 sq ft sports and wellness zone, 25M lap pool, pool pavilion, co-working lounge, indoor games, AV room, creche, event lawn and multiple themed gardens.",
+      "Possession and approval timelines should be verified on the official Karnataka RERA portal using the listed RERA number.",
   },
   {
-    question: "Is Poulomi Florique RERA registered?",
+    question: "How do I book a private viewing?",
     answer:
-      "Yes. The RERA registration listed in the supplied brochure and Poulomi project page is PRM/KA/RERA/1251/446/PR/180326/008539.",
+      "Submit the private-viewing form or call the enquiry number. The project team will coordinate brochure, floor-plan and site-visit details.",
   },
 ] as const;

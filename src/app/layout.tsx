@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     description: siteDescription,
     images: [
       {
-        url: absoluteUrl("/florique/hero/official-desktop.jpg"),
+        url: absoluteUrl("/florique/official/hero-official-desktop.jpg"),
         width: 1440,
         height: 810,
         alt: "Poulomi Florique Thanisandra residential towers and clubhouse",
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Poulomi Florique Thanisandra | Price, Brochure, Floor Plans & Site Visit",
     description: siteDescription,
-    images: [absoluteUrl("/florique/hero/official-desktop.jpg")],
+    images: [absoluteUrl("/florique/official/hero-official-desktop.jpg")],
   },
   category: "real estate",
   other: {
