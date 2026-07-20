@@ -22,18 +22,20 @@ export const projectFacts = {
   },
   mapUrl: "https://www.google.com/maps/search/Poulomi+Florique+Thanisandra+Bengaluru",
   images: {
+    logoRose: "/florique/brand/poulomi-florique-logo-rose.png",
+    logoWhite: "/florique/brand/poulomi-florique-logo-white.png",
     heroDesktop: "/florique/optimized/arrival-entrance-desktop.webp",
     heroTablet: "/florique/optimized/arrival-entrance-desktop.webp",
     heroMobile: "/florique/optimized/arrival-entrance-mobile.webp",
     elevation: "/florique/optimized/tower-elevation-official.webp",
     arrivalDesktop: "/florique/optimized/arrival-entrance-desktop.webp",
-    arrivalMobile: "/florique/optimized/arrival-entrance-mobile.webp",
     botanicalMacro: "/florique/optimized/botanical-macro-mobile.webp",
     masterPlan: "/florique/official/masterplan-official.jpg",
+    masterPlanLayout: "/florique/optimized/masterplan-layout-only.webp",
     locationDesktop: "/florique/official/location-map-official-desktop.jpg",
     locationTablet: "/florique/official/location-map-official-tablet.jpg",
     locationMobile: "/florique/official/location-map-official-mobile.jpg",
-    floorPlan: "/florique/optimized/floor-plan-blossom-cascade-official.webp",
+    floorPlanOverview: "/florique/official/floor-plan-blossom-cascade-official.jpg",
   },
 } as const;
 
@@ -51,122 +53,173 @@ export const proofFacts = [
   { value: "27,500 sq ft", label: "Sports zone", sourceLabel: "Official project material", verifiedAt: "2026-07-19", status: "needs-confirmation" },
 ] as const;
 
+export type ResidenceFamilyLabel = "3 BHK" | "3 BHK + Maid" | "3 BHK + Study + Maid";
+
+export type ResidencePlan = {
+  id: string;
+  family: ResidenceFamilyLabel;
+  qualifier?: "2 toilets";
+  areaSqFt: number;
+  areaType: "SBUA";
+  blocks: readonly ("A" | "B" | "C" | "D")[];
+  unitTypes: readonly string[];
+  src: string;
+  width: number;
+  height: number;
+  status: "approved-source" | "derived-from-approved-sheet";
+};
+
+export const residencePlans: readonly ResidencePlan[] = [
+  {
+    id: "3bhk-1585",
+    family: "3 BHK",
+    qualifier: "2 toilets",
+    areaSqFt: 1585,
+    areaType: "SBUA",
+    blocks: ["B", "C"],
+    unitTypes: ["03", "05"],
+    src: "/florique/plans/units/3bhk-2-toilets-1585-sqft.webp",
+    width: 760,
+    height: 640,
+    status: "derived-from-approved-sheet",
+  },
+  {
+    id: "3bhk-1780",
+    family: "3 BHK",
+    areaSqFt: 1780,
+    areaType: "SBUA",
+    blocks: ["B", "C"],
+    unitTypes: ["04", "06"],
+    src: "/florique/plans/units/3bhk-1780-sqft.webp",
+    width: 682,
+    height: 654,
+    status: "approved-source",
+  },
+  {
+    id: "3bhk-1830",
+    family: "3 BHK",
+    areaSqFt: 1830,
+    areaType: "SBUA",
+    blocks: ["A", "D"],
+    unitTypes: ["03", "04"],
+    src: "/florique/plans/units/3bhk-1830-sqft.jpg",
+    width: 729,
+    height: 713,
+    status: "approved-source",
+  },
+  {
+    id: "3bhk-1890",
+    family: "3 BHK",
+    areaSqFt: 1890,
+    areaType: "SBUA",
+    blocks: ["B", "C"],
+    unitTypes: ["08"],
+    src: "/florique/plans/units/3bhk-1890-sqft.webp",
+    width: 691,
+    height: 700,
+    status: "approved-source",
+  },
+  {
+    id: "3bhk-1905",
+    family: "3 BHK",
+    areaSqFt: 1905,
+    areaType: "SBUA",
+    blocks: ["B", "C"],
+    unitTypes: ["01"],
+    src: "/florique/plans/units/3bhk-1905-sqft.jpg",
+    width: 708,
+    height: 697,
+    status: "approved-source",
+  },
+  {
+    id: "3bhk-2000",
+    family: "3 BHK",
+    areaSqFt: 2000,
+    areaType: "SBUA",
+    blocks: ["B", "C"],
+    unitTypes: ["02"],
+    src: "/florique/plans/units/3bhk-2000-sqft.webp",
+    width: 695,
+    height: 725,
+    status: "approved-source",
+  },
+  {
+    id: "3bhk-2030",
+    family: "3 BHK",
+    areaSqFt: 2030,
+    areaType: "SBUA",
+    blocks: ["B", "C"],
+    unitTypes: ["07"],
+    src: "/florique/plans/units/3bhk-2030-sqft.jpg",
+    width: 698,
+    height: 726,
+    status: "approved-source",
+  },
+  {
+    id: "3bhk-maid-2210",
+    family: "3 BHK + Maid",
+    areaSqFt: 2210,
+    areaType: "SBUA",
+    blocks: ["A", "D"],
+    unitTypes: ["05"],
+    src: "/florique/plans/units/3bhk-maid-2210-sqft.jpg",
+    width: 729,
+    height: 882,
+    status: "approved-source",
+  },
+  {
+    id: "3bhk-maid-2380",
+    family: "3 BHK + Maid",
+    areaSqFt: 2380,
+    areaType: "SBUA",
+    blocks: ["A", "D"],
+    unitTypes: ["06"],
+    src: "/florique/plans/units/3bhk-maid-2380-sqft.jpg",
+    width: 800,
+    height: 739,
+    status: "approved-source",
+  },
+  {
+    id: "3bhk-maid-2535",
+    family: "3 BHK + Maid",
+    areaSqFt: 2535,
+    areaType: "SBUA",
+    blocks: ["A", "D"],
+    unitTypes: ["01"],
+    src: "/florique/plans/units/3bhk-maid-2535-sqft.jpg",
+    width: 800,
+    height: 748,
+    status: "approved-source",
+  },
+  {
+    id: "3bhk-study-maid-2740",
+    family: "3 BHK + Study + Maid",
+    areaSqFt: 2740,
+    areaType: "SBUA",
+    blocks: ["A", "D"],
+    unitTypes: ["02"],
+    src: "/florique/plans/units/3bhk-study-maid-2740-sqft.jpg",
+    width: 815,
+    height: 900,
+    status: "approved-source",
+  },
+];
+
 export const residenceFamilies = [
   {
     slug: "3-bhk",
     label: "3 BHK",
-    areaRange: "Request official area sheet",
-    summary: "Elegant 3 BHK-led homes planned for private family living.",
-    variants: ["3 BHK + 2T", "3 BHK + 3T"],
-    image: projectFacts.images.floorPlan,
+    summary: "Seven exact 3 BHK plan variants from 1,585 to 2,030 sq ft SBUA.",
   },
   {
     slug: "3-bhk-maid",
     label: "3 BHK + Maid",
-    areaRange: "Request official area sheet",
-    summary: "Larger residences with staff-room convenience and practical zoning.",
-    variants: ["3 BHK + Maid", "Select east and west variants"],
-    image: projectFacts.images.floorPlan,
+    summary: "Three larger family homes with staff-room convenience.",
   },
   {
-    slug: "3-5-bhk-study-maid",
-    label: "3.5 BHK + Study + Maid",
-    areaRange: "Request official area sheet",
-    summary: "Signature work-from-home family residences with added flexibility.",
-    variants: ["3.5 BHK", "Study", "Maid room"],
-    image: projectFacts.images.floorPlan,
-  },
-] as const;
-
-export const units = [
-  {
-    slug: "3bhk-2t-east-1585",
-    label: "3 BHK + 2T (East)",
-    saleableArea: 1585,
-    carpetArea: null,
-    price: "Request current price",
-    buyerFit: "Efficient premium family home",
-    image: projectFacts.images.floorPlan,
-    primary: true,
-  },
-  {
-    slug: "3bhk-3t-west-1780",
-    label: "3 BHK + 3T (West)",
-    saleableArea: 1780,
-    carpetArea: null,
-    price: "Request current price",
-    buyerFit: "Balanced three-bedroom layout",
-    image: projectFacts.images.floorPlan,
-    primary: false,
-  },
-  {
-    slug: "3bhk-3t-east-1830",
-    label: "3 BHK + 3T (East)",
-    saleableArea: 1830,
-    carpetArea: null,
-    price: "Request current price",
-    buyerFit: "Spacious family residence",
-    image: projectFacts.images.floorPlan,
-    primary: true,
-  },
-  {
-    slug: "3bhk-3t-west-2000",
-    label: "3 BHK + 3T (West)",
-    saleableArea: 2000,
-    carpetArea: null,
-    price: "Request current price",
-    buyerFit: "Roomier three-bedroom plan",
-    image: projectFacts.images.floorPlan,
-    primary: false,
-  },
-  {
-    slug: "3bhk-maid-east-2210",
-    label: "3 BHK + Maid (East)",
-    saleableArea: 2210,
-    carpetArea: null,
-    price: "Request current price",
-    buyerFit: "Family home with staff room",
-    image: projectFacts.images.floorPlan,
-    primary: true,
-  },
-  {
-    slug: "3bhk-maid-west-2380",
-    label: "3 BHK + Maid (West)",
-    saleableArea: 2380,
-    carpetArea: null,
-    price: "Request current price",
-    buyerFit: "Premium 3 BHK plus staff",
-    image: projectFacts.images.floorPlan,
-    primary: false,
-  },
-  {
-    slug: "35bhk-study-maid-west-2740",
-    label: "3.5 BHK + Study + Maid",
-    saleableArea: 2740,
-    carpetArea: null,
-    price: "Request current price",
-    buyerFit: "Signature work-from-home plan",
-    image: projectFacts.images.floorPlan,
-    primary: true,
-  },
-] as const;
-
-export const uspHighlights = [
-  {
-    title: "Lush central greens",
-    text: "A landscape-led master plan with themed gardens and quiet outdoor rooms.",
-  },
-  {
-    title: "Private clusters",
-    text: "Residential planning shaped for privacy, daily movement and calmer shared spaces.",
-  },
-  {
-    title: "Walking trails",
-    text: "A garden-first experience with trails, nature pockets and seamless amenity access.",
-  },
-  {
-    title: "Curated landscapes",
-    text: "Botanical spaces, pool decks, play zones and community lawns across the podium.",
+    slug: "3-bhk-study-maid",
+    label: "3 BHK + Study + Maid",
+    summary: "A signature 2,740 sq ft SBUA plan with study and maid room.",
   },
 ] as const;
 
@@ -269,7 +322,7 @@ export const faqItems = [
   {
     question: "What residence configurations are available?",
     answer:
-      "The current working presentation is for 3 BHK-led homes, including 3 BHK, 3 BHK + Maid and 3.5 BHK + Study + Maid families. Exact inventory should be reconfirmed with the sales team.",
+      "The current working presentation is for 3 BHK-led homes, including 3 BHK, 3 BHK + Maid and 3 BHK + Study + Maid families. Exact inventory should be reconfirmed with the sales team.",
   },
   {
     question: "What are the available apartment sizes?",

@@ -1,21 +1,26 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  ArrowLeft,
   ArrowRight,
-  Building2,
-  Check,
+  Briefcase,
   Download,
   Eye,
   FileText,
-  Leaf,
+  GraduationCap,
+  Hospital,
   Mail,
   Menu,
   Phone,
+  RotateCcw,
+  ShoppingBag,
   X,
+  ZoomIn,
+  ZoomOut,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -29,20 +34,21 @@ import {
   projectFacts,
   proofFacts,
   residenceFamilies,
+  residencePlans,
+  type ResidenceFamilyLabel,
+  type ResidencePlan,
   trustItems,
-  uspHighlights,
 } from "@/data/poulomi-florique";
 import { getLeadMetadata, trackEvent } from "@/lib/analytics";
 
 type LeadIntent = "site_visit" | "price_sheet" | "brochure" | "floor_plan" | "general_enquiry";
-type ResidenceFamily = (typeof residenceFamilies)[number];
 
 type LeadOverlay = {
   intent: LeadIntent;
   ctaSource: string;
   title: string;
   description: string;
-  selectedResidence?: ResidenceFamily;
+  selectedPlan?: ResidencePlan;
 };
 
 const leadSchema = z.object({
@@ -131,25 +137,63 @@ async function submitLead(payload: Record<string, unknown>) {
   return response.json();
 }
 
-function BrandWordmark({ light = false }: { light?: boolean }) {
+function ProjectLogo({ light = false, context = "default" }: { light?: boolean; context?: "default" | "footer" | "hero" }) {
   return (
-    <span className={`brand-wordmark ${light ? "brand-wordmark--light" : ""}`}>
-      <span>Poulomi</span>
-      <span>Florique</span>
-    </span>
+    <Image
+      className={`brand-logo brand-logo--${context}`}
+      src={light ? projectFacts.images.logoWhite : projectFacts.images.logoRose}
+      alt="Poulomi Florique"
+      width={951}
+      height={762}
+    />
   );
 }
 
 function BotanicalMark() {
-  return (
-    <Image
-      src="/florique/decorative/florique-flower-outline.svg"
-      alt=""
-      width={22}
-      height={22}
-      aria-hidden="true"
-    />
-  );
+  return <span className="botanical-mask botanical-mask--flower" aria-hidden="true" />;
+}
+
+function BotanicalMask({ name, className = "" }: { name: "cornerTop" | "cornerBottom" | "corner" | "branch" | "cluster" | "divider" | "dividerAlt"; className?: string }) {
+  return <span className={`botanical-mask botanical-mask--${name} ${className}`} aria-hidden="true" />;
+}
+
+function BrandIcon({ name, className = "" }: { name: string; className?: string }) {
+  return <span className={`brand-icon brand-icon--${name} ${className}`} aria-hidden="true" />;
+}
+
+function ProofIcon({ label }: { label: string }) {
+  const iconName =
+    label === "Acres"
+      ? "stat-acreage"
+      : label === "Open space"
+        ? "stat-open-space"
+        : label === "Residences"
+          ? "stat-residences"
+          : label === "Clubhouse"
+            ? "stat-clubhouse"
+            : "stat-sports-zone";
+
+  return <BrandIcon name={iconName} />;
+}
+
+function TrustIcon({ label }: { label: string }) {
+  const iconName =
+    label === "RERA registered project"
+      ? "trust-quality-construction"
+      : label === "Official project details"
+        ? "trust-thoughtful-design"
+        : label === "Poulomi Estates enquiry"
+          ? "trust-customer-first"
+          : "trust-sustainable-living";
+
+  return <BrandIcon name={iconName} />;
+}
+
+function LocationIcon({ label }: { label: string }) {
+  if (label === "Education") return <GraduationCap size={17} />;
+  if (label === "Healthcare") return <Hospital size={17} />;
+  if (label === "Lifestyle") return <ShoppingBag size={17} />;
+  return <Briefcase size={17} />;
 }
 
 function SectionLabel({ index, eyebrow }: { index: string; eyebrow: string }) {
@@ -162,18 +206,41 @@ function SectionLabel({ index, eyebrow }: { index: string; eyebrow: string }) {
   );
 }
 
+function ZoomControls({
+  onClose,
+  onZoomIn,
+  onZoomOut,
+  onReset,
+  closeLabel,
+}: {
+  onClose: () => void;
+  onZoomIn: () => void;
+  onZoomOut: () => void;
+  onReset: () => void;
+  closeLabel: string;
+}) {
+  return (
+    <div className="lightbox-controls">
+      <button type="button" aria-label={closeLabel} onClick={onClose}><X /></button>
+      <button type="button" aria-label="Zoom out" onClick={onZoomOut}><ZoomOut /></button>
+      <button type="button" aria-label="Reset zoom" onClick={onReset}><RotateCcw /></button>
+      <button type="button" aria-label="Zoom in" onClick={onZoomIn}><ZoomIn /></button>
+    </div>
+  );
+}
+
 function LeadForm({
   intent,
   ctaSource,
   formName,
-  selectedResidence,
+  selectedPlan,
   compact = false,
   onSuccess,
 }: {
   intent: LeadIntent;
   ctaSource: string;
   formName: string;
-  selectedResidence?: ResidenceFamily;
+  selectedPlan?: ResidencePlan;
   compact?: boolean;
   onSuccess?: () => void;
 }) {
@@ -191,7 +258,7 @@ function LeadForm({
       name: "",
       phone: "",
       email: "",
-      configuration: selectedResidence?.label ?? residenceFamilies[0].label,
+      configuration: selectedPlan ? `${selectedPlan.family} · ${selectedPlan.areaSqFt} sq ft ${selectedPlan.areaType}` : residencePlans[0].family,
       preferredDate: "",
       message: "",
       consent: true,
@@ -199,10 +266,10 @@ function LeadForm({
   });
 
   useEffect(() => {
-    if (selectedResidence) {
-      setValue("configuration", selectedResidence.label);
+    if (selectedPlan) {
+      setValue("configuration", `${selectedPlan.family} · ${selectedPlan.areaSqFt} sq ft ${selectedPlan.areaType}`);
     }
-  }, [selectedResidence, setValue]);
+  }, [selectedPlan, setValue]);
 
   const onFocus = () => {
     if (started) {
@@ -214,7 +281,7 @@ function LeadForm({
       form_name: formName,
       cta_source: ctaSource,
       lead_action: intent,
-      configuration: selectedResidence?.label,
+      configuration: selectedPlan?.id,
     });
   };
 
@@ -229,6 +296,11 @@ function LeadForm({
         lead_name: values.name,
         lead_phone: phone,
         lead_unit_type: values.configuration,
+        lead_plan_id: selectedPlan?.id ?? "",
+        lead_area_sqft: selectedPlan?.areaSqFt ?? "",
+        lead_area_type: selectedPlan?.areaType ?? "",
+        lead_blocks: selectedPlan?.blocks.join(",") ?? "",
+        lead_unit_types: selectedPlan?.unitTypes.join(",") ?? "",
         lead_callback_time: values.preferredDate,
         name: values.name,
         phone,
@@ -244,6 +316,8 @@ function LeadForm({
           pageSection: formName,
           preferredAction: intent,
           unitSelected: values.configuration,
+          planId: selectedPlan?.id,
+          areaSqFt: selectedPlan?.areaSqFt,
         }),
       });
 
@@ -252,6 +326,8 @@ function LeadForm({
         cta_source: ctaSource,
         lead_action: intent,
         configuration: values.configuration,
+        plan_id: selectedPlan?.id,
+        area_sqft: selectedPlan?.areaSqFt,
       });
 
       setStatus("success");
@@ -259,7 +335,7 @@ function LeadForm({
         name: "",
         phone: "",
         email: "",
-        configuration: selectedResidence?.label ?? residenceFamilies[0].label,
+        configuration: selectedPlan ? `${selectedPlan.family} · ${selectedPlan.areaSqFt} sq ft ${selectedPlan.areaType}` : residencePlans[0].family,
         preferredDate: "",
         message: "",
         consent: true,
@@ -303,9 +379,9 @@ function LeadForm({
         <label>
           <span>I&apos;m interested in</span>
           <select {...register("configuration")}>
-            {residenceFamilies.map((family) => (
-              <option key={family.slug} value={family.label}>
-                {family.label}
+            {residencePlans.map((plan) => (
+              <option key={plan.id} value={`${plan.family} · ${plan.areaSqFt} sq ft ${plan.areaType}`}>
+                {plan.family} · {plan.areaSqFt} sq ft {plan.areaType}
               </option>
             ))}
           </select>
@@ -347,10 +423,15 @@ function LeadForm({
 
 export function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [selectedResidence, setSelectedResidence] = useState<ResidenceFamily>(residenceFamilies[0]);
+  const [selectedFamily, setSelectedFamily] = useState<ResidenceFamilyLabel>("3 BHK");
+  const [selectedPlan, setSelectedPlan] = useState<ResidencePlan>(residencePlans[0]);
   const [leadOverlay, setLeadOverlay] = useState<LeadOverlay | null>(null);
   const [planOpen, setPlanOpen] = useState(false);
   const [masterPlanOpen, setMasterPlanOpen] = useState(false);
+  const [overviewOpen, setOverviewOpen] = useState(false);
+  const [locationMapOpen, setLocationMapOpen] = useState(false);
+  const [viewerZoom, setViewerZoom] = useState(1);
+  const [amenityIndex, setAmenityIndex] = useState(0);
   const [selectedMasterPoint, setSelectedMasterPoint] = useState<(typeof masterPlanPoints)[number]>(masterPlanPoints[2]);
   const [locationTab, setLocationTab] = useState<(typeof locationClusters)[number]["label"]>(
     locationClusters[0].label,
@@ -361,13 +442,18 @@ export function LandingPage() {
     () => locationClusters.find((cluster) => cluster.label === locationTab) ?? locationClusters[0],
     [locationTab],
   );
+  const filteredPlans = useMemo(
+    () => residencePlans.filter((plan) => plan.family === selectedFamily),
+    [selectedFamily],
+  );
+  const amenityTrackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen || leadOverlay || planOpen || masterPlanOpen ? "hidden" : "";
+    document.body.style.overflow = menuOpen || leadOverlay || planOpen || masterPlanOpen || overviewOpen || locationMapOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [leadOverlay, masterPlanOpen, menuOpen, planOpen]);
+  }, [leadOverlay, locationMapOpen, masterPlanOpen, menuOpen, overviewOpen, planOpen]);
 
   const scrollTo = (id: string, source: string) => {
     setMenuOpen(false);
@@ -380,9 +466,38 @@ export function LandingPage() {
     trackEvent("lead_sheet_open", {
       lead_action: overlay.intent,
       cta_source: overlay.ctaSource,
-      configuration: overlay.selectedResidence?.label,
+      plan_id: overlay.selectedPlan?.id,
+      area_sqft: overlay.selectedPlan?.areaSqFt,
     });
     setLeadOverlay(overlay);
+  };
+
+  const resetViewer = () => setViewerZoom(1);
+  const zoomIn = () => setViewerZoom((zoom) => Math.min(2.4, Number((zoom + 0.2).toFixed(2))));
+  const zoomOut = () => setViewerZoom((zoom) => Math.max(0.8, Number((zoom - 0.2).toFixed(2))));
+  const scrollAmenityTo = (index: number, source = "amenity-control") => {
+    const track = amenityTrackRef.current;
+    const cards = track ? Array.from(track.querySelectorAll<HTMLElement>(".amenity-card")) : [];
+    const nextIndex = Math.max(0, Math.min(index, amenityHighlights.length - 1));
+
+    setAmenityIndex(nextIndex);
+    cards[nextIndex]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+    trackEvent("amenity_carousel_select", { amenity: amenityHighlights[nextIndex]?.label, cta_source: source });
+  };
+  const syncAmenityIndex = () => {
+    const track = amenityTrackRef.current;
+    if (!track) return;
+
+    const cards = Array.from(track.querySelectorAll<HTMLElement>(".amenity-card"));
+    const current = cards.reduce(
+      (closest, card, index) => {
+        const distance = Math.abs(card.offsetLeft - track.scrollLeft);
+        return distance < closest.distance ? { distance, index } : closest;
+      },
+      { distance: Number.POSITIVE_INFINITY, index: 0 },
+    );
+
+    setAmenityIndex(current.index);
   };
 
   return (
@@ -393,8 +508,8 @@ export function LandingPage() {
           <span>RERA Reg. No. {projectFacts.rera.registration}</span>
         </div>
         <div className="nav-shell">
-          <button type="button" className="brand-button" onClick={() => scrollTo("top", "brand")}>
-            <BrandWordmark />
+          <button type="button" className="brand-button" aria-label="Poulomi Florique home" onClick={() => scrollTo("top", "brand")}>
+            <ProjectLogo light />
           </button>
           <nav className="desktop-nav" aria-label="Primary navigation">
             {navItems.map((item) => (
@@ -412,7 +527,7 @@ export function LandingPage() {
                 ctaSource: "desktop-header",
                 title: "Book a private viewing",
                 description: "Share your preferred details and the Florique team will coordinate your visit.",
-                selectedResidence,
+                selectedPlan,
               })
             }
           >
@@ -432,7 +547,7 @@ export function LandingPage() {
             <img src={projectFacts.images.heroMobile} alt="Poulomi Florique landscaped residential tower at dusk" />
           </picture>
           <div className="hero-card">
-            <Image className="card-botanical" src="/florique/decorative/botanical-corner-top-right.svg" alt="" width={260} height={260} aria-hidden="true" />
+            <BotanicalMask name="cornerTop" className="card-botanical" />
             <p>Thanisandra · North Bengaluru</p>
             <h1>Where architecture blooms.</h1>
             <i />
@@ -451,7 +566,7 @@ export function LandingPage() {
                     ctaSource: "hero-brochure",
                     title: "Download brochure",
                     description: "Share your details to receive the latest Florique brochure.",
-                    selectedResidence,
+                    selectedPlan,
                   })
                 }
               >
@@ -460,9 +575,9 @@ export function LandingPage() {
               </button>
             </div>
             <div className="mobile-quick-facts">
-              <span><Building2 /> 3 BHK-led homes</span>
+              <span><BrandIcon name="proof-residence-led" /> 3 BHK-led homes</span>
               <span><FileText /> Private price sheet</span>
-              <span><Leaf /> Curated landscapes</span>
+              <span><BrandIcon name="proof-curated-landscape" /> Curated landscapes</span>
             </div>
           </div>
           <div className="hero-index" aria-hidden="true"><span>01</span><i /></div>
@@ -475,7 +590,7 @@ export function LandingPage() {
                 ctaSource: "hero-enquire-tab",
                 title: "Enquire now",
                 description: "Tell us what you would like to know about Poulomi Florique.",
-                selectedResidence,
+                selectedPlan,
               })
             }
           >
@@ -485,10 +600,11 @@ export function LandingPage() {
         </section>
 
         <section className="proof-ribbon" aria-label="Project proof points">
+          <BotanicalMask name="dividerAlt" className="proof-botanical" />
           <div className="proof-track">
             {proofFacts.map((fact) => (
               <article key={fact.label}>
-                <Leaf />
+                <ProofIcon label={fact.label} />
                 <strong>{fact.value}</strong>
                 <span>{fact.label}</span>
               </article>
@@ -497,6 +613,8 @@ export function LandingPage() {
         </section>
 
         <section className="editorial-section story-section">
+          <BotanicalMask name="branch" className="story-botanical" />
+          <BotanicalMask name="cluster" className="story-cluster-botanical" />
           <SectionLabel index="02" eyebrow="The Florique Life" />
           <div className="story-copy">
             <h2>A world that blossoms around you.</h2>
@@ -508,58 +626,113 @@ export function LandingPage() {
             </button>
           </div>
           <div className="story-media">
-            <Image src={projectFacts.images.elevation} alt="Poulomi Florique official residential tower elevation" fill sizes="(min-width: 1024px) 54vw, 100vw" className="story-main" />
+            <Image src={projectFacts.images.arrivalDesktop} alt="Poulomi Florique landscaped arrival experience" fill sizes="(min-width: 1024px) 54vw, 100vw" className="story-main" />
             <Image src={projectFacts.images.botanicalMacro} alt="" width={180} height={230} className="story-inset" aria-hidden="true" />
           </div>
         </section>
 
         <section id="residences" className="editorial-section residences-section">
+          <BotanicalMask name="cornerBottom" className="residence-botanical residence-botanical--lower" />
+          <BotanicalMask name="branch" className="residence-botanical residence-botanical--upper" />
+          <BotanicalMask name="divider" className="residence-divider-botanical" />
           <SectionLabel index="03" eyebrow="Choose your home" />
           <div className="residence-intro">
             <h2>Residences, crafted to complement your life.</h2>
+            <p className="residence-note">Select from eleven approved plan variants. All areas below are shown as sq ft SBUA.</p>
             <div className="residence-tabs" role="tablist" aria-label="Residence families">
               {residenceFamilies.map((family) => (
                 <button
                   key={family.slug}
                   type="button"
                   role="tab"
-                  aria-selected={family.slug === selectedResidence.slug}
-                  className={family.slug === selectedResidence.slug ? "active" : ""}
+                  aria-selected={family.label === selectedFamily}
+                  className={family.label === selectedFamily ? "active" : ""}
                   onClick={() => {
-                    setSelectedResidence(family);
-                    trackEvent("residence_family_select", { residence: family.slug });
+                    setSelectedFamily(family.label);
+                    const nextPlan = residencePlans.find((plan) => plan.family === family.label) ?? residencePlans[0];
+                    setSelectedPlan(nextPlan);
+                    trackEvent("residence_family_select", { residence: family.label });
                   }}
                 >
                   <strong>{family.label}</strong>
-                  <span>{family.areaRange}</span>
+                  <span>{family.summary}</span>
                 </button>
               ))}
             </div>
           </div>
-          <article className="plan-card">
-            <Image src="/florique/decorative/botanical-branch-vertical.svg" alt="" width={118} height={260} className="plan-botanical" aria-hidden="true" />
-            <div>
-              <p>{selectedResidence.label}</p>
-              <h3>{selectedResidence.areaRange}</h3>
-              <span>{selectedResidence.summary}</span>
-              <button type="button" className="text-cta" onClick={() => setPlanOpen(true)}>
-                View Plan Details <ArrowRight size={16} />
+          <div className="area-tabs" aria-label="Plan areas">
+            {filteredPlans.map((plan) => (
+              <button
+                key={plan.id}
+                type="button"
+                className={plan.id === selectedPlan.id ? "active" : ""}
+                onClick={() => {
+                  setSelectedPlan(plan);
+                  trackEvent("residence_variant_select", { plan_id: plan.id, area_sqft: plan.areaSqFt });
+                }}
+              >
+                {plan.areaSqFt}
               </button>
-            </div>
-            <button type="button" className="plan-image-button" onClick={() => setPlanOpen(true)}>
-              <Image src={selectedResidence.image} alt={`${selectedResidence.label} floor plan`} fill sizes="(min-width: 1024px) 48vw, 100vw" className="object-contain" />
-            </button>
-          </article>
+            ))}
+          </div>
+          <div className="residence-browser">
+            <article className="plan-stage">
+              <BotanicalMask name="corner" className="plan-botanical" />
+              <div className="plan-stage-copy">
+                <p>{selectedPlan.family}{selectedPlan.qualifier ? ` with ${selectedPlan.qualifier}` : ""}</p>
+                <h3>{selectedPlan.areaSqFt.toLocaleString("en-IN")} sq ft {selectedPlan.areaType}</h3>
+                <span>Blocks {selectedPlan.blocks.join("/")} | Unit {selectedPlan.unitTypes.join(", ")} | {selectedPlan.status === "derived-from-approved-sheet" ? "Derived from approved overview sheet" : "Supplied individual plan"}</span>
+                <div className="plan-stage-actions">
+                  <button type="button" className="text-cta" onClick={() => { resetViewer(); setPlanOpen(true); }}>
+                    View Full Plan <ArrowRight size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    className="rose-cta"
+                    onClick={() =>
+                      openLead({
+                        intent: "price_sheet",
+                        ctaSource: `plan-${selectedPlan.id}`,
+                        title: "Request current price",
+                        description: `${selectedPlan.family}, ${selectedPlan.areaSqFt.toLocaleString("en-IN")} sq ft ${selectedPlan.areaType}. Share your details for the latest cost sheet.`,
+                        selectedPlan,
+                      })
+                    }
+                  >
+                    Request Current Price
+                  </button>
+                </div>
+              </div>
+              <button type="button" className="plan-image-button" onClick={() => { resetViewer(); setPlanOpen(true); }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={selectedPlan.src}
+                  alt={`${selectedPlan.family} ${selectedPlan.areaSqFt} sq ft ${selectedPlan.areaType} floor plan`}
+                  width={selectedPlan.width}
+                  height={selectedPlan.height}
+                  className="object-contain"
+                  loading="eager"
+                  decoding="async"
+                  style={{ display: "block", width: "100%", maxWidth: "100%", height: "auto", objectFit: "contain" }}
+                />
+              </button>
+              <button type="button" className="plan-overview-link" onClick={() => { resetViewer(); setOverviewOpen(true); }}>
+                View typical floor overview <Eye size={16} />
+              </button>
+            </article>
+          </div>
         </section>
 
         <section id="bloomscapes" className="editorial-section amenities-section">
+          <BotanicalMask name="cornerBottom" className="amenity-botanical" />
+          <BotanicalMask name="dividerAlt" className="amenity-divider-botanical" />
           <SectionLabel index="04" eyebrow="Amenities bloomscape" />
           <div className="amenity-copy">
             <h2>Spaces that nourish every part of you.</h2>
           </div>
-          <div className="amenity-track">
+          <div className="amenity-track" ref={amenityTrackRef} onScroll={syncAmenityIndex} aria-label="Amenity highlights">
             {amenityHighlights.map((amenity, index) => (
-              <article key={amenity.label} className="amenity-card">
+              <article key={amenity.label} className={index === amenityIndex ? "amenity-card active" : "amenity-card"}>
                 <Image src={amenity.image} alt={amenity.label} fill sizes="(min-width: 1024px) 22vw, 70vw" className="object-cover" />
                 <div>
                   <small>{String(index + 1).padStart(2, "0")} / {String(amenityHighlights.length).padStart(2, "0")}</small>
@@ -574,43 +747,46 @@ export function LandingPage() {
               </article>
             ))}
           </div>
-          <div className="gallery-dots" aria-hidden="true">
-            {amenityHighlights.map((amenity, index) => <span key={amenity.label} className={index === 0 ? "active" : ""} />)}
+          <div className="amenity-controls" aria-label="Amenity carousel controls">
+            <div className="amenity-progress" aria-hidden="true">
+              <span style={{ width: `${((amenityIndex + 1) / amenityHighlights.length) * 100}%` }} />
+            </div>
+            <div className="gallery-dots">
+              {amenityHighlights.map((amenity, index) => (
+                <button
+                  key={amenity.label}
+                  type="button"
+                  aria-label={`Show ${amenity.label}`}
+                  className={index === amenityIndex ? "active" : ""}
+                  onClick={() => scrollAmenityTo(index, "amenity-dot")}
+                />
+              ))}
+            </div>
+            <div className="amenity-arrows">
+              <button type="button" aria-label="Previous amenity" onClick={() => scrollAmenityTo(amenityIndex - 1, "amenity-prev")}>
+                <ArrowLeft size={17} />
+              </button>
+              <button type="button" aria-label="Next amenity" onClick={() => scrollAmenityTo(amenityIndex + 1, "amenity-next")}>
+                <ArrowRight size={17} />
+              </button>
+            </div>
           </div>
         </section>
 
         <section id="masterplan" className="editorial-section masterplan-section">
+          <BotanicalMask name="branch" className="master-botanical" />
+          <BotanicalMask name="cluster" className="master-cluster-botanical" />
           <SectionLabel index="05" eyebrow="Master plan" />
           <div className="master-copy">
             <h2>Designed with green at the heart.</h2>
-            <ul>
-              {uspHighlights.map((item) => (
-                <li key={item.title}><Check size={15} /> {item.title}</li>
-              ))}
-            </ul>
-            <button type="button" className="text-cta" onClick={() => setMasterPlanOpen(true)}>
-              Explore Master Plan <Download size={15} />
+            <button type="button" className="text-cta" onClick={() => { resetViewer(); setMasterPlanOpen(true); }}>
+              View Full Master Plan <Download size={15} />
             </button>
           </div>
           <div className="master-image-wrap">
-          <button type="button" className="master-image" onClick={() => setMasterPlanOpen(true)}>
-            <Image src={projectFacts.images.masterPlan} alt="Poulomi Florique official master plan" fill sizes="(min-width: 1024px) 58vw, 100vw" className="object-cover" />
-          </button>
-            {masterPlanPoints.map((point, index) => (
-              <button
-                key={point.label}
-                type="button"
-                className={`master-hotspot ${selectedMasterPoint.label === point.label ? "active" : ""}`}
-                style={{ left: `${point.x}%`, top: `${point.y}%` }}
-                aria-label={`Show ${point.label} on master plan`}
-                onClick={() => {
-                  setSelectedMasterPoint(point);
-                  trackEvent("masterplan_hotspot_select", { point: point.label });
-                }}
-              >
-                {index + 1}
-              </button>
-            ))}
+            <button type="button" className="master-image" onClick={() => { resetViewer(); setMasterPlanOpen(true); }}>
+              <Image src={projectFacts.images.masterPlanLayout} alt="Poulomi Florique official master plan layout preview" fill sizes="(min-width: 1024px) 42vw, 100vw" className="object-contain" />
+            </button>
           </div>
           <aside className="master-legend">
             {masterPlanPoints.map((point, index) => (
@@ -631,20 +807,31 @@ export function LandingPage() {
               <strong>{selectedMasterPoint.category}</strong>
               {selectedMasterPoint.description}
             </p>
-            <button type="button" className="legend-view" onClick={() => setMasterPlanOpen(true)}>View Legend <Eye size={14} /></button>
+            <button type="button" className="legend-view" onClick={() => { resetViewer(); setMasterPlanOpen(true); }}>View Legend <Eye size={14} /></button>
           </aside>
         </section>
 
         <section id="location" className="editorial-section location-section">
+          <BotanicalMask name="cornerTop" className="location-botanical" />
           <SectionLabel index="06" eyebrow="North Bengaluru" />
           <div className="location-copy">
             <h2>Well connected. Well placed.</h2>
             <p>Located in Thanisandra, close to major business hubs, schools, healthcare and everyday conveniences.</p>
           </div>
-          <div className="location-map">
-            <Image src={projectFacts.images.locationMobile} alt="Poulomi Florique location map" fill sizes="100vw" className="object-contain sm:hidden" />
-            <Image src={projectFacts.images.locationTablet} alt="Poulomi Florique location map" fill sizes="100vw" className="hidden object-contain sm:block lg:hidden" />
-            <Image src={projectFacts.images.locationDesktop} alt="Poulomi Florique location map" fill sizes="(min-width: 1024px) 46vw, 100vw" className="hidden object-contain lg:block" />
+          <div className="location-visual" aria-label="Poulomi Florique landmark access summary">
+            <div className="location-pin">
+              <ProjectLogo light />
+              <span>Thanisandra</span>
+            </div>
+            {locationClusters.map((cluster) => (
+              <article key={cluster.label}>
+                <strong>{cluster.label}</strong>
+                <span>{cluster.items[0]?.name}</span>
+              </article>
+            ))}
+            <button type="button" className="text-cta" onClick={() => { resetViewer(); setLocationMapOpen(true); }}>
+              View official location map <Eye size={16} />
+            </button>
           </div>
           <aside className="commute-card">
             <p>Indicative non-peak access</p>
@@ -659,6 +846,7 @@ export function LandingPage() {
                     trackEvent("location_category_select", { category: cluster.label });
                   }}
                 >
+                  <LocationIcon label={cluster.label} />
                   {cluster.label}
                 </button>
               ))}
@@ -676,17 +864,19 @@ export function LandingPage() {
         </section>
 
         <section id="trust" className="trust-section">
+          <BotanicalMask name="divider" className="trust-divider-botanical" />
           <SectionLabel index="07" eyebrow="Built on trust" />
           <div className="trust-brand">
-            <BrandWordmark />
+            <ProjectLogo />
             <p>Poulomi Florique enquiries should be cross-checked with official project material, legal documents and Karnataka RERA before any booking decision.</p>
           </div>
           <div className="trust-icons">
             {trustItems.map((item) => (
-              <span key={item}><Leaf /> {item}</span>
+              <span key={item}><TrustIcon label={item} /> {item}</span>
             ))}
           </div>
           <div className="rera-card">
+            <BotanicalMask name="cornerTop" className="rera-botanical" />
             <p>RERA Reg. No.</p>
             <strong>{projectFacts.rera.registration}</strong>
             <Link href={projectFacts.rera.url} target="_blank" rel="noreferrer" onClick={() => trackEvent("rera_link_click", {})}>
@@ -696,9 +886,10 @@ export function LandingPage() {
         </section>
 
         <section id="private-viewing" className="faq-form-section">
+          <BotanicalMask name="cornerBottom" className="faq-botanical" />
           <SectionLabel index="08" eyebrow="Frequently asked questions" />
           <div className="faq-list">
-            {faqItems.map((faq) => {
+            {faqItems.slice(0, 5).map((faq) => {
               const open = openFaq === faq.question;
               return (
                 <article key={faq.question}>
@@ -719,7 +910,8 @@ export function LandingPage() {
             })}
           </div>
           <div className="green-quote">
-            <Image src="/florique/decorative/botanical-cluster-large.svg" alt="" width={210} height={210} aria-hidden="true" />
+            <BotanicalMask name="cluster" />
+            <ProjectLogo light context="hero" />
             <h2>Homes that bloom with possibility.</h2>
             <p>Book your private viewing today.</p>
           </div>
@@ -729,7 +921,7 @@ export function LandingPage() {
               intent="site_visit"
               ctaSource="final-form"
               formName="private-viewing"
-              selectedResidence={selectedResidence}
+              selectedPlan={selectedPlan}
             />
           </aside>
         </section>
@@ -737,7 +929,7 @@ export function LandingPage() {
 
       <footer id="legal" className="footer">
         <div>
-          <BrandWordmark light />
+          <ProjectLogo light context="footer" />
           <p>{projectFacts.locationShort}</p>
           <div className="social-line">
             <span>Instagram</span>
@@ -764,7 +956,7 @@ export function LandingPage() {
                 ctaSource: "footer-viewing",
                 title: "Book a private viewing",
                 description: "Share your details and preferred configuration.",
-                selectedResidence,
+                selectedPlan,
               })
             }
           >
@@ -778,7 +970,7 @@ export function LandingPage() {
                 ctaSource: "footer-brochure",
                 title: "Download brochure",
                 description: "Share your details to receive the latest brochure.",
-                selectedResidence,
+                selectedPlan,
               })
             }
           >
@@ -802,7 +994,7 @@ export function LandingPage() {
               ctaSource: "mobile-sticky-enquire",
               title: "Enquire now",
               description: "Tell us what you would like to know about Poulomi Florique.",
-              selectedResidence,
+              selectedPlan,
             })
           }
         >
@@ -818,7 +1010,7 @@ export function LandingPage() {
       {menuOpen ? (
         <div className="menu-overlay" role="dialog" aria-modal="true" aria-label="Navigation menu">
           <button type="button" aria-label="Close menu" onClick={() => setMenuOpen(false)}><X /></button>
-          <BrandWordmark />
+          <ProjectLogo />
           {navItems.map((item) => (
             <button key={`menu-${item.id}-${item.label}`} type="button" onClick={() => scrollTo(item.id, `menu-${item.label.toLowerCase()}`)}>
               {item.label}
@@ -833,7 +1025,7 @@ export function LandingPage() {
                 ctaSource: "mobile-menu-brochure",
                 title: "Download brochure",
                 description: "Share your details to receive the latest brochure.",
-                selectedResidence,
+                selectedPlan,
               })
             }
           >
@@ -847,14 +1039,14 @@ export function LandingPage() {
           <button type="button" className="overlay-backdrop" aria-label="Close enquiry form" onClick={() => setLeadOverlay(null)} />
           <aside className="lead-panel">
             <button type="button" className="panel-close" aria-label="Close enquiry form" onClick={() => setLeadOverlay(null)}><X size={18} /></button>
-            <p>{projectFacts.name}</p>
+            <ProjectLogo context="hero" />
             <h2 id="lead-title">{leadOverlay.title}</h2>
             <span>{leadOverlay.description}</span>
             <LeadForm
               intent={leadOverlay.intent}
               ctaSource={leadOverlay.ctaSource}
               formName="lead-overlay"
-              selectedResidence={leadOverlay.selectedResidence}
+              selectedPlan={leadOverlay.selectedPlan}
               compact
             />
           </aside>
@@ -863,15 +1055,45 @@ export function LandingPage() {
 
       {planOpen ? (
         <div className="image-lightbox" role="dialog" aria-modal="true" aria-label="Floor plan viewer">
-          <button type="button" aria-label="Close floor plan" onClick={() => setPlanOpen(false)}><X /></button>
-          <Image src={selectedResidence.image} alt={`${selectedResidence.label} floor plan enlarged`} fill sizes="100vw" className="object-contain" />
+          <ZoomControls onClose={() => setPlanOpen(false)} onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={resetViewer} closeLabel="Close floor plan" />
+          <div className="lightbox-canvas">
+            <Image
+              src={selectedPlan.src}
+              alt={`${selectedPlan.family} ${selectedPlan.areaSqFt} sq ft ${selectedPlan.areaType} floor plan enlarged`}
+              width={selectedPlan.width}
+              height={selectedPlan.height}
+              sizes="100vw"
+              className="object-contain"
+              style={{ transform: `scale(${viewerZoom})` }}
+            />
+          </div>
+        </div>
+      ) : null}
+
+      {overviewOpen ? (
+        <div className="image-lightbox" role="dialog" aria-modal="true" aria-label="Typical floor overview viewer">
+          <ZoomControls onClose={() => setOverviewOpen(false)} onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={resetViewer} closeLabel="Close typical floor overview" />
+          <div className="lightbox-canvas">
+            <Image src={projectFacts.images.floorPlanOverview} alt="Poulomi Florique approved typical floor overview" width={2160} height={3840} sizes="100vw" className="object-contain" style={{ transform: `scale(${viewerZoom})` }} />
+          </div>
         </div>
       ) : null}
 
       {masterPlanOpen ? (
         <div className="image-lightbox" role="dialog" aria-modal="true" aria-label="Master plan viewer">
-          <button type="button" aria-label="Close master plan" onClick={() => setMasterPlanOpen(false)}><X /></button>
-          <Image src={projectFacts.images.masterPlan} alt="Poulomi Florique master plan enlarged" fill sizes="100vw" className="object-contain" />
+          <ZoomControls onClose={() => setMasterPlanOpen(false)} onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={resetViewer} closeLabel="Close master plan" />
+          <div className="lightbox-canvas">
+            <Image src={projectFacts.images.masterPlan} alt="Poulomi Florique master plan enlarged" width={2160} height={3840} sizes="100vw" className="object-contain" style={{ transform: `scale(${viewerZoom})` }} />
+          </div>
+        </div>
+      ) : null}
+
+      {locationMapOpen ? (
+        <div className="image-lightbox" role="dialog" aria-modal="true" aria-label="Official location map viewer">
+          <ZoomControls onClose={() => setLocationMapOpen(false)} onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={resetViewer} closeLabel="Close location map" />
+          <div className="lightbox-canvas">
+            <Image src={projectFacts.images.locationDesktop} alt="Poulomi Florique official location map" width={2160} height={3840} sizes="100vw" className="object-contain" style={{ transform: `scale(${viewerZoom})` }} />
+          </div>
         </div>
       ) : null}
     </div>

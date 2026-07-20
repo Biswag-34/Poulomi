@@ -30,6 +30,13 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 next-*.log
+*.log
+
+# local lead/test artifacts
+content/submissions/
+content/qa-screenshots/
+content/*report*.md
+content/*manifest*.json
 
 # env files (can opt-in for committing if needed)
 .env*

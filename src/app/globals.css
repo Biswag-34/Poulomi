@@ -83,6 +83,8 @@ textarea:focus-visible {
 
 .florique-page {
   min-height: 100vh;
+  max-width: 100vw;
+  overflow-x: clip;
   padding-bottom: calc(64px + env(safe-area-inset-bottom));
   background:
     radial-gradient(circle at 8% 22%, rgba(181, 111, 120, 0.08), transparent 26rem),
@@ -113,22 +115,171 @@ textarea:focus-visible {
   text-align: left;
 }
 
-.brand-wordmark {
-  display: grid;
-  color: var(--florique-forest);
-  font-family: var(--font-display), serif;
-  font-size: 1.6rem;
-  line-height: 0.82;
-  text-transform: uppercase;
+.brand-logo {
+  display: block;
+  width: 112px;
+  height: auto;
+  max-height: 42px;
+  object-fit: contain;
 }
 
-.brand-wordmark span:last-child {
-  font-size: 1.15rem;
+.brand-logo--footer {
+  width: 150px;
+  max-height: 72px;
 }
 
-.brand-button .brand-wordmark,
-.brand-wordmark--light {
-  color: white;
+.brand-logo--hero {
+  width: 132px;
+}
+
+.botanical-mask {
+  display: inline-block;
+  flex: none;
+  background: currentColor;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  pointer-events: none;
+}
+
+.botanical-mask--flower {
+  width: 22px;
+  height: 22px;
+  -webkit-mask-image: url("/florique/decorative/florique-flower-outline.svg");
+  mask-image: url("/florique/decorative/florique-flower-outline.svg");
+}
+
+.botanical-mask--cornerTop {
+  -webkit-mask-image: url("/florique/decorative/botanical-corner-top-right.svg");
+  mask-image: url("/florique/decorative/botanical-corner-top-right.svg");
+}
+
+.botanical-mask--cornerBottom {
+  -webkit-mask-image: url("/florique/decorative/botanical-corner-bottom-left.svg");
+  mask-image: url("/florique/decorative/botanical-corner-bottom-left.svg");
+}
+
+.botanical-mask--corner {
+  -webkit-mask-image: url("/florique/decorative/botanical-corner.svg");
+  mask-image: url("/florique/decorative/botanical-corner.svg");
+}
+
+.botanical-mask--branch {
+  -webkit-mask-image: url("/florique/decorative/botanical-branch-vertical.svg");
+  mask-image: url("/florique/decorative/botanical-branch-vertical.svg");
+}
+
+.botanical-mask--cluster {
+  -webkit-mask-image: url("/florique/decorative/botanical-cluster-large.svg");
+  mask-image: url("/florique/decorative/botanical-cluster-large.svg");
+}
+
+.botanical-mask--divider {
+  -webkit-mask-image: url("/florique/decorative/botanical-divider-horizontal.svg");
+  mask-image: url("/florique/decorative/botanical-divider-horizontal.svg");
+}
+
+.botanical-mask--dividerAlt {
+  -webkit-mask-image: url("/florique/decorative/botanical-divider.svg");
+  mask-image: url("/florique/decorative/botanical-divider.svg");
+}
+
+.brand-icon {
+  display: inline-block;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  color: currentColor;
+  background: currentColor;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(181, 111, 120, 0.62) rgba(238, 230, 218, 0.74);
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(238, 230, 218, 0.74);
+}
+
+*::-webkit-scrollbar-thumb {
+  border: 2px solid rgba(238, 230, 218, 0.74);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(201, 130, 138, 0.86), rgba(23, 60, 49, 0.86));
+}
+
+.brand-icon--proof-residence-led {
+  -webkit-mask-image: url("/florique/icons/brand/proof-residence-led.svg");
+  mask-image: url("/florique/icons/brand/proof-residence-led.svg");
+}
+
+.brand-icon--proof-area-range {
+  -webkit-mask-image: url("/florique/icons/brand/proof-area-range.svg");
+  mask-image: url("/florique/icons/brand/proof-area-range.svg");
+}
+
+.brand-icon--proof-curated-landscape {
+  -webkit-mask-image: url("/florique/icons/brand/proof-curated-landscape.svg");
+  mask-image: url("/florique/icons/brand/proof-curated-landscape.svg");
+}
+
+.brand-icon--stat-acreage {
+  -webkit-mask-image: url("/florique/icons/brand/stat-acreage.svg");
+  mask-image: url("/florique/icons/brand/stat-acreage.svg");
+}
+
+.brand-icon--stat-open-space {
+  -webkit-mask-image: url("/florique/icons/brand/stat-open-space.svg");
+  mask-image: url("/florique/icons/brand/stat-open-space.svg");
+}
+
+.brand-icon--stat-residences {
+  -webkit-mask-image: url("/florique/icons/brand/stat-residences.svg");
+  mask-image: url("/florique/icons/brand/stat-residences.svg");
+}
+
+.brand-icon--stat-clubhouse {
+  -webkit-mask-image: url("/florique/icons/brand/stat-clubhouse.svg");
+  mask-image: url("/florique/icons/brand/stat-clubhouse.svg");
+}
+
+.brand-icon--stat-sports-zone {
+  -webkit-mask-image: url("/florique/icons/brand/stat-sports-zone.svg");
+  mask-image: url("/florique/icons/brand/stat-sports-zone.svg");
+}
+
+.brand-icon--trust-thoughtful-design {
+  -webkit-mask-image: url("/florique/icons/brand/trust-thoughtful-design.svg");
+  mask-image: url("/florique/icons/brand/trust-thoughtful-design.svg");
+}
+
+.brand-icon--trust-quality-construction {
+  -webkit-mask-image: url("/florique/icons/brand/trust-quality-construction.svg");
+  mask-image: url("/florique/icons/brand/trust-quality-construction.svg");
+}
+
+.brand-icon--trust-customer-first {
+  -webkit-mask-image: url("/florique/icons/brand/trust-customer-first.svg");
+  mask-image: url("/florique/icons/brand/trust-customer-first.svg");
+}
+
+.brand-icon--trust-sustainable-living {
+  -webkit-mask-image: url("/florique/icons/brand/trust-sustainable-living.svg");
+  mask-image: url("/florique/icons/brand/trust-sustainable-living.svg");
 }
 
 .desktop-nav,
@@ -175,7 +326,7 @@ textarea:focus-visible {
   z-index: 2;
   width: min(calc(100% - 28px), 44rem);
   margin: -28px auto 0;
-  overflow: hidden;
+  overflow: clip;
   border: 1px solid rgba(201, 187, 168, 0.5);
   border-radius: 28px 28px 8px 8px;
   background:
@@ -187,12 +338,12 @@ textarea:focus-visible {
 
 .card-botanical {
   position: absolute;
-  right: -18px;
-  top: 24px;
-  width: 44%;
-  height: auto;
-  color: var(--florique-stone);
-  opacity: 0.28;
+  right: 14px;
+  top: 52px;
+  width: min(64%, 330px);
+  height: 360px;
+  color: #b98f83;
+  opacity: 0.42;
   pointer-events: none;
 }
 
@@ -209,12 +360,15 @@ textarea:focus-visible {
 
 .hero-card h1 {
   position: relative;
-  max-width: 9ch;
+  z-index: 1;
+  max-width: 11.5ch;
   margin-top: 14px;
   font-family: var(--font-display), serif;
   font-size: clamp(2.95rem, 13vw, 3.85rem);
   font-weight: 400;
   line-height: 0.9;
+  overflow: visible;
+  text-wrap: balance;
 }
 
 .hero-card > i {
@@ -225,7 +379,9 @@ textarea:focus-visible {
   background: var(--florique-rose);
 }
 
-.hero-card > span {
+.hero-card > span:not(.botanical-mask) {
+  position: relative;
+  z-index: 1;
   display: block;
   max-width: 28rem;
   margin-top: 14px;
@@ -235,6 +391,8 @@ textarea:focus-visible {
 }
 
 .hero-actions {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 10px;
   margin-top: 18px;
@@ -244,30 +402,43 @@ textarea:focus-visible {
 .text-cta,
 .outline-nav-cta,
 .footer-actions button {
-  min-height: 48px;
-  border-radius: 4px;
-  font-size: 0.8rem;
+  max-width: 100%;
+  min-height: 54px;
+  border-radius: 6px;
+  font-size: 0.82rem;
   font-weight: 800;
+  overflow-wrap: normal;
+  text-align: center;
   text-transform: uppercase;
+  white-space: nowrap;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease;
 }
 
 .rose-cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
+  border: 1px solid rgba(181, 111, 120, 0.84);
   background: linear-gradient(180deg, #c9828a 0%, var(--florique-rose) 100%);
   color: white;
-  box-shadow: 0 14px 32px rgba(181, 111, 120, 0.28);
+  padding-inline: 24px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 14px 32px rgba(181, 111, 120, 0.28);
 }
 
 .rose-cta:hover {
   background: var(--florique-rose-dark);
-  transform: translateY(-1px);
-}
-
-.rose-cta img {
-  filter: brightness(0) invert(1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 18px 38px rgba(181, 111, 120, 0.34);
+  transform: translateY(-2px);
 }
 
 .text-cta {
@@ -275,12 +446,45 @@ textarea:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 10px;
+  min-height: 50px;
   border-bottom: 1px solid rgba(23, 60, 49, 0.42);
   color: var(--florique-forest);
+  padding-inline: 2px;
+}
+
+.hero-actions .text-cta,
+.plan-stage-actions .text-cta,
+.footer-actions button,
+.outline-nav-cta {
+  border: 1px solid rgba(23, 60, 49, 0.42);
+  padding-inline: 22px;
+}
+
+.hero-actions .text-cta {
+  background: rgba(255, 253, 252, 0.54);
+}
+
+.hero-actions .rose-cta,
+.hero-actions .text-cta {
+  min-width: 0;
+  min-height: 54px;
+  white-space: normal;
 }
 
 .text-cta:hover svg {
   transform: translateX(3px);
+}
+
+.rose-cta:focus-visible,
+.text-cta:focus-visible,
+.outline-nav-cta:focus-visible,
+.footer-actions button:focus-visible,
+.mobile-action-bar button:focus-visible,
+.mobile-action-bar a:focus-visible,
+.amenity-arrows button:focus-visible,
+.gallery-dots button:focus-visible {
+  outline: 2px solid rgba(181, 111, 120, 0.72);
+  outline-offset: 3px;
 }
 
 .mobile-quick-facts {
@@ -291,7 +495,7 @@ textarea:focus-visible {
   border-top: 1px solid var(--line);
 }
 
-.mobile-quick-facts span {
+.mobile-quick-facts > span {
   display: grid;
   min-height: 58px;
   place-items: center;
@@ -309,9 +513,14 @@ textarea:focus-visible {
 }
 
 .mobile-quick-facts svg {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   stroke-width: 1.4;
+}
+
+.mobile-quick-facts .brand-icon {
+  width: 30px;
+  height: 30px;
 }
 
 .enquire-tab {
@@ -323,8 +532,10 @@ textarea:focus-visible {
 }
 
 .proof-ribbon {
+  position: relative;
   width: min(calc(100% - 20px), 44rem);
   margin: 8px auto 0;
+  overflow: hidden;
   border-block: 1px solid rgba(201, 187, 168, 0.55);
   border-inline: 1px solid rgba(201, 187, 168, 0.48);
   border-radius: 10px;
@@ -332,11 +543,26 @@ textarea:focus-visible {
   padding: 12px 0;
 }
 
+.proof-botanical {
+  position: absolute;
+  right: 16px;
+  bottom: -32px;
+  z-index: 0;
+  width: 260px;
+  height: 100px;
+  color: #b98f83;
+  opacity: 0.2;
+}
+
 .proof-track {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-auto-columns: minmax(148px, 42vw);
+  grid-auto-columns: minmax(128px, 39vw);
   grid-auto-flow: column;
   gap: 0;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
   padding-inline: 18px;
   scroll-snap-type: x mandatory;
@@ -345,34 +571,39 @@ textarea:focus-visible {
 .proof-track article {
   display: grid;
   min-height: 78px;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 30px minmax(0, 1fr);
   grid-template-rows: 1fr 1fr;
   align-items: center;
-  gap: 0 10px;
+  gap: 0 8px;
   border-right: 1px solid rgba(32, 36, 31, 0.16);
-  padding: 8px 18px 8px 8px;
+  padding: 8px 12px 8px 8px;
   scroll-snap-align: start;
 }
 
-.proof-track svg {
+.proof-track svg,
+.proof-track .brand-icon {
   grid-row: span 2;
   color: var(--florique-success);
-  stroke-width: 1.3;
+  width: 30px;
+  height: 30px;
 }
 
 .proof-track strong {
   align-self: end;
   font-family: var(--font-display), serif;
-  font-size: 1.45rem;
+  font-size: 1rem;
   font-weight: 400;
   line-height: 1;
+  white-space: nowrap;
 }
 
-.proof-track span {
+.proof-track article > span:not(.brand-icon) {
   align-self: start;
   color: #616861;
-  font-size: 0.68rem;
+  font-size: 0.54rem;
   font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
   text-transform: uppercase;
 }
 
@@ -392,14 +623,28 @@ textarea:focus-visible {
 }
 
 .editorial-section {
+  position: relative;
   display: grid;
   gap: 18px;
+  min-width: 0;
   width: min(calc(100% - 20px), 44rem);
   margin: 8px auto 0;
   border: 1px solid rgba(201, 187, 168, 0.46);
   border-radius: 10px;
   background: rgba(255, 253, 252, 0.48);
   border-bottom: 1px solid rgba(201, 187, 168, 0.45);
+}
+
+.story-section,
+.location-section {
+  overflow: hidden;
+}
+
+.editorial-section > :not(.botanical-mask),
+.trust-section > :not(.botanical-mask),
+.faq-form-section > :not(.botanical-mask) {
+  position: relative;
+  z-index: 1;
 }
 
 .section-label {
@@ -453,6 +698,30 @@ textarea:focus-visible {
   min-height: 250px;
 }
 
+.story-botanical {
+  position: absolute;
+  right: 4px;
+  top: 110px;
+  z-index: 0;
+  width: 210px;
+  height: 410px;
+  color: #b98f83;
+  opacity: 0.28;
+  pointer-events: none;
+}
+
+.story-cluster-botanical {
+  position: absolute;
+  left: 46%;
+  top: 20px;
+  z-index: 0;
+  width: 240px;
+  height: 240px;
+  color: #c6b59e;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
 .story-media .story-main {
   border-radius: 8px;
   object-fit: cover;
@@ -474,22 +743,27 @@ textarea:focus-visible {
 .residence-tabs {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 20px;
+  gap: 7px;
+  margin-top: 16px;
+  min-width: 0;
+  overflow: clip;
+  padding-bottom: 4px;
 }
 
 .residence-tabs button {
-  min-height: 58px;
+  min-width: 0;
+  min-height: 46px;
   border: 1px solid rgba(201, 187, 168, 0.72);
-  border-radius: 4px;
+  border-radius: 7px;
   background: rgba(255, 253, 252, 0.56);
-  padding: 8px;
-  text-align: left;
+  padding: 7px 5px;
+  text-align: center;
 }
 
 .residence-tabs button.active {
   border-color: var(--florique-rose);
-  box-shadow: inset 2px 0 0 var(--florique-rose);
+  background: rgba(255, 253, 252, 0.92);
+  box-shadow: inset 3px 0 0 var(--florique-rose), 0 10px 24px rgba(181, 111, 120, 0.08);
 }
 
 .residence-tabs strong,
@@ -498,14 +772,232 @@ textarea:focus-visible {
 }
 
 .residence-tabs strong {
-  font-size: 0.86rem;
+  font-size: clamp(0.59rem, 2.75vw, 0.72rem);
+  line-height: 1.12;
 }
 
 .residence-tabs span {
+  display: none;
   margin-top: 4px;
   color: #73786f;
   font-size: 0.68rem;
   line-height: 1.25;
+}
+
+.residence-note {
+  margin-top: 12px;
+  color: #626a62;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.area-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
+  gap: 7px;
+  min-width: 0;
+  overflow: visible;
+  padding-bottom: 4px;
+}
+
+.area-tabs button {
+  min-width: 0;
+  min-height: 32px;
+  border: 1px solid rgba(201, 187, 168, 0.72);
+  border-radius: 999px;
+  background: rgba(255, 253, 252, 0.68);
+  color: var(--florique-forest);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.area-tabs button.active {
+  border-color: var(--florique-rose);
+  background: rgba(181, 111, 120, 0.11);
+  color: var(--florique-rose-dark);
+}
+
+.residences-section {
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.residence-botanical,
+.plan-botanical {
+  position: absolute;
+  z-index: 0;
+  color: var(--florique-stone);
+  pointer-events: none;
+}
+
+.residence-botanical--upper {
+  top: 90px;
+  right: 34px;
+  width: 240px;
+  height: 500px;
+  color: #c0aa93;
+  opacity: 0.34;
+}
+
+.residence-botanical--lower {
+  bottom: 18px;
+  left: 48px;
+  width: 300px;
+  height: 300px;
+  color: #b98f83;
+  opacity: 0.28;
+}
+
+.residence-divider-botanical {
+  position: absolute;
+  right: 42%;
+  bottom: 26px;
+  z-index: 0;
+  width: 340px;
+  height: 120px;
+  color: #b98f83;
+  opacity: 0.18;
+}
+
+.residence-browser {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.unit-plan-card,
+.plan-stage {
+  position: relative;
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(201, 187, 168, 0.65);
+  border-radius: 8px;
+  background:
+    linear-gradient(140deg, rgba(255, 253, 252, 0.72), rgba(246, 240, 231, 0.32)),
+    rgba(255, 253, 252, 0.18);
+  padding: 16px;
+  box-shadow: 0 28px 70px rgba(12, 41, 33, 0.12);
+}
+
+.plan-stage::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  content: "";
+  background: linear-gradient(180deg, var(--florique-rose), rgba(181, 111, 120, 0.16));
+}
+
+.plan-stage-copy {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+}
+
+.unit-plan-card.active {
+  border-color: rgba(181, 111, 120, 0.72);
+}
+
+.unit-plan-copy p,
+.plan-stage p {
+  position: relative;
+  z-index: 1;
+  color: var(--florique-rose);
+  font-size: 0.76rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
+.unit-plan-copy h3,
+.plan-stage h3 {
+  position: relative;
+  z-index: 1;
+  margin-top: 6px;
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.82rem, 7vw, 2.35rem);
+  font-weight: 400;
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+.unit-plan-copy h3 span,
+.plan-stage h3 span {
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.unit-plan-copy small,
+.plan-stage > div > span {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 8px;
+  color: #687068;
+  font-size: 0.82rem;
+  line-height: 1.38;
+  overflow-wrap: anywhere;
+}
+
+.unit-plan-image,
+.plan-image-button {
+  position: relative;
+  box-sizing: border-box;
+  display: grid;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  inline-size: 100%;
+  max-inline-size: 100%;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(201, 187, 168, 0.48);
+  border-radius: 8px;
+  background: rgba(255, 253, 252, 0.56);
+  padding: 4px;
+}
+
+.unit-plan-image {
+  margin-top: 12px;
+}
+
+.unit-plan-image img,
+.plan-image-button img {
+  display: block;
+  min-width: 0;
+  width: 100% !important;
+  max-width: 100%;
+  inline-size: 100% !important;
+  max-inline-size: 100%;
+  height: auto !important;
+  block-size: auto !important;
+  max-height: clamp(250px, 68vw, 360px);
+  object-fit: contain;
+}
+
+.unit-plan-actions,
+.plan-stage-actions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.unit-plan-actions .text-cta,
+.plan-stage-actions .text-cta {
+  justify-content: center;
+}
+
+.plan-stage-actions .rose-cta,
+.plan-stage-actions .text-cta {
+  width: 100%;
 }
 
 .plan-card {
@@ -547,54 +1039,110 @@ textarea:focus-visible {
 }
 
 .plan-image-button {
-  position: relative;
-  min-height: 188px;
-  border-radius: 6px;
-  background: #faf6ee;
+  z-index: 1;
+  min-height: 0;
+  box-shadow: inset 0 0 0 1px rgba(201, 187, 168, 0.24);
 }
 
 .plan-botanical {
+  right: 10px;
+  bottom: 8px;
+  width: 260px;
+  height: 260px;
+  color: var(--florique-rose);
+  opacity: 0.22;
+}
+
+.plan-overview-link {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 8px;
+  color: var(--florique-forest);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.amenities-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.amenity-botanical {
   position: absolute;
-  right: -24px;
-  bottom: -30px;
+  left: -24px;
+  bottom: 4px;
+  z-index: 0;
+  width: 270px;
+  height: 270px;
+  color: var(--florique-rose);
   opacity: 0.32;
   pointer-events: none;
 }
 
-.amenities-section {
-  overflow: hidden;
+.amenity-divider-botanical {
+  position: absolute;
+  right: 18px;
+  top: 26px;
+  z-index: 0;
+  width: 260px;
+  height: 110px;
+  color: #c6b59e;
+  opacity: 0.2;
 }
 
 .amenity-track {
-  display: grid;
-  grid-auto-columns: minmax(172px, 72vw);
-  grid-auto-flow: column;
+  position: relative;
+  z-index: 1;
+  display: flex;
   gap: 12px;
+  contain: layout paint;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
   padding-bottom: 12px;
   scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.amenity-track::-webkit-scrollbar {
+  display: none;
 }
 
 .amenity-card {
   position: relative;
-  min-height: 210px;
+  flex: 0 0 min(72vw, 250px);
+  min-height: 265px;
   overflow: hidden;
   border-radius: 8px;
-  background: var(--florique-forest);
+  background: transparent;
   scroll-snap-align: start;
+  box-shadow: 0 18px 38px rgba(12, 41, 33, 0.14);
+  transition: transform 260ms ease, box-shadow 260ms ease, opacity 260ms ease;
+}
+
+.amenity-card.active {
+  box-shadow: 0 24px 46px rgba(12, 41, 33, 0.18);
+  transform: translateY(-2px);
 }
 
 .amenity-card::after {
   position: absolute;
-  inset: auto 0 0;
-  height: 58%;
+  inset: 0;
   content: "";
-  background: linear-gradient(0deg, rgba(12, 41, 33, 0.9), transparent);
+  background: linear-gradient(180deg, rgb(6 24 19 / 0%) 36%, rgb(6 24 19 / 38%) 61%, rgb(6 24 19 / 90%) 100%);
 }
 
 .amenity-card div {
   position: absolute;
-  inset: auto 12px 12px;
+  inset: auto 16px 16px;
   z-index: 1;
   color: white;
 }
@@ -610,9 +1158,10 @@ textarea:focus-visible {
 .amenity-card strong {
   display: block;
   max-width: 14ch;
-  font-size: 0.95rem;
+  font-family: var(--font-display), serif;
+  font-size: 1.32rem;
+  font-weight: 400;
   line-height: 1.12;
-  text-transform: uppercase;
 }
 
 .amenity-card span {
@@ -640,24 +1189,64 @@ textarea:focus-visible {
   line-height: 1.2;
 }
 
+.amenity-controls {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 14px;
+}
+
+.amenity-progress {
+  height: 2px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(201, 187, 168, 0.74);
+}
+
+.amenity-progress span {
+  display: block;
+  height: 100%;
+  background: var(--florique-rose);
+  transition: width 180ms ease;
+}
+
 .gallery-dots {
   display: flex;
   justify-content: center;
   gap: 7px;
-  margin-top: -4px;
+  grid-column: 1 / -1;
+  order: 2;
 }
 
-.gallery-dots span {
+.gallery-dots button {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   border: 1px solid rgba(181, 111, 120, 0.42);
+  background: transparent;
 }
 
 .gallery-dots .active {
   width: 18px;
   border-radius: 999px;
   background: var(--florique-rose);
+}
+
+.amenity-arrows {
+  display: none;
+  gap: 8px;
+}
+
+.amenity-arrows button {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(23, 60, 49, 0.24);
+  border-radius: 50%;
+  color: var(--florique-forest);
 }
 
 .masterplan-section,
@@ -667,12 +1256,46 @@ textarea:focus-visible {
   background: rgba(255, 253, 252, 0.42);
 }
 
+.masterplan-section {
+  overflow: hidden;
+}
+
+.master-botanical {
+  position: absolute;
+  left: 14px;
+  top: 74px;
+  z-index: 0;
+  width: 210px;
+  height: 430px;
+  color: #b98f83;
+  opacity: 0.28;
+  pointer-events: none;
+}
+
+.master-cluster-botanical {
+  position: absolute;
+  right: 25%;
+  bottom: 18px;
+  z-index: 0;
+  width: 260px;
+  height: 260px;
+  color: #c6b59e;
+  opacity: 0.18;
+}
+
 .master-copy ul {
   display: grid;
   gap: 8px;
   margin-top: 18px;
   color: #5f655d;
   font-size: 0.9rem;
+}
+
+.master-intro {
+  margin-top: 14px;
+  color: #5f655d;
+  font-size: 0.92rem;
+  line-height: 1.55;
 }
 
 .master-copy li {
@@ -687,7 +1310,7 @@ textarea:focus-visible {
 
 .master-image-wrap,
 .master-image,
-.location-map {
+.location-visual {
   position: relative;
   min-height: 240px;
   overflow: hidden;
@@ -697,6 +1320,9 @@ textarea:focus-visible {
 }
 
 .master-image-wrap {
+  aspect-ratio: 1960 / 2160;
+  min-height: 0;
+  max-height: 460px;
   border: 0;
   background: transparent;
 }
@@ -707,40 +1333,19 @@ textarea:focus-visible {
   width: 100%;
 }
 
-.master-hotspot {
-  position: absolute;
-  z-index: 2;
-  display: grid;
-  width: 28px;
-  height: 28px;
-  place-items: center;
-  border: 2px solid rgba(255, 253, 252, 0.86);
-  border-radius: 50%;
-  background: var(--florique-rose);
-  color: white;
-  font-size: 0.72rem;
-  font-weight: 800;
-  box-shadow: 0 8px 18px rgba(12, 41, 33, 0.24);
-  transform: translate(-50%, -50%);
-}
-
-.master-hotspot.active {
-  background: var(--florique-forest);
-  transform: translate(-50%, -50%) scale(1.12);
-}
-
 .master-legend {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  gap: 9px;
   border-radius: 8px;
   background: var(--florique-forest);
-  padding: 12px;
+  padding: 14px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 18px 40px rgba(12, 41, 33, 0.16);
 }
 
 .master-legend button {
   display: flex;
-  min-height: 34px;
+  min-height: 38px;
   align-items: center;
   gap: 8px;
   color: white;
@@ -755,8 +1360,8 @@ textarea:focus-visible {
 
 .master-legend span {
   display: grid;
-  width: 22px;
-  height: 22px;
+  width: 25px;
+  height: 25px;
   place-items: center;
   border-radius: 50%;
   background: var(--florique-rose);
@@ -789,8 +1394,67 @@ textarea:focus-visible {
   text-transform: uppercase;
 }
 
-.location-map {
+.location-visual {
+  display: grid;
+  gap: 10px;
   min-height: 220px;
+  align-content: center;
+  padding: 16px;
+  background:
+    linear-gradient(135deg, rgba(23, 60, 49, 0.08), transparent 42%),
+    var(--florique-white);
+}
+
+.location-pin {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  border-radius: 8px;
+  background: var(--florique-forest);
+  padding: 16px;
+  color: white;
+}
+
+.location-pin span {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.location-visual article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(201, 187, 168, 0.46);
+  padding: 10px 2px;
+}
+
+.location-visual article strong {
+  color: var(--florique-forest);
+  font-size: 0.82rem;
+}
+
+.location-visual article span {
+  color: #626a62;
+  font-size: 0.78rem;
+  text-align: right;
+}
+
+.location-visual .text-cta {
+  justify-content: flex-start;
+  margin-top: 4px;
+}
+
+.location-botanical {
+  position: absolute;
+  right: 18px;
+  bottom: 14px;
+  z-index: 0;
+  width: 240px;
+  height: 240px;
+  color: #b98f83;
+  opacity: 0.18;
 }
 
 .commute-card,
@@ -815,13 +1479,23 @@ textarea:focus-visible {
 }
 
 .commute-tabs button {
-  min-height: 34px;
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   border: 1px solid rgba(201, 187, 168, 0.72);
   border-radius: 4px;
   padding-inline: 12px;
   color: #676d64;
   font-size: 0.76rem;
   font-weight: 700;
+}
+
+.commute-tabs svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.55;
 }
 
 .commute-tabs .active {
@@ -857,9 +1531,22 @@ textarea:focus-visible {
 }
 
 .trust-section {
+  position: relative;
   display: grid;
-  gap: 20px;
+  gap: 14px;
   border-bottom: 1px solid rgba(201, 187, 168, 0.45);
+  overflow: hidden;
+}
+
+.trust-divider-botanical {
+  position: absolute;
+  left: 18%;
+  bottom: -22px;
+  z-index: 0;
+  width: 420px;
+  height: 150px;
+  color: #c6b59e;
+  opacity: 0.18;
 }
 
 .trust-brand {
@@ -875,27 +1562,54 @@ textarea:focus-visible {
 
 .trust-icons {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  border-block: 1px solid rgba(201, 187, 168, 0.46);
 }
 
-.trust-icons span {
+.trust-icons > span {
   display: grid;
-  min-height: 78px;
+  min-height: 74px;
   place-items: center;
   gap: 6px;
+  border-right: 1px solid rgba(201, 187, 168, 0.42);
   color: #4e5950;
-  font-size: 0.76rem;
+  font-size: clamp(0.58rem, 2.4vw, 0.72rem);
+  line-height: 1.2;
+  padding: 8px 4px;
   text-align: center;
 }
 
-.trust-icons svg {
+.trust-icons > span:last-child {
+  border-right: 0;
+}
+
+.trust-icons svg,
+.trust-icons .brand-icon {
   color: var(--florique-success);
-  stroke-width: 1.3;
+  width: 42px;
+  height: 42px;
 }
 
 .rera-card {
+  position: relative;
+  overflow: hidden;
   padding: 16px;
+}
+
+.rera-card > :not(.rera-botanical) {
+  position: relative;
+  z-index: 1;
+}
+
+.rera-botanical {
+  position: absolute;
+  right: -20px;
+  bottom: -16px;
+  width: 128px;
+  height: 128px;
+  color: var(--florique-stone);
+  opacity: 0.14;
 }
 
 .rera-card strong {
@@ -917,8 +1631,21 @@ textarea:focus-visible {
 }
 
 .faq-form-section {
+  position: relative;
   display: grid;
   gap: 14px;
+  overflow: hidden;
+}
+
+.faq-botanical {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  z-index: 0;
+  width: 260px;
+  height: 260px;
+  color: #b98f83;
+  opacity: 0.2;
 }
 
 .faq-list {
@@ -955,30 +1682,38 @@ textarea:focus-visible {
   position: relative;
   overflow: hidden;
   background: var(--florique-forest);
-  min-height: 230px;
-  padding: 30px 24px;
+  min-height: 220px;
+  padding: 28px 22px;
   color: white;
 }
 
-.green-quote img {
+.green-quote .botanical-mask {
   position: absolute;
   right: -36px;
   top: 6px;
+  width: 210px;
+  height: 210px;
   opacity: 0.1;
-  filter: brightness(0) invert(1);
+  color: white;
 }
 
 .green-quote h2 {
-  max-width: 11ch;
+  position: relative;
+  z-index: 1;
+  max-width: 12ch;
+  font-size: clamp(2.1rem, 9vw, 2.75rem);
+  line-height: 0.98;
   color: white;
 }
 
 .green-quote p {
+  position: relative;
+  z-index: 1;
   color: rgba(255, 255, 255, 0.78);
 }
 
 .final-form-card {
-  padding: 16px;
+  padding: 18px;
 }
 
 .visit-form {
@@ -1006,7 +1741,7 @@ textarea:focus-visible {
 .visit-form input,
 .visit-form select {
   width: 100%;
-  min-height: 42px;
+  min-height: 46px;
   border: 1px solid rgba(201, 187, 168, 0.72);
   border-radius: 4px;
   background: rgba(255, 253, 252, 0.82);
@@ -1052,11 +1787,27 @@ textarea:focus-visible {
 }
 
 .footer {
+  position: relative;
   display: grid;
   gap: 26px;
+  overflow: hidden;
   background: var(--florique-forest-deep);
   color: white;
   padding-bottom: calc(94px + env(safe-area-inset-bottom));
+}
+
+.footer::after {
+  position: absolute;
+  right: -34px;
+  top: 26px;
+  width: 128px;
+  height: 128px;
+  content: "";
+  background: white;
+  opacity: 0.035;
+  pointer-events: none;
+  -webkit-mask: url("/florique/decorative/florique-flower-outline.svg") center / contain no-repeat;
+  mask: url("/florique/decorative/florique-flower-outline.svg") center / contain no-repeat;
 }
 
 .footer p,
@@ -1095,8 +1846,23 @@ textarea:focus-visible {
 }
 
 .footer-actions button {
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  min-height: 56px;
+  border: 1px solid rgba(225, 195, 181, 0.58);
+  border-radius: 6px;
   color: white;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.025)),
+    rgba(5, 40, 31, 0.58);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.footer-actions button:hover {
+  border-color: rgba(225, 195, 181, 0.92);
+  background:
+    linear-gradient(135deg, rgba(181, 111, 120, 0.86), rgba(145, 72, 82, 0.86)),
+    var(--florique-rose);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.22);
+  transform: translateY(-1px);
 }
 
 .mobile-action-bar {
@@ -1114,7 +1880,7 @@ textarea:focus-visible {
 .mobile-action-bar button,
 .mobile-action-bar a {
   display: inline-flex;
-  min-height: 48px;
+  min-height: 52px;
   align-items: center;
   justify-content: center;
   gap: 9px;
@@ -1125,7 +1891,8 @@ textarea:focus-visible {
 }
 
 .mobile-action-bar button {
-  background: var(--florique-rose);
+  border: 1px solid rgba(181, 111, 120, 0.86);
+  background: linear-gradient(180deg, #c9828a 0%, var(--florique-rose) 100%);
   color: white;
 }
 
@@ -1195,7 +1962,7 @@ textarea:focus-visible {
 }
 
 .panel-close,
-.image-lightbox > button {
+.lightbox-controls button {
   display: grid;
   width: 42px;
   height: 42px;
@@ -1240,18 +2007,33 @@ textarea:focus-visible {
   display: grid;
   place-items: center;
   background: rgba(12, 41, 33, 0.94);
-  padding: 20px;
+  padding: 76px 18px 24px;
 }
 
-.image-lightbox > button {
+.lightbox-controls {
   position: absolute;
-  right: 18px;
-  top: 18px;
+  right: 14px;
+  top: 14px;
   z-index: 1;
+  display: flex;
+  gap: 8px;
 }
 
-.image-lightbox > img {
-  padding: 62px 12px 22px !important;
+.lightbox-canvas {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.lightbox-canvas img {
+  max-width: min(100%, 1100px);
+  max-height: calc(100svh - 130px);
+  object-fit: contain;
+  transform-origin: center;
+  transition: transform 180ms ease;
 }
 
 @media (min-width: 640px) {
@@ -1308,6 +2090,11 @@ textarea:focus-visible {
     padding-inline: clamp(36px, 5vw, 78px);
   }
 
+  .brand-button .brand-logo {
+    width: clamp(184px, 14vw, 238px);
+    max-height: 76px;
+  }
+
   .desktop-nav {
     display: flex;
     align-items: center;
@@ -1338,7 +2125,8 @@ textarea:focus-visible {
   }
 
   .hero {
-    min-height: calc(100svh - 114px);
+    height: clamp(620px, 76svh, 820px);
+    min-height: 0;
   }
 
   .hero picture {
@@ -1364,22 +2152,37 @@ textarea:focus-visible {
 
   .hero-card {
     position: absolute;
-    left: clamp(40px, 7vw, 92px);
-    top: 50%;
-    width: min(41vw, 530px);
+    left: clamp(40px, 5vw, 80px);
+    top: clamp(52px, 7vh, 88px);
+    width: clamp(520px, 38vw, 620px);
     margin: 0;
-    transform: translateY(-44%);
+    transform: none;
     border-radius: 8px;
-    padding: clamp(34px, 4vw, 54px);
+    padding: clamp(42px, 4vw, 58px);
   }
 
   .hero-card h1 {
-    font-size: clamp(4.4rem, 6.2vw, 6.4rem);
+    max-width: 100%;
+    font-size: clamp(4.2rem, 5vw, 5.35rem);
+    line-height: 0.94;
+  }
+
+  .card-botanical {
+    right: 18px;
+    top: 78px;
+    width: 270px;
+    height: 340px;
+    opacity: 0.3;
   }
 
   .hero-actions {
-    grid-template-columns: auto auto;
+    grid-template-columns: minmax(190px, 1fr) minmax(190px, 1fr);
     align-items: center;
+  }
+
+  .hero-actions .rose-cta,
+  .hero-actions .text-cta {
+    white-space: nowrap;
   }
 
   .mobile-quick-facts {
@@ -1388,7 +2191,7 @@ textarea:focus-visible {
 
   .hero-index {
     position: absolute;
-    left: 34px;
+    left: 24px;
     bottom: 78px;
     z-index: 3;
     display: grid;
@@ -1430,10 +2233,6 @@ textarea:focus-visible {
     transform: translateY(-50%);
   }
 
-  .enquire-tab img {
-    filter: brightness(0) invert(1);
-  }
-
   .proof-track {
     max-width: 1180px;
     grid-auto-columns: 1fr;
@@ -1448,11 +2247,25 @@ textarea:focus-visible {
     padding-inline: 28px;
   }
 
+  .proof-track svg,
+  .proof-track .brand-icon {
+    width: 48px;
+    height: 48px;
+  }
+
   .proof-ribbon {
     width: 100%;
     margin-top: 0;
     border-inline: 0;
     border-radius: 0;
+  }
+
+  .proof-botanical {
+    right: 8%;
+    bottom: -44px;
+    width: 420px;
+    height: 150px;
+    opacity: 0.18;
   }
 
   .editorial-section,
@@ -1463,13 +2276,13 @@ textarea:focus-visible {
     margin: 0;
     border-inline: 0;
     border-radius: 0;
-    padding: clamp(58px, 6vw, 96px) clamp(48px, 6vw, 104px);
+    padding: clamp(54px, 5.4vw, 88px) clamp(28px, 4.2vw, 72px);
   }
 
   .editorial-section {
-    grid-template-columns: 58px minmax(0, 0.82fr) minmax(0, 1.32fr);
+    grid-template-columns: 46px minmax(210px, 0.72fr) minmax(0, 2.5fr);
     align-items: center;
-    gap: clamp(28px, 4vw, 58px);
+    gap: clamp(28px, 4vw, 64px);
   }
 
   .section-label {
@@ -1490,6 +2303,24 @@ textarea:focus-visible {
     min-height: 390px;
   }
 
+  .story-botanical {
+    left: clamp(72px, 7.2vw, 128px);
+    right: auto;
+    top: 58px;
+    width: 250px;
+    height: 540px;
+    color: #b98f83;
+    opacity: 0.24;
+  }
+
+  .story-cluster-botanical {
+    left: clamp(150px, 15vw, 260px);
+    top: 86px;
+    width: 300px;
+    height: 300px;
+    opacity: 0.16;
+  }
+
   .story-inset {
     left: -42px;
     bottom: 38px;
@@ -1498,78 +2329,348 @@ textarea:focus-visible {
   }
 
   .residences-section {
-    grid-template-columns: 58px minmax(0, 0.72fr) minmax(0, 1.28fr);
+    grid-template-columns: 46px minmax(330px, 0.86fr) minmax(0, 1.82fr);
+    grid-template-rows: auto auto;
+    align-items: start;
+    gap: clamp(22px, 3.2vw, 48px);
+    padding-block: clamp(48px, 4.2vw, 66px);
   }
 
-  .plan-card {
-    grid-template-columns: 0.45fr 1fr;
-    min-height: 380px;
-    align-items: center;
-    padding: 32px;
+  .residence-botanical--upper {
+    right: 5%;
+    top: 90px;
+    width: 300px;
+    height: 620px;
+    opacity: 0.3;
   }
 
-  .plan-image-button {
+  .residence-botanical--lower {
+    left: 7%;
+    bottom: 26px;
+    width: 360px;
+    height: 360px;
+    opacity: 0.24;
+  }
+
+  .residence-divider-botanical {
+    right: 37%;
+    bottom: 26px;
+    width: 520px;
+    height: 170px;
+    opacity: 0.18;
+  }
+
+  .residence-intro {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    display: block;
+    align-self: start;
+  }
+
+  .residence-intro h2,
+  .residence-note {
+    grid-column: auto;
+  }
+
+  .residence-intro h2 {
+    max-width: 10.5ch;
+  }
+
+  .residence-tabs {
+    grid-column: auto;
+    grid-row: auto;
+    grid-template-columns: 1fr;
+    align-self: start;
+    gap: 10px;
+    margin-top: 28px;
+    overflow: visible;
+  }
+
+  .residence-tabs button {
+    min-height: 78px;
+    padding: 14px 16px;
+    text-align: left;
+  }
+
+  .residence-tabs strong {
+    font-size: 0.94rem;
+  }
+
+  .residence-tabs span {
+    display: block;
+  }
+
+  .area-tabs {
+    grid-column: 3;
+    grid-row: 1;
+    grid-auto-flow: row;
+    grid-template-columns: repeat(auto-fit, minmax(78px, 1fr));
+    align-self: start;
+    margin-top: 0;
+    overflow: visible;
+  }
+
+  .area-tabs button {
+    min-height: 38px;
+    font-size: 0.78rem;
+  }
+
+  .residence-browser {
+    grid-column: 3;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    margin-top: -8px;
+  }
+
+  .plan-stage {
+    display: grid;
+    grid-template-columns: minmax(230px, 0.28fr) minmax(0, 0.72fr);
+    grid-template-rows: 1fr auto;
+    gap: 18px 30px;
+    min-height: 500px;
+    align-items: start;
+    padding: 28px 30px 24px;
+    background:
+      linear-gradient(145deg, rgba(255, 253, 252, 0.34), rgba(246, 240, 231, 0.16)),
+      rgba(255, 253, 252, 0.08);
+  }
+
+  .plan-stage-copy {
     min-height: 330px;
   }
 
+  .plan-image-button {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    min-height: 0;
+    height: 100%;
+    margin-top: 0;
+    padding: 6px;
+    background: transparent;
+    border-color: rgba(201, 187, 168, 0.32);
+  }
+
+  .plan-image-button img {
+    max-height: clamp(430px, 39vw, 560px);
+  }
+
+  .plan-botanical {
+    right: -8px;
+    bottom: 18px;
+    width: 340px;
+    height: 340px;
+    opacity: 0.3;
+  }
+
+  .plan-overview-link {
+    grid-column: 1;
+    align-self: end;
+  }
+
+  .plan-stage-actions {
+    margin-top: 26px;
+  }
+
   .amenities-section {
-    grid-template-columns: 58px minmax(240px, 0.55fr) minmax(0, 1.45fr);
+    grid-template-columns: 46px minmax(230px, 0.7fr) minmax(0, 2.55fr);
+    padding-block: clamp(48px, 4.2vw, 68px);
   }
 
   .amenity-track {
-    grid-auto-columns: minmax(220px, 24%);
-    grid-template-columns: none;
+    grid-column: 3;
     overflow-x: auto;
+    gap: 16px;
+    padding: 4px 0 18px;
   }
 
   .amenity-card {
-    min-height: 300px;
+    flex-basis: clamp(190px, 18vw, 245px);
+    min-height: 305px;
+    scroll-snap-align: center;
+  }
+
+  .amenity-botanical {
+    left: 3.5%;
+    bottom: 20px;
+    width: 330px;
+    height: 330px;
+    opacity: 0.3;
+  }
+
+  .amenity-divider-botanical {
+    right: 7%;
+    top: 42px;
+    width: 390px;
+    height: 130px;
+    opacity: 0.2;
+  }
+
+  .amenity-controls {
+    grid-column: 3;
+    grid-template-columns: minmax(180px, 1fr) auto auto;
+  }
+
+  .gallery-dots {
+    grid-column: auto;
+    order: 0;
+  }
+
+  .amenity-arrows {
+    display: flex;
   }
 
   .masterplan-section {
-    grid-template-columns: 58px minmax(220px, 0.48fr) minmax(0, 1.18fr) 180px;
+    grid-template-columns: 46px minmax(230px, 0.62fr) minmax(0, 1.62fr) minmax(220px, 0.62fr);
+    align-items: stretch;
+    padding-block: clamp(48px, 4.4vw, 70px);
   }
 
   .master-image-wrap,
   .master-image {
-    min-height: 420px;
+    min-height: 0;
+    max-height: 560px;
+  }
+
+  .master-botanical {
+    left: 7%;
+    top: 86px;
+    width: 230px;
+    height: 520px;
+    opacity: 0.27;
+  }
+
+  .master-cluster-botanical {
+    right: 25%;
+    bottom: 42px;
+    width: 360px;
+    height: 360px;
+    opacity: 0.18;
   }
 
   .master-legend {
     align-self: stretch;
     grid-template-columns: 1fr;
+    min-width: 220px;
+    align-content: start;
+    padding: 18px;
+  }
+
+  .master-legend button {
+    min-height: 42px;
+    font-size: 0.82rem;
   }
 
   .location-section {
-    grid-template-columns: 58px minmax(210px, 0.45fr) minmax(0, 1fr) minmax(280px, 0.48fr);
+    grid-template-columns: 46px minmax(210px, 0.72fr) minmax(0, 1.8fr) minmax(250px, 0.72fr);
   }
 
-  .location-map {
+  .location-botanical {
+    right: 6%;
+    bottom: 28px;
+    width: 300px;
+    height: 300px;
+    opacity: 0.2;
+  }
+
+  .location-visual {
     min-height: 310px;
   }
 
   .trust-section {
-    grid-template-columns: 58px 1fr 1.4fr 0.8fr;
+    min-height: 150px;
+    grid-template-columns: 46px minmax(210px, 0.9fr) minmax(0, 1.55fr) minmax(230px, 0.72fr);
     align-items: center;
+    gap: 24px;
+    padding-block: clamp(36px, 3.8vw, 58px);
+  }
+
+  .trust-divider-botanical {
+    left: 20%;
+    bottom: -32px;
+    width: 620px;
+    height: 200px;
+    opacity: 0.17;
   }
 
   .trust-icons {
     grid-template-columns: repeat(4, 1fr);
+    align-self: stretch;
+    border-block: 0;
+    border-left: 1px solid rgba(201, 187, 168, 0.46);
+  }
+
+  .trust-icons > span {
+    min-height: 112px;
+    border-right: 1px solid rgba(201, 187, 168, 0.46);
+    font-size: 0.76rem;
+  }
+
+  .trust-icons svg,
+  .trust-icons .brand-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .rera-card {
+    align-self: stretch;
+    display: grid;
+    align-content: center;
   }
 
   .faq-form-section {
-    grid-template-columns: 58px 1fr 0.58fr 1.18fr;
-    align-items: start;
+    grid-template-columns: 46px minmax(300px, 1fr) minmax(210px, 0.58fr) minmax(420px, 1.28fr);
+    align-items: stretch;
+    gap: 20px;
+    padding-block: clamp(42px, 4vw, 58px);
+  }
+
+  .faq-botanical {
+    right: 5%;
+    top: 28px;
+    width: 340px;
+    height: 340px;
+    opacity: 0.2;
+  }
+
+  .green-quote {
+    min-height: auto;
+    height: 100%;
+    padding: 28px 24px;
+    align-content: start;
+  }
+
+  .green-quote h2 {
+    font-size: clamp(2.15rem, 2.5vw, 2.65rem);
   }
 
   .final-form-card {
     padding: 22px;
   }
 
+  .faq-list {
+    align-self: stretch;
+    gap: 7px;
+  }
+
+  .faq-list button {
+    min-height: 42px;
+    padding-block: 10px;
+  }
+
+  .faq-list p {
+    padding-bottom: 10px;
+  }
+
   .footer {
     grid-template-columns: 1.1fr 1.2fr 0.8fr;
     align-items: start;
-    padding-bottom: 28px;
+    padding-bottom: 34px;
+  }
+
+  .footer-actions {
+    gap: 12px;
   }
 
   .footer-disclaimer {
@@ -1599,8 +2700,11 @@ textarea:focus-visible {
     font-size: 2.8rem;
   }
 
-  .residence-tabs {
-    grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .amenity-track {
+    overflow-x: hidden;
   }
 }
 

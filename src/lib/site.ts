@@ -16,7 +16,7 @@ export const siteKeywords = [
   "Poulomi Florique floor plans",
   "Poulomi Estates Bangalore",
   "3 BHK apartments Thanisandra",
-  "3.5 BHK apartments Thanisandra",
+  "3 BHK study maid apartments Thanisandra",
   "apartments near Manyata Tech Park",
   "flats near Bhartiya City Bengaluru",
   "Kannur Bengaluru apartments",
