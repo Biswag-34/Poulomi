@@ -607,6 +607,106 @@ textarea:focus-visible {
   text-transform: uppercase;
 }
 
+.quick-enquiry-section {
+  position: relative;
+  display: grid;
+  gap: 14px;
+  width: min(calc(100% - 20px), 44rem);
+  margin: 8px auto 0;
+  overflow: hidden;
+  border: 1px solid rgba(201, 187, 168, 0.5);
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgba(255, 253, 252, 0.92), rgba(248, 241, 232, 0.76)),
+    var(--florique-paper);
+  padding: 18px;
+  box-shadow: 0 16px 34px rgba(38, 44, 37, 0.055);
+}
+
+.quick-enquiry-section > :not(.botanical-mask) {
+  position: relative;
+  z-index: 1;
+}
+
+.quick-enquiry-botanical {
+  position: absolute;
+  right: -42px;
+  top: -12px;
+  width: 300px;
+  height: 110px;
+  color: #b98f83;
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+.quick-enquiry-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.quick-enquiry-copy p {
+  color: var(--florique-rose);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.quick-enquiry-copy h2 {
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.6rem, 7vw, 2.35rem);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.quick-enquiry-form {
+  display: grid;
+  gap: 10px;
+}
+
+.quick-enquiry-form label {
+  display: grid;
+  gap: 5px;
+}
+
+.quick-enquiry-form label > span {
+  color: #687068;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.quick-enquiry-form input {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid rgba(23, 60, 49, 0.24);
+  border-radius: 5px;
+  background: rgba(255, 253, 252, 0.92);
+  padding: 9px 11px;
+  color: var(--florique-ink);
+  font-size: 0.88rem;
+}
+
+.quick-enquiry-form input:focus {
+  border-color: rgba(181, 111, 120, 0.78);
+  box-shadow: 0 0 0 3px rgba(181, 111, 120, 0.12);
+  outline: 0;
+}
+
+.quick-enquiry-form small {
+  color: var(--florique-error);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.quick-enquiry-form .rose-cta {
+  min-height: 48px;
+}
+
+.quick-enquiry-form .form-success,
+.quick-enquiry-form .form-error {
+  margin: 0;
+}
+
 .editorial-section,
 .trust-section,
 .faq-form-section,
@@ -663,6 +763,10 @@ textarea:focus-visible {
   width: 24px;
   height: 1px;
   background: var(--florique-forest);
+}
+
+.section-label--blank {
+  display: none;
 }
 
 .story-copy h2,
@@ -2268,6 +2372,47 @@ textarea:focus-visible {
     opacity: 0.18;
   }
 
+  .quick-enquiry-section {
+    width: 100%;
+    margin: 0;
+    grid-template-columns: minmax(220px, 0.46fr) minmax(0, 1.54fr);
+    align-items: end;
+    gap: clamp(22px, 3.5vw, 54px);
+    border-inline: 0;
+    border-radius: 0;
+    padding: 24px clamp(28px, 4.2vw, 72px);
+  }
+
+  .quick-enquiry-copy h2 {
+    max-width: 11ch;
+    font-size: clamp(1.95rem, 2.7vw, 2.9rem);
+  }
+
+  .quick-enquiry-botanical {
+    right: 10%;
+    top: -24px;
+    width: 520px;
+    height: 170px;
+    opacity: 0.14;
+  }
+
+  .quick-enquiry-form {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+    align-items: start;
+  }
+
+  .quick-enquiry-form .rose-cta {
+    align-self: end;
+    min-width: 170px;
+    min-height: 46px;
+    padding-inline: 20px;
+  }
+
+  .quick-enquiry-form .form-success,
+  .quick-enquiry-form .form-error {
+    grid-column: 1 / -1;
+  }
+
   .editorial-section,
   .trust-section,
   .faq-form-section,
@@ -2289,6 +2434,11 @@ textarea:focus-visible {
     align-self: start;
     grid-template-columns: 1fr;
     justify-items: start;
+  }
+
+  .section-label--blank {
+    display: block;
+    visibility: hidden;
   }
 
   .section-label i {

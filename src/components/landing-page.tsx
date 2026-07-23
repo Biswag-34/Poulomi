@@ -66,6 +66,18 @@ const leadSchema = z.object({
 
 type LeadFormValues = z.infer<typeof leadSchema>;
 
+const quickEnquirySchema = z.object({
+  name: z.string().trim().min(2, "Please enter your full name."),
+  phone: z
+    .string()
+    .trim()
+    .regex(/^(\+91[\s-]?)?[6-9]\d{9}$/, "Enter a valid Indian mobile number."),
+  email: z.string().trim().email("Enter a valid email."),
+  budget: z.string().trim().min(2, "Please enter your budget range."),
+});
+
+type QuickEnquiryValues = z.infer<typeof quickEnquirySchema>;
+
 const actionLabels: Record<LeadIntent, string> = {
   site_visit: "Schedule My Visit",
   price_sheet: "Request Current Price",
@@ -197,13 +209,8 @@ function LocationIcon({ label }: { label: string }) {
 }
 
 function SectionLabel({ index, eyebrow }: { index: string; eyebrow: string }) {
-  return (
-    <div className="section-label">
-      <span>{index}</span>
-      <i />
-      <p>{eyebrow}</p>
-    </div>
-  );
+  const hasLabel = Boolean(index || eyebrow);
+  return <div className="section-label section-label--blank" aria-hidden={hasLabel} />;
 }
 
 function ZoomControls({
@@ -421,6 +428,137 @@ function LeadForm({
   );
 }
 
+function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [started, setStarted] = useState(false);
+  const {
+    formState: { errors, isSubmitting },
+    handleSubmit,
+    register,
+    reset,
+  } = useForm<QuickEnquiryValues>({
+    resolver: zodResolver(quickEnquirySchema),
+    defaultValues: {
+      name: "",
+      phone: "",
+      email: "",
+      budget: "",
+    },
+  });
+
+  const formName = "banner-quick-enquiry";
+  const ctaSource = "after-proof-strip";
+
+  const onFocus = () => {
+    if (started) {
+      return;
+    }
+
+    setStarted(true);
+    trackEvent("lead_form_start", {
+      form_name: formName,
+      cta_source: ctaSource,
+      lead_action: "general_enquiry",
+      configuration: selectedPlan.id,
+    });
+  };
+
+  const onSubmit = async (values: QuickEnquiryValues) => {
+    setStatus("idle");
+
+    try {
+      const phone = normalisePhone(values.phone);
+      const selectedUnit = `${selectedPlan.family} | ${selectedPlan.areaSqFt} sq ft ${selectedPlan.areaType}`;
+
+      await submitLead({
+        ...captureAttribution(ctaSource, formName),
+        lead_action: "general_enquiry",
+        lead_name: values.name,
+        lead_phone: phone,
+        lead_unit_type: selectedUnit,
+        lead_plan_id: selectedPlan.id,
+        lead_area_sqft: selectedPlan.areaSqFt,
+        lead_area_type: selectedPlan.areaType,
+        lead_budget: values.budget,
+        name: values.name,
+        phone,
+        email: values.email,
+        budget: values.budget,
+        interestedIn: selectedUnit,
+        interest: "banner_quick_enquiry",
+        preferredAction: "general_enquiry",
+        source: ctaSource,
+        metadata: getLeadMetadata({
+          ctaSource,
+          pageSection: formName,
+          preferredAction: "general_enquiry",
+          unitSelected: selectedUnit,
+          planId: selectedPlan.id,
+          areaSqFt: selectedPlan.areaSqFt,
+          budget: values.budget,
+        }),
+      });
+
+      trackEvent("lead_submit_success", {
+        form_name: formName,
+        cta_source: ctaSource,
+        lead_action: "general_enquiry",
+        budget: values.budget,
+        plan_id: selectedPlan.id,
+        area_sqft: selectedPlan.areaSqFt,
+      });
+
+      setStatus("success");
+      reset();
+    } catch {
+      trackEvent("lead_submit_error", {
+        form_name: formName,
+        cta_source: ctaSource,
+        lead_action: "general_enquiry",
+      });
+      setStatus("error");
+    }
+  };
+
+  return (
+    <section className="quick-enquiry-section" aria-label="Quick enquiry form">
+      <BotanicalMask name="dividerAlt" className="quick-enquiry-botanical" />
+      <div className="quick-enquiry-copy">
+        <p>Private Enquiry</p>
+        <h2>Speak with the Florique team.</h2>
+      </div>
+      <form className="quick-enquiry-form" onFocus={onFocus} onSubmit={handleSubmit(onSubmit)}>
+        <label>
+          <span>Name</span>
+          <input autoComplete="name" {...register("name")} />
+          {errors.name ? <small>{errors.name.message}</small> : null}
+        </label>
+        <label>
+          <span>Mobile Number</span>
+          <input autoComplete="tel" inputMode="tel" type="tel" {...register("phone")} />
+          {errors.phone ? <small>{errors.phone.message}</small> : null}
+        </label>
+        <label>
+          <span>Email Address</span>
+          <input autoComplete="email" inputMode="email" type="email" {...register("email")} />
+          {errors.email ? <small>{errors.email.message}</small> : null}
+        </label>
+        <label>
+          <span>Budget</span>
+          <input autoComplete="off" {...register("budget")} />
+          {errors.budget ? <small>{errors.budget.message}</small> : null}
+        </label>
+        <button type="submit" className="rose-cta" disabled={isSubmitting}>
+          <BotanicalMark />
+          {isSubmitting ? "Sending..." : "Enquire Now"}
+        </button>
+        {status === "success" ? <p className="form-success" role="status">Thank you. Your enquiry has been received.</p> : null}
+        {status === "error" ? <p className="form-error" role="status">We could not submit right now. Please try again.</p> : null}
+      </form>
+    </section>
+  );
+}
+
 export function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedFamily, setSelectedFamily] = useState<ResidenceFamilyLabel>("3 BHK");
@@ -611,6 +749,8 @@ export function LandingPage() {
             ))}
           </div>
         </section>
+
+        <QuickEnquiryForm selectedPlan={selectedPlan} />
 
         <section className="editorial-section story-section">
           <BotanicalMask name="branch" className="story-botanical" />
