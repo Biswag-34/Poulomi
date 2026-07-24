@@ -2,22 +2,23 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowLeft,
   ArrowRight,
-  Briefcase,
+  Building2,
   Download,
   Eye,
   FileText,
-  GraduationCap,
-  Hospital,
   Mail,
   Menu,
+  MapPin,
   Phone,
   RotateCcw,
+  School,
   ShoppingBag,
+  Sparkles,
+  Stethoscope,
   X,
   ZoomIn,
   ZoomOut,
@@ -37,7 +38,6 @@ import {
   residencePlans,
   type ResidenceFamilyLabel,
   type ResidencePlan,
-  trustItems,
 } from "@/data/poulomi-florique";
 import { getLeadMetadata, trackEvent } from "@/lib/analytics";
 
@@ -51,13 +51,32 @@ type LeadOverlay = {
   selectedPlan?: ResidencePlan;
 };
 
+const nameSchema = z
+  .string()
+  .trim()
+  .min(2, "Please enter your full name.")
+  .regex(/^[A-Za-z][A-Za-z .'-]*$/, "Use letters only for your name.");
+
+const indianPhoneSchema = z
+  .string()
+  .trim()
+  .refine((value) => {
+    const digits = value.replace(/\D/g, "");
+    const mobile = digits.length > 10 && digits.startsWith("91") ? digits.slice(2) : digits;
+    return /^[6-9]\d{9}$/.test(mobile);
+  }, "Enter a valid 10-digit Indian mobile number.");
+
+const emailSchema = z.string().trim().email("Enter a valid email address.");
+
+const budgetSchema = z
+  .string()
+  .trim()
+  .regex(/^\d+(\.\d{1,2})?$/, "Enter budget as a number only.");
+
 const leadSchema = z.object({
-  name: z.string().trim().min(2, "Please enter your full name."),
-  phone: z
-    .string()
-    .trim()
-    .regex(/^(\+91[\s-]?)?[6-9]\d{9}$/, "Enter a valid Indian mobile number."),
-  email: z.string().trim().email("Enter a valid email.").optional().or(z.literal("")),
+  name: nameSchema,
+  phone: indianPhoneSchema,
+  email: emailSchema.optional().or(z.literal("")),
   configuration: z.string().min(1, "Choose a configuration."),
   preferredDate: z.string().optional(),
   message: z.string().trim().max(400, "Keep the message under 400 characters.").optional(),
@@ -67,13 +86,10 @@ const leadSchema = z.object({
 type LeadFormValues = z.infer<typeof leadSchema>;
 
 const quickEnquirySchema = z.object({
-  name: z.string().trim().min(2, "Please enter your full name."),
-  phone: z
-    .string()
-    .trim()
-    .regex(/^(\+91[\s-]?)?[6-9]\d{9}$/, "Enter a valid Indian mobile number."),
-  email: z.string().trim().email("Enter a valid email."),
-  budget: z.string().trim().min(2, "Please enter your budget range."),
+  name: nameSchema,
+  phone: indianPhoneSchema,
+  email: emailSchema,
+  budget: budgetSchema,
 });
 
 type QuickEnquiryValues = z.infer<typeof quickEnquirySchema>;
@@ -97,18 +113,48 @@ const masterPlanPoints = [
 ] as const;
 
 const navItems = [
-  { id: "residences", label: "Residences" },
-  { id: "bloomscapes", label: "Bloomscapes" },
+  { id: "usp", label: "Why Florique" },
   { id: "bloomscapes", label: "Amenities" },
+  { id: "florique-life", label: "Gallery" },
+  { id: "residences", label: "Residences" },
   { id: "masterplan", label: "Plans" },
   { id: "location", label: "Location" },
-  { id: "trust", label: "About Poulomi" },
 ] as const;
+
+const uspLabels: Record<(typeof proofFacts)[number]["label"], string> = {
+  Acres: "8.66 Acres",
+  "Open space": "Open Space",
+  Residences: "720 Homes",
+  Clubhouse: "Clubhouse",
+  "Sports zone": "Sports Zone",
+};
+
+const familyCompactLabels: Record<ResidenceFamilyLabel, string> = {
+  "3 BHK": "3BHK",
+  "3 BHK + Maid": "3BHK+Maid",
+  "3 BHK + Study + Maid": "3BHK+Study+Maid",
+};
 
 function normalisePhone(phone: string) {
   const digits = phone.replace(/\D/g, "");
   const number = digits.length > 10 ? digits.slice(-10) : digits;
   return `+91${number}`;
+}
+
+function formatIndianMobileInput(value: string) {
+  const digits = value.replace(/\D/g, "");
+  const withoutCountryCode = digits.length > 10 && digits.startsWith("91") ? digits.slice(2) : digits;
+  return withoutCountryCode.slice(0, 10);
+}
+
+function formatBudgetInput(value: string) {
+  const cleaned = value.replace(/[^\d.]/g, "");
+  const [whole, decimal = ""] = cleaned.split(".");
+  return decimal ? `${whole}.${decimal.slice(0, 2)}` : whole;
+}
+
+function redirectToThankYou() {
+  window.location.assign("/thank-you");
 }
 
 function captureAttribution(ctaSource: string, formName: string) {
@@ -188,24 +234,11 @@ function ProofIcon({ label }: { label: string }) {
   return <BrandIcon name={iconName} />;
 }
 
-function TrustIcon({ label }: { label: string }) {
-  const iconName =
-    label === "RERA registered project"
-      ? "trust-quality-construction"
-      : label === "Official project details"
-        ? "trust-thoughtful-design"
-        : label === "Poulomi Estates enquiry"
-          ? "trust-customer-first"
-          : "trust-sustainable-living";
-
-  return <BrandIcon name={iconName} />;
-}
-
 function LocationIcon({ label }: { label: string }) {
-  if (label === "Education") return <GraduationCap size={17} />;
-  if (label === "Healthcare") return <Hospital size={17} />;
+  if (label === "Education") return <School size={17} />;
+  if (label === "Healthcare") return <Stethoscope size={17} />;
   if (label === "Lifestyle") return <ShoppingBag size={17} />;
-  return <Briefcase size={17} />;
+  return <Building2 size={17} />;
 }
 
 function SectionLabel({ index, eyebrow }: { index: string; eyebrow: string }) {
@@ -257,7 +290,6 @@ function LeadForm({
     formState: { errors, isSubmitting },
     handleSubmit,
     register,
-    reset,
     setValue,
   } = useForm<LeadFormValues>({
     resolver: zodResolver(leadSchema),
@@ -265,7 +297,7 @@ function LeadForm({
       name: "",
       phone: "",
       email: "",
-      configuration: selectedPlan ? `${selectedPlan.family} · ${selectedPlan.areaSqFt} sq ft ${selectedPlan.areaType}` : residencePlans[0].family,
+      configuration: selectedPlan ? `${selectedPlan.family} · ${selectedPlan.areaSqFt} sq. ft. ${selectedPlan.areaType}` : residencePlans[0].family,
       preferredDate: "",
       message: "",
       consent: true,
@@ -274,7 +306,7 @@ function LeadForm({
 
   useEffect(() => {
     if (selectedPlan) {
-      setValue("configuration", `${selectedPlan.family} · ${selectedPlan.areaSqFt} sq ft ${selectedPlan.areaType}`);
+      setValue("configuration", `${selectedPlan.family} · ${selectedPlan.areaSqFt} sq. ft. ${selectedPlan.areaType}`);
     }
   }, [selectedPlan, setValue]);
 
@@ -338,16 +370,8 @@ function LeadForm({
       });
 
       setStatus("success");
-      reset({
-        name: "",
-        phone: "",
-        email: "",
-        configuration: selectedPlan ? `${selectedPlan.family} · ${selectedPlan.areaSqFt} sq ft ${selectedPlan.areaType}` : residencePlans[0].family,
-        preferredDate: "",
-        message: "",
-        consent: true,
-      });
       onSuccess?.();
+      redirectToThankYou();
     } catch {
       trackEvent("lead_submit_error", {
         form_name: formName,
@@ -363,17 +387,30 @@ function LeadForm({
       <div className="form-grid">
         <label>
           <span>Full Name</span>
-          <input autoComplete="name" {...register("name")} />
+          <input autoComplete="name" placeholder="Your full name" {...register("name")} />
           {errors.name ? <small>{errors.name.message}</small> : null}
         </label>
         <label>
           <span>Phone Number</span>
-          <input autoComplete="tel" inputMode="tel" type="tel" {...register("phone")} />
+          <span className="phone-input">
+            <b>+91</b>
+            <input
+              autoComplete="tel"
+              inputMode="numeric"
+              maxLength={10}
+              placeholder="10-digit mobile"
+              type="tel"
+              {...register("phone")}
+              onInput={(event) => {
+                event.currentTarget.value = formatIndianMobileInput(event.currentTarget.value);
+              }}
+            />
+          </span>
           {errors.phone ? <small>{errors.phone.message}</small> : null}
         </label>
         <label>
           <span>Email Address</span>
-          <input autoComplete="email" inputMode="email" type="email" {...register("email")} />
+          <input autoComplete="email" inputMode="email" placeholder="name@example.com" type="email" {...register("email")} />
           {errors.email ? <small>{errors.email.message}</small> : null}
         </label>
         <label>
@@ -387,8 +424,8 @@ function LeadForm({
           <span>I&apos;m interested in</span>
           <select {...register("configuration")}>
             {residencePlans.map((plan) => (
-              <option key={plan.id} value={`${plan.family} · ${plan.areaSqFt} sq ft ${plan.areaType}`}>
-                {plan.family} · {plan.areaSqFt} sq ft {plan.areaType}
+              <option key={plan.id} value={`${plan.family} · ${plan.areaSqFt} sq. ft. ${plan.areaType}`}>
+                {plan.family} · {plan.areaSqFt} sq. ft. {plan.areaType}
               </option>
             ))}
           </select>
@@ -420,8 +457,8 @@ function LeadForm({
         </p>
       ) : null}
       {status === "error" ? (
-        <p className="form-error" role="status">
-          We could not submit right now. Please try again.
+        <p className="lead-toast lead-toast--error" role="alert">
+          We could not submit your request. Please check your details and try again.
         </p>
       ) : null}
     </form>
@@ -468,7 +505,8 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
 
     try {
       const phone = normalisePhone(values.phone);
-      const selectedUnit = `${selectedPlan.family} | ${selectedPlan.areaSqFt} sq ft ${selectedPlan.areaType}`;
+      const selectedUnit = `${selectedPlan.family} | ${selectedPlan.areaSqFt} sq. ft. ${selectedPlan.areaType}`;
+      const budgetWithSuffix = `${values.budget} Cr`;
 
       await submitLead({
         ...captureAttribution(ctaSource, formName),
@@ -479,11 +517,11 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
         lead_plan_id: selectedPlan.id,
         lead_area_sqft: selectedPlan.areaSqFt,
         lead_area_type: selectedPlan.areaType,
-        lead_budget: values.budget,
+        lead_budget: budgetWithSuffix,
         name: values.name,
         phone,
         email: values.email,
-        budget: values.budget,
+        budget: budgetWithSuffix,
         interestedIn: selectedUnit,
         interest: "banner_quick_enquiry",
         preferredAction: "general_enquiry",
@@ -495,7 +533,7 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
           unitSelected: selectedUnit,
           planId: selectedPlan.id,
           areaSqFt: selectedPlan.areaSqFt,
-          budget: values.budget,
+          budget: budgetWithSuffix,
         }),
       });
 
@@ -503,13 +541,14 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
         form_name: formName,
         cta_source: ctaSource,
         lead_action: "general_enquiry",
-        budget: values.budget,
+        budget: budgetWithSuffix,
         plan_id: selectedPlan.id,
         area_sqft: selectedPlan.areaSqFt,
       });
 
       setStatus("success");
       reset();
+      redirectToThankYou();
     } catch {
       trackEvent("lead_submit_error", {
         form_name: formName,
@@ -530,22 +569,46 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
       <form className="quick-enquiry-form" onFocus={onFocus} onSubmit={handleSubmit(onSubmit)}>
         <label>
           <span>Name</span>
-          <input autoComplete="name" {...register("name")} />
+          <input autoComplete="name" placeholder="Your name" {...register("name")} />
           {errors.name ? <small>{errors.name.message}</small> : null}
         </label>
         <label>
           <span>Mobile Number</span>
-          <input autoComplete="tel" inputMode="tel" type="tel" {...register("phone")} />
+          <span className="phone-input">
+            <b>+91</b>
+            <input
+              autoComplete="tel"
+              inputMode="numeric"
+              maxLength={10}
+              placeholder="10-digit mobile"
+              type="tel"
+              {...register("phone")}
+              onInput={(event) => {
+                event.currentTarget.value = formatIndianMobileInput(event.currentTarget.value);
+              }}
+            />
+          </span>
           {errors.phone ? <small>{errors.phone.message}</small> : null}
         </label>
         <label>
           <span>Email Address</span>
-          <input autoComplete="email" inputMode="email" type="email" {...register("email")} />
+          <input autoComplete="email" inputMode="email" placeholder="name@example.com" type="email" {...register("email")} />
           {errors.email ? <small>{errors.email.message}</small> : null}
         </label>
         <label>
           <span>Budget</span>
-          <input autoComplete="off" {...register("budget")} />
+          <span className="budget-input">
+            <input
+              autoComplete="off"
+              inputMode="decimal"
+              placeholder="2.5"
+              {...register("budget")}
+              onInput={(event) => {
+                event.currentTarget.value = formatBudgetInput(event.currentTarget.value);
+              }}
+            />
+            <b>Cr</b>
+          </span>
           {errors.budget ? <small>{errors.budget.message}</small> : null}
         </label>
         <button type="submit" className="rose-cta" disabled={isSubmitting}>
@@ -553,7 +616,11 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
           {isSubmitting ? "Sending..." : "Enquire Now"}
         </button>
         {status === "success" ? <p className="form-success" role="status">Thank you. Your enquiry has been received.</p> : null}
-        {status === "error" ? <p className="form-error" role="status">We could not submit right now. Please try again.</p> : null}
+        {status === "error" ? (
+          <p className="lead-toast lead-toast--error" role="alert">
+            We could not submit your enquiry. Please check your details and try again.
+          </p>
+        ) : null}
       </form>
     </section>
   );
@@ -737,136 +804,28 @@ export function LandingPage() {
           </button>
         </section>
 
-        <section className="proof-ribbon" aria-label="Project proof points">
-          <BotanicalMask name="dividerAlt" className="proof-botanical" />
-          <div className="proof-track">
-            {proofFacts.map((fact) => (
-              <article key={fact.label}>
-                <ProofIcon label={fact.label} />
-                <strong>{fact.value}</strong>
-                <span>{fact.label}</span>
-              </article>
-            ))}
-          </div>
-        </section>
-
         <QuickEnquiryForm selectedPlan={selectedPlan} />
 
-        <section className="editorial-section story-section">
-          <BotanicalMask name="branch" className="story-botanical" />
-          <BotanicalMask name="cluster" className="story-cluster-botanical" />
-          <SectionLabel index="02" eyebrow="The Florique Life" />
-          <div className="story-copy">
-            <h2>A world that blossoms around you.</h2>
-            <p>
-              Poulomi Florique is a sanctuary of green and light. Where modern architecture rises gently from landscaped gardens, and every space is designed to help you live well, every day.
-            </p>
-            <button type="button" className="text-cta" onClick={() => scrollTo("masterplan", "story-discover")}>
-              Discover the Story <ArrowRight size={16} />
-            </button>
+        <section id="usp" className="usp-section" aria-labelledby="usp-title">
+          <BotanicalMask name="cornerTop" className="usp-botanical usp-botanical--corner" />
+          <BotanicalMask name="divider" className="usp-botanical usp-botanical--divider" />
+          <div className="usp-copy">
+            <h2 id="usp-title">Why Choose Poulomi</h2>
           </div>
-          <div className="story-media">
-            <Image src={projectFacts.images.arrivalDesktop} alt="Poulomi Florique landscaped arrival experience" fill sizes="(min-width: 1024px) 54vw, 100vw" className="story-main" />
-            <Image src={projectFacts.images.botanicalMacro} alt="" width={180} height={230} className="story-inset" aria-hidden="true" />
-          </div>
-        </section>
-
-        <section id="residences" className="editorial-section residences-section">
-          <BotanicalMask name="cornerBottom" className="residence-botanical residence-botanical--lower" />
-          <BotanicalMask name="branch" className="residence-botanical residence-botanical--upper" />
-          <BotanicalMask name="divider" className="residence-divider-botanical" />
-          <SectionLabel index="03" eyebrow="Choose your home" />
-          <div className="residence-intro">
-            <h2>Residences, crafted to complement your life.</h2>
-            <p className="residence-note">Select from eleven approved plan variants. All areas below are shown as sq ft SBUA.</p>
-            <div className="residence-tabs" role="tablist" aria-label="Residence families">
-              {residenceFamilies.map((family) => (
-                <button
-                  key={family.slug}
-                  type="button"
-                  role="tab"
-                  aria-selected={family.label === selectedFamily}
-                  className={family.label === selectedFamily ? "active" : ""}
-                  onClick={() => {
-                    setSelectedFamily(family.label);
-                    const nextPlan = residencePlans.find((plan) => plan.family === family.label) ?? residencePlans[0];
-                    setSelectedPlan(nextPlan);
-                    trackEvent("residence_family_select", { residence: family.label });
-                  }}
-                >
-                  <strong>{family.label}</strong>
-                  <span>{family.summary}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="area-tabs" aria-label="Plan areas">
-            {filteredPlans.map((plan) => (
-              <button
-                key={plan.id}
-                type="button"
-                className={plan.id === selectedPlan.id ? "active" : ""}
-                onClick={() => {
-                  setSelectedPlan(plan);
-                  trackEvent("residence_variant_select", { plan_id: plan.id, area_sqft: plan.areaSqFt });
-                }}
-              >
-                {plan.areaSqFt}
-              </button>
+          <div className="usp-grid">
+            {proofFacts.map((fact) => (
+              <article key={fact.label}>
+                <span className="usp-icon"><ProofIcon label={fact.label} /></span>
+                <h3>{uspLabels[fact.label]}</h3>
+              </article>
             ))}
-          </div>
-          <div className="residence-browser">
-            <article className="plan-stage">
-              <BotanicalMask name="corner" className="plan-botanical" />
-              <div className="plan-stage-copy">
-                <p>{selectedPlan.family}{selectedPlan.qualifier ? ` with ${selectedPlan.qualifier}` : ""}</p>
-                <h3>{selectedPlan.areaSqFt.toLocaleString("en-IN")} sq ft {selectedPlan.areaType}</h3>
-                <span>Blocks {selectedPlan.blocks.join("/")} | Unit {selectedPlan.unitTypes.join(", ")} | {selectedPlan.status === "derived-from-approved-sheet" ? "Derived from approved overview sheet" : "Supplied individual plan"}</span>
-                <div className="plan-stage-actions">
-                  <button type="button" className="text-cta" onClick={() => { resetViewer(); setPlanOpen(true); }}>
-                    View Full Plan <ArrowRight size={16} />
-                  </button>
-                  <button
-                    type="button"
-                    className="rose-cta"
-                    onClick={() =>
-                      openLead({
-                        intent: "price_sheet",
-                        ctaSource: `plan-${selectedPlan.id}`,
-                        title: "Request current price",
-                        description: `${selectedPlan.family}, ${selectedPlan.areaSqFt.toLocaleString("en-IN")} sq ft ${selectedPlan.areaType}. Share your details for the latest cost sheet.`,
-                        selectedPlan,
-                      })
-                    }
-                  >
-                    Request Current Price
-                  </button>
-                </div>
-              </div>
-              <button type="button" className="plan-image-button" onClick={() => { resetViewer(); setPlanOpen(true); }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={selectedPlan.src}
-                  alt={`${selectedPlan.family} ${selectedPlan.areaSqFt} sq ft ${selectedPlan.areaType} floor plan`}
-                  width={selectedPlan.width}
-                  height={selectedPlan.height}
-                  className="object-contain"
-                  loading="eager"
-                  decoding="async"
-                  style={{ display: "block", width: "100%", maxWidth: "100%", height: "auto", objectFit: "contain" }}
-                />
-              </button>
-              <button type="button" className="plan-overview-link" onClick={() => { resetViewer(); setOverviewOpen(true); }}>
-                View typical floor overview <Eye size={16} />
-              </button>
-            </article>
           </div>
         </section>
 
         <section id="bloomscapes" className="editorial-section amenities-section">
           <BotanicalMask name="cornerBottom" className="amenity-botanical" />
           <BotanicalMask name="dividerAlt" className="amenity-divider-botanical" />
-          <SectionLabel index="04" eyebrow="Amenities bloomscape" />
+          <SectionLabel index="03" eyebrow="Amenities bloomscape" />
           <div className="amenity-copy">
             <h2>Spaces that nourish every part of you.</h2>
           </div>
@@ -913,10 +872,125 @@ export function LandingPage() {
           </div>
         </section>
 
+        <section id="florique-life" className="editorial-section story-section">
+          <BotanicalMask name="branch" className="story-botanical" />
+          <BotanicalMask name="cluster" className="story-cluster-botanical" />
+          <SectionLabel index="04" eyebrow="The Florique Life" />
+          <div className="story-copy">
+            <h2>A world that blossoms around you.</h2>
+            <p>
+              Poulomi Florique is a sanctuary of green and light. Where modern architecture rises gently from landscaped gardens, and every space is designed to help you live well, every day.
+            </p>
+            <button type="button" className="text-cta" onClick={() => scrollTo("masterplan", "story-discover")}>
+              Discover the Story <ArrowRight size={16} />
+            </button>
+          </div>
+          <div className="story-media">
+            <Image src={projectFacts.images.arrivalDesktop} alt="Poulomi Florique landscaped arrival experience" fill sizes="(min-width: 1024px) 54vw, 100vw" className="story-main" />
+            <Image src={projectFacts.images.botanicalMacro} alt="" width={180} height={230} className="story-inset" aria-hidden="true" />
+          </div>
+        </section>
+
+        <section id="residences" className="editorial-section residences-section">
+          <BotanicalMask name="cornerBottom" className="residence-botanical residence-botanical--lower" />
+          <BotanicalMask name="branch" className="residence-botanical residence-botanical--upper" />
+          <BotanicalMask name="divider" className="residence-divider-botanical" />
+          <SectionLabel index="05" eyebrow="Choose your home" />
+          <div className="residence-intro">
+            <h2>Choose Your Florique Home.</h2>
+            <p className="residence-note">Select from eleven approved plan variants. All areas below are shown as sq ft SBUA.</p>
+            <div className="residence-tabs" role="tablist" aria-label="Residence families">
+              {residenceFamilies.map((family) => (
+                <button
+                  key={family.slug}
+                  type="button"
+                  role="tab"
+                  aria-selected={family.label === selectedFamily}
+                  className={family.label === selectedFamily ? "active" : ""}
+                  onClick={() => {
+                    setSelectedFamily(family.label);
+                    const nextPlan = residencePlans.find((plan) => plan.family === family.label) ?? residencePlans[0];
+                    setSelectedPlan(nextPlan);
+                    trackEvent("residence_family_select", { residence: family.label });
+                  }}
+                >
+                  <strong>
+                    <span className="family-label-full">{family.label}</span>
+                    <span className="family-label-compact">{familyCompactLabels[family.label]}</span>
+                  </strong>
+                  <span>{family.summary}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="area-tabs" aria-label="Plan areas">
+            {filteredPlans.map((plan) => (
+              <button
+                key={plan.id}
+                type="button"
+                className={plan.id === selectedPlan.id ? "active" : ""}
+                onClick={() => {
+                  setSelectedPlan(plan);
+                  trackEvent("residence_variant_select", { plan_id: plan.id, area_sqft: plan.areaSqFt });
+                }}
+              >
+                <strong>{plan.areaSqFt.toLocaleString("en-IN")}</strong>
+                <span>sq. ft.</span>
+              </button>
+            ))}
+          </div>
+          <div className="residence-browser">
+            <article className="plan-stage">
+              <BotanicalMask name="corner" className="plan-botanical" />
+              <div className="plan-stage-copy">
+                <p>{selectedPlan.family}{selectedPlan.qualifier ? ` with ${selectedPlan.qualifier}` : ""}</p>
+                <h3>{selectedPlan.areaSqFt.toLocaleString("en-IN")} sq. ft. {selectedPlan.areaType}</h3>
+                <span>Blocks {selectedPlan.blocks.join("/")} | Unit {selectedPlan.unitTypes.join(", ")} | {selectedPlan.status === "derived-from-approved-sheet" ? "Derived from approved overview sheet" : "Supplied individual plan"}</span>
+              </div>
+              <button type="button" className="plan-image-button" onClick={() => { resetViewer(); setPlanOpen(true); }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={selectedPlan.src}
+                  alt={`${selectedPlan.family} ${selectedPlan.areaSqFt} sq. ft. ${selectedPlan.areaType} floor plan`}
+                  width={selectedPlan.width}
+                  height={selectedPlan.height}
+                  className="object-contain"
+                  loading="eager"
+                  decoding="async"
+                  style={{ display: "block", width: "100%", maxWidth: "100%", height: "auto", objectFit: "contain" }}
+                />
+              </button>
+              <div className="plan-stage-actions">
+                <button type="button" className="text-cta" onClick={() => { resetViewer(); setPlanOpen(true); }}>
+                  View Full Plan <ArrowRight size={16} />
+                </button>
+                <button
+                  type="button"
+                  className="rose-cta"
+                  onClick={() =>
+                    openLead({
+                      intent: "price_sheet",
+                      ctaSource: `plan-${selectedPlan.id}`,
+                      title: "Request current price",
+                      description: `${selectedPlan.family}, ${selectedPlan.areaSqFt.toLocaleString("en-IN")} sq. ft. ${selectedPlan.areaType}. Share your details for the latest cost sheet.`,
+                      selectedPlan,
+                    })
+                  }
+                >
+                  Request Current Price
+                </button>
+              </div>
+              <button type="button" className="plan-overview-link" onClick={() => { resetViewer(); setOverviewOpen(true); }}>
+                View typical floor overview <Eye size={16} />
+              </button>
+            </article>
+          </div>
+        </section>
+
         <section id="masterplan" className="editorial-section masterplan-section">
           <BotanicalMask name="branch" className="master-botanical" />
           <BotanicalMask name="cluster" className="master-cluster-botanical" />
-          <SectionLabel index="05" eyebrow="Master plan" />
+          <SectionLabel index="06" eyebrow="Master plan" />
           <div className="master-copy">
             <h2>Designed with green at the heart.</h2>
             <button type="button" className="text-cta" onClick={() => { resetViewer(); setMasterPlanOpen(true); }}>
@@ -953,18 +1027,20 @@ export function LandingPage() {
 
         <section id="location" className="editorial-section location-section">
           <BotanicalMask name="cornerTop" className="location-botanical" />
-          <SectionLabel index="06" eyebrow="North Bengaluru" />
+          <SectionLabel index="07" eyebrow="North Bengaluru" />
           <div className="location-copy">
             <h2>Well connected. Well placed.</h2>
             <p>Located in Thanisandra, close to major business hubs, schools, healthcare and everyday conveniences.</p>
           </div>
           <div className="location-visual" aria-label="Poulomi Florique landmark access summary">
             <div className="location-pin">
+              <MapPin size={24} />
               <ProjectLogo light />
               <span>Thanisandra</span>
             </div>
             {locationClusters.map((cluster) => (
               <article key={cluster.label}>
+                <span className="location-icon"><LocationIcon label={cluster.label} /></span>
                 <strong>{cluster.label}</strong>
                 <span>{cluster.items[0]?.name}</span>
               </article>
@@ -1003,29 +1079,7 @@ export function LandingPage() {
           </aside>
         </section>
 
-        <section id="trust" className="trust-section">
-          <BotanicalMask name="divider" className="trust-divider-botanical" />
-          <SectionLabel index="07" eyebrow="Built on trust" />
-          <div className="trust-brand">
-            <ProjectLogo />
-            <p>Poulomi Florique enquiries should be cross-checked with official project material, legal documents and Karnataka RERA before any booking decision.</p>
-          </div>
-          <div className="trust-icons">
-            {trustItems.map((item) => (
-              <span key={item}><TrustIcon label={item} /> {item}</span>
-            ))}
-          </div>
-          <div className="rera-card">
-            <BotanicalMask name="cornerTop" className="rera-botanical" />
-            <p>RERA Reg. No.</p>
-            <strong>{projectFacts.rera.registration}</strong>
-            <Link href={projectFacts.rera.url} target="_blank" rel="noreferrer" onClick={() => trackEvent("rera_link_click", {})}>
-              View RERA Details <ArrowRight size={16} />
-            </Link>
-          </div>
-        </section>
-
-        <section id="private-viewing" className="faq-form-section">
+        <section id="faqs" className="faq-section">
           <BotanicalMask name="cornerBottom" className="faq-botanical" />
           <SectionLabel index="08" eyebrow="Frequently asked questions" />
           <div className="faq-list">
@@ -1049,9 +1103,14 @@ export function LandingPage() {
               );
             })}
           </div>
+        </section>
+
+        <section id="private-viewing" className="enquiry-section">
+          <BotanicalMask name="cornerBottom" className="faq-botanical enquiry-botanical" />
           <div className="green-quote">
             <BotanicalMask name="cluster" />
             <ProjectLogo light context="hero" />
+            <Sparkles size={24} />
             <h2>Homes that bloom with possibility.</h2>
             <p>Book your private viewing today.</p>
           </div>
@@ -1068,59 +1127,32 @@ export function LandingPage() {
       </main>
 
       <footer id="legal" className="footer">
-        <div>
+        <div className="footer-brand">
           <ProjectLogo light context="footer" />
           <p>{projectFacts.locationShort}</p>
-          <div className="social-line">
-            <span>Instagram</span>
-            <span>Facebook</span>
-            <span>YouTube</span>
-            <span>LinkedIn</span>
-          </div>
+          <small>RERA Reg. No. {projectFacts.rera.registration}</small>
         </div>
-        <nav>
-          <button type="button" onClick={() => scrollTo("residences", "footer-residences")}>Residences</button>
-          <button type="button" onClick={() => scrollTo("bloomscapes", "footer-bloomscapes")}>Bloomscapes</button>
-          <button type="button" onClick={() => scrollTo("masterplan", "footer-plans")}>Plans</button>
-          <button type="button" onClick={() => scrollTo("location", "footer-location")}>Location</button>
-          <button type="button" onClick={() => scrollTo("trust", "footer-about")}>About</button>
-          <a href={`mailto:${projectFacts.contactEmail}`}>Contact</a>
-          <Link href={projectFacts.rera.url} target="_blank" rel="noreferrer">RERA</Link>
-        </nav>
-        <div className="footer-actions">
+        <div className="footer-actions footer-icon-actions" aria-label="Footer enquiry actions">
           <button
             type="button"
+            aria-label="Send enquiry"
             onClick={() =>
               openLead({
-                intent: "site_visit",
-                ctaSource: "footer-viewing",
-                title: "Book a private viewing",
-                description: "Share your details and preferred configuration.",
+                intent: "general_enquiry",
+                ctaSource: "footer-enquiry",
+                title: "Enquire now",
+                description: "Tell us what you would like to know about Poulomi Florique.",
                 selectedPlan,
               })
             }
           >
-            Book a Private Viewing
+            <Mail size={18} />
           </button>
-          <button
-            type="button"
-            onClick={() =>
-              openLead({
-                intent: "brochure",
-                ctaSource: "footer-brochure",
-                title: "Download brochure",
-                description: "Share your details to receive the latest brochure.",
-                selectedPlan,
-              })
-            }
-          >
-            Download Brochure <Download size={15} />
-          </button>
+          <a href={projectFacts.contactPhoneHref} aria-label="Call Poulomi Florique" onClick={() => trackEvent("call_click", { cta_source: "footer-call" })}>
+            <Phone size={18} />
+          </a>
         </div>
         <p className="footer-disclaimer">
-          <span>Privacy Policy</span>
-          <span>Terms & Conditions</span>
-          <span>Disclaimer</span>
           {micrositeDisclaimer}
         </p>
       </footer>
@@ -1199,7 +1231,7 @@ export function LandingPage() {
           <div className="lightbox-canvas">
             <Image
               src={selectedPlan.src}
-              alt={`${selectedPlan.family} ${selectedPlan.areaSqFt} sq ft ${selectedPlan.areaType} floor plan enlarged`}
+              alt={`${selectedPlan.family} ${selectedPlan.areaSqFt} sq. ft. ${selectedPlan.areaType} floor plan enlarged`}
               width={selectedPlan.width}
               height={selectedPlan.height}
               sizes="100vw"
