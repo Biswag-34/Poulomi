@@ -4,36 +4,45 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  ArrowLeft,
   ArrowRight,
+  Baby,
   Building2,
+  Cpu,
   Download,
+  Droplets,
+  Dumbbell,
   Eye,
-  FileText,
+  Flower2,
+  Footprints,
+  Laptop,
   Mail,
+  Maximize2,
   Menu,
-  MapPin,
-  Phone,
+  Music2,
+  PawPrint,
+  Quote,
   RotateCcw,
   School,
+  ShieldCheck,
   ShoppingBag,
   Sparkles,
   Stethoscope,
+  Trophy,
+  Waves,
   X,
   ZoomIn,
   ZoomOut,
+  type LucideIcon,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import {
-  amenityHighlights,
   consentText,
   faqItems,
   locationClusters,
   micrositeDisclaimer,
   projectFacts,
-  proofFacts,
   residenceFamilies,
   residencePlans,
   type ResidenceFamilyLabel,
@@ -78,7 +87,6 @@ const leadSchema = z.object({
   phone: indianPhoneSchema,
   email: emailSchema.optional().or(z.literal("")),
   configuration: z.string().min(1, "Choose a configuration."),
-  preferredDate: z.string().optional(),
   message: z.string().trim().max(400, "Keep the message under 400 characters.").optional(),
   consent: z.boolean().refine(Boolean, "Please confirm consent."),
 });
@@ -121,19 +129,105 @@ const navItems = [
   { id: "location", label: "Location" },
 ] as const;
 
-const uspLabels: Record<(typeof proofFacts)[number]["label"], string> = {
-  Acres: "8.66 Acres",
-  "Open space": "Open Space",
-  Residences: "720 Homes",
-  Clubhouse: "Clubhouse",
-  "Sports zone": "Sports Zone",
-};
-
 const familyCompactLabels: Record<ResidenceFamilyLabel, string> = {
   "3 BHK": "3BHK",
   "3 BHK + Maid": "3BHK+Maid",
   "3 BHK + Study + Maid": "3BHK+Study+Maid",
 };
+
+const whyChooseItems: readonly { title: string; description: string; Icon: LucideIcon }[] = [
+  {
+    title: "No Common Walls",
+    description: "Private residences planned to reduce neighbour disturbance and feel more independent.",
+    Icon: ShieldCheck,
+  },
+  {
+    title: "Spacious 3 BHK Homes",
+    description: "Generous homes from about 1,585 to 2,740 sq. ft., including maid and study layouts.",
+    Icon: Maximize2,
+  },
+  {
+    title: "40+ Lifestyle Amenities",
+    description: "Clubhouse, sports, wellness, gardens and family spaces for everyday recreation.",
+    Icon: Sparkles,
+  },
+  {
+    title: "Water-Sensitive Planning",
+    description: "Rainwater capture, groundwater recharge and treated-water reuse support responsible living.",
+    Icon: Droplets,
+  },
+  {
+    title: "Vehicle-Free Podium",
+    description: "Safer elevated outdoor spaces where children, families and seniors can relax comfortably.",
+    Icon: Footprints,
+  },
+  {
+    title: "Future-Ready Living",
+    description: "IGBC Platinum pre-certification, power backup, EV provision and smart access control.",
+    Icon: Cpu,
+  },
+] as const;
+
+const amenityItems: readonly { title: string; description: string; Icon: LucideIcon }[] = [
+  {
+    title: "Grand Clubhouse",
+    description: "37,800 sq. ft. hub for leisure, celebrations and community experiences.",
+    Icon: Building2,
+  },
+  {
+    title: "25m Lap Pool",
+    description: "Lap pool with kids' pool, jacuzzi, bubbling pool, deck and pavilion.",
+    Icon: Waves,
+  },
+  {
+    title: "Sports Zone",
+    description: "27,500 sq. ft. active zone with tennis, basketball, futsal, pickleball and cricket.",
+    Icon: Trophy,
+  },
+  {
+    title: "Indoor Sports",
+    description: "Badminton and squash courts for all-weather recreation within the community.",
+    Icon: Dumbbell,
+  },
+  {
+    title: "Yoga Deck",
+    description: "Open-air wellness space for yoga, mindful movement and daily renewal.",
+    Icon: Flower2,
+  },
+  {
+    title: "Co-working",
+    description: "Clubhouse workspace for focused work, remote meetings and productivity.",
+    Icon: Laptop,
+  },
+  {
+    title: "Kids' Zone",
+    description: "Creche, play areas, adventure playground and kids' pool for younger residents.",
+    Icon: Baby,
+  },
+  {
+    title: "Event Lawn",
+    description: "Purpose-made spaces for performances, celebrations and community gatherings.",
+    Icon: Music2,
+  },
+  {
+    title: "Senior Garden",
+    description: "Senior-friendly garden with reflexology features, seating and restorative landscape.",
+    Icon: Footprints,
+  },
+  {
+    title: "Pet Garden",
+    description: "Dedicated pet-friendly garden and walking track for comfortable outdoor time.",
+    Icon: PawPrint,
+  },
+] as const;
+
+const getRepresentativePlan = (family: ResidenceFamilyLabel) =>
+  residencePlans.find((plan) => plan.family === family) ?? residencePlans[0];
+
+const leadPlanOptions = residenceFamilies.map((family) => getRepresentativePlan(family.label));
+
+const formatPlanOption = (plan: ResidencePlan) =>
+  `${plan.family} | ${plan.areaSqFt.toLocaleString("en-IN")} sq. ft. ${plan.areaType}`;
 
 function normalisePhone(phone: string) {
   const digits = phone.replace(/\D/g, "");
@@ -215,25 +309,6 @@ function BotanicalMask({ name, className = "" }: { name: "cornerTop" | "cornerBo
   return <span className={`botanical-mask botanical-mask--${name} ${className}`} aria-hidden="true" />;
 }
 
-function BrandIcon({ name, className = "" }: { name: string; className?: string }) {
-  return <span className={`brand-icon brand-icon--${name} ${className}`} aria-hidden="true" />;
-}
-
-function ProofIcon({ label }: { label: string }) {
-  const iconName =
-    label === "Acres"
-      ? "stat-acreage"
-      : label === "Open space"
-        ? "stat-open-space"
-        : label === "Residences"
-          ? "stat-residences"
-          : label === "Clubhouse"
-            ? "stat-clubhouse"
-            : "stat-sports-zone";
-
-  return <BrandIcon name={iconName} />;
-}
-
 function LocationIcon({ label }: { label: string }) {
   if (label === "Education") return <School size={17} />;
   if (label === "Healthcare") return <Stethoscope size={17} />;
@@ -297,8 +372,7 @@ function LeadForm({
       name: "",
       phone: "",
       email: "",
-      configuration: selectedPlan ? `${selectedPlan.family} · ${selectedPlan.areaSqFt} sq. ft. ${selectedPlan.areaType}` : residencePlans[0].family,
-      preferredDate: "",
+      configuration: selectedPlan ? formatPlanOption(selectedPlan) : formatPlanOption(leadPlanOptions[0]),
       message: "",
       consent: true,
     },
@@ -306,7 +380,7 @@ function LeadForm({
 
   useEffect(() => {
     if (selectedPlan) {
-      setValue("configuration", `${selectedPlan.family} · ${selectedPlan.areaSqFt} sq. ft. ${selectedPlan.areaType}`);
+      setValue("configuration", formatPlanOption(selectedPlan));
     }
   }, [selectedPlan, setValue]);
 
@@ -329,24 +403,25 @@ function LeadForm({
 
     try {
       const phone = normalisePhone(values.phone);
+      const activePlan = leadPlanOptions.find((plan) => formatPlanOption(plan) === values.configuration) ?? selectedPlan;
       await submitLead({
         ...captureAttribution(ctaSource, formName),
         lead_action: intent,
         lead_name: values.name,
         lead_phone: phone,
         lead_unit_type: values.configuration,
-        lead_plan_id: selectedPlan?.id ?? "",
-        lead_area_sqft: selectedPlan?.areaSqFt ?? "",
-        lead_area_type: selectedPlan?.areaType ?? "",
-        lead_blocks: selectedPlan?.blocks.join(",") ?? "",
-        lead_unit_types: selectedPlan?.unitTypes.join(",") ?? "",
-        lead_callback_time: values.preferredDate,
+        lead_plan_id: activePlan?.id ?? "",
+        lead_area_sqft: activePlan?.areaSqFt ?? "",
+        lead_area_type: activePlan?.areaType ?? "",
+        lead_blocks: activePlan?.blocks.join(",") ?? "",
+        lead_unit_types: activePlan?.unitTypes.join(",") ?? "",
+        lead_callback_time: "",
         name: values.name,
         phone,
         email: values.email,
         interestedIn: values.configuration,
         preferredAction: intent,
-        callbackTime: values.preferredDate,
+        callbackTime: "",
         note: values.message,
         source: ctaSource,
         consent: values.consent,
@@ -355,8 +430,8 @@ function LeadForm({
           pageSection: formName,
           preferredAction: intent,
           unitSelected: values.configuration,
-          planId: selectedPlan?.id,
-          areaSqFt: selectedPlan?.areaSqFt,
+          planId: activePlan?.id,
+          areaSqFt: activePlan?.areaSqFt,
         }),
       });
 
@@ -365,8 +440,8 @@ function LeadForm({
         cta_source: ctaSource,
         lead_action: intent,
         configuration: values.configuration,
-        plan_id: selectedPlan?.id,
-        area_sqft: selectedPlan?.areaSqFt,
+        plan_id: activePlan?.id,
+        area_sqft: activePlan?.areaSqFt,
       });
 
       setStatus("success");
@@ -387,7 +462,7 @@ function LeadForm({
       <div className="form-grid">
         <label>
           <span>Full Name</span>
-          <input autoComplete="name" placeholder="Your full name" {...register("name")} />
+          <input aria-label="Full name" autoComplete="name" placeholder="Your full name" {...register("name")} />
           {errors.name ? <small>{errors.name.message}</small> : null}
         </label>
         <label>
@@ -396,6 +471,7 @@ function LeadForm({
             <b>+91</b>
             <input
               autoComplete="tel"
+              aria-label="Phone number"
               inputMode="numeric"
               maxLength={10}
               placeholder="10-digit mobile"
@@ -410,22 +486,18 @@ function LeadForm({
         </label>
         <label>
           <span>Email Address</span>
-          <input autoComplete="email" inputMode="email" placeholder="name@example.com" type="email" {...register("email")} />
+          <input aria-label="Email address" autoComplete="email" inputMode="email" placeholder="name@example.com" type="email" {...register("email")} />
           {errors.email ? <small>{errors.email.message}</small> : null}
-        </label>
-        <label>
-          <span>Preferred Date</span>
-          <input type="date" {...register("preferredDate")} />
         </label>
       </div>
 
       <div className="form-grid form-grid--wide">
         <label>
           <span>I&apos;m interested in</span>
-          <select {...register("configuration")}>
-            {residencePlans.map((plan) => (
-              <option key={plan.id} value={`${plan.family} · ${plan.areaSqFt} sq. ft. ${plan.areaType}`}>
-                {plan.family} · {plan.areaSqFt} sq. ft. {plan.areaType}
+          <select aria-label="Interested in" {...register("configuration")}>
+            {leadPlanOptions.map((plan) => (
+              <option key={plan.id} value={formatPlanOption(plan)}>
+                {formatPlanOption(plan)}
               </option>
             ))}
           </select>
@@ -433,13 +505,13 @@ function LeadForm({
         </label>
         <label>
           <span>Message (Optional)</span>
-          <input {...register("message")} />
+          <input aria-label="Message" {...register("message")} />
           {errors.message ? <small>{errors.message.message}</small> : null}
         </label>
       </div>
 
       <label className="consent-line">
-        <input type="checkbox" {...register("consent")} />
+        <input type="checkbox" {...register("consent")} aria-label="Consent to receive project updates" />
         <span>
           {consentText} <a href="#legal">Privacy, terms and disclaimer</a>.
         </span>
@@ -484,7 +556,7 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
   });
 
   const formName = "banner-quick-enquiry";
-  const ctaSource = "after-proof-strip";
+  const ctaSource = "hero-enquiry-form";
 
   const onFocus = () => {
     if (started) {
@@ -560,16 +632,16 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
   };
 
   return (
-    <section className="quick-enquiry-section" aria-label="Quick enquiry form">
-      <BotanicalMask name="dividerAlt" className="quick-enquiry-botanical" />
-      <div className="quick-enquiry-copy">
-        <p>Private Enquiry</p>
-        <h2>Speak with the Florique team.</h2>
+    <aside className="hero-enquiry-card" aria-label="Quick enquiry form">
+      <BotanicalMask name="dividerAlt" className="hero-enquiry-botanical" />
+      <div className="hero-enquiry-copy">
+        <h2>Begin Your Florique Enquiry</h2>
+        <span>Get pricing, plans and private viewing slots from the project team.</span>
       </div>
       <form className="quick-enquiry-form" onFocus={onFocus} onSubmit={handleSubmit(onSubmit)}>
         <label>
           <span>Name</span>
-          <input autoComplete="name" placeholder="Your name" {...register("name")} />
+          <input aria-label="Name" autoComplete="name" placeholder="Your name" {...register("name")} />
           {errors.name ? <small>{errors.name.message}</small> : null}
         </label>
         <label>
@@ -578,6 +650,7 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
             <b>+91</b>
             <input
               autoComplete="tel"
+              aria-label="Mobile number"
               inputMode="numeric"
               maxLength={10}
               placeholder="10-digit mobile"
@@ -592,7 +665,7 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
         </label>
         <label>
           <span>Email Address</span>
-          <input autoComplete="email" inputMode="email" placeholder="name@example.com" type="email" {...register("email")} />
+          <input aria-label="Email address" autoComplete="email" inputMode="email" placeholder="name@example.com" type="email" {...register("email")} />
           {errors.email ? <small>{errors.email.message}</small> : null}
         </label>
         <label>
@@ -600,6 +673,7 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
           <span className="budget-input">
             <input
               autoComplete="off"
+              aria-label="Budget in crores"
               inputMode="decimal"
               placeholder="2.5"
               {...register("budget")}
@@ -613,7 +687,7 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
         </label>
         <button type="submit" className="rose-cta" disabled={isSubmitting}>
           <BotanicalMark />
-          {isSubmitting ? "Sending..." : "Enquire Now"}
+          {isSubmitting ? "Sending..." : "Enquire"}
         </button>
         {status === "success" ? <p className="form-success" role="status">Thank you. Your enquiry has been received.</p> : null}
         {status === "error" ? (
@@ -622,12 +696,14 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
           </p>
         ) : null}
       </form>
-    </section>
+    </aside>
   );
 }
 
 export function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuClosing, setMenuClosing] = useState(false);
+  const [mobileCtaCompact, setMobileCtaCompact] = useState(false);
   const [selectedFamily, setSelectedFamily] = useState<ResidenceFamilyLabel>("3 BHK");
   const [selectedPlan, setSelectedPlan] = useState<ResidencePlan>(residencePlans[0]);
   const [leadOverlay, setLeadOverlay] = useState<LeadOverlay | null>(null);
@@ -636,22 +712,19 @@ export function LandingPage() {
   const [overviewOpen, setOverviewOpen] = useState(false);
   const [locationMapOpen, setLocationMapOpen] = useState(false);
   const [viewerZoom, setViewerZoom] = useState(1);
-  const [amenityIndex, setAmenityIndex] = useState(0);
   const [selectedMasterPoint, setSelectedMasterPoint] = useState<(typeof masterPlanPoints)[number]>(masterPlanPoints[2]);
   const [locationTab, setLocationTab] = useState<(typeof locationClusters)[number]["label"]>(
     locationClusters[0].label,
   );
   const [openFaq, setOpenFaq] = useState<string>(faqItems[0].question);
+  const menuCloseTimerRef = useRef<number | null>(null);
+  const mobileCtaIdleTimerRef = useRef<number | null>(null);
+  const mobileCtaOpenTimerRef = useRef<number | null>(null);
 
   const selectedLocation = useMemo(
     () => locationClusters.find((cluster) => cluster.label === locationTab) ?? locationClusters[0],
     [locationTab],
   );
-  const filteredPlans = useMemo(
-    () => residencePlans.filter((plan) => plan.family === selectedFamily),
-    [selectedFamily],
-  );
-  const amenityTrackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     document.body.style.overflow = menuOpen || leadOverlay || planOpen || masterPlanOpen || overviewOpen || locationMapOpen ? "hidden" : "";
@@ -660,14 +733,84 @@ export function LandingPage() {
     };
   }, [leadOverlay, locationMapOpen, masterPlanOpen, menuOpen, overviewOpen, planOpen]);
 
+  useEffect(() => {
+    const clearIdleTimer = () => {
+      if (mobileCtaIdleTimerRef.current) {
+        window.clearTimeout(mobileCtaIdleTimerRef.current);
+        mobileCtaIdleTimerRef.current = null;
+      }
+    };
+
+    const showFullAfterIdle = () => {
+      clearIdleTimer();
+      mobileCtaIdleTimerRef.current = window.setTimeout(() => {
+        setMobileCtaCompact(false);
+      }, 4000);
+    };
+
+    const syncMobileCta = () => {
+      if (window.scrollY <= 18) {
+        clearIdleTimer();
+        setMobileCtaCompact(false);
+        return;
+      }
+
+      setMobileCtaCompact(true);
+      showFullAfterIdle();
+    };
+
+    syncMobileCta();
+    window.addEventListener("scroll", syncMobileCta, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", syncMobileCta);
+      clearIdleTimer();
+      if (mobileCtaOpenTimerRef.current) {
+        window.clearTimeout(mobileCtaOpenTimerRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => () => {
+    if (menuCloseTimerRef.current) {
+      window.clearTimeout(menuCloseTimerRef.current);
+    }
+  }, []);
+
+  const openMenu = () => {
+    if (menuCloseTimerRef.current) {
+      window.clearTimeout(menuCloseTimerRef.current);
+      menuCloseTimerRef.current = null;
+    }
+    setMenuClosing(false);
+    setMenuOpen(true);
+  };
+
+  const closeMenu = () => {
+    if (!menuOpen) {
+      return;
+    }
+
+    setMenuClosing(true);
+    if (menuCloseTimerRef.current) {
+      window.clearTimeout(menuCloseTimerRef.current);
+    }
+    menuCloseTimerRef.current = window.setTimeout(() => {
+      setMenuOpen(false);
+      setMenuClosing(false);
+      menuCloseTimerRef.current = null;
+    }, 280);
+  };
+
   const scrollTo = (id: string, source: string) => {
-    setMenuOpen(false);
+    closeMenu();
     trackEvent("navigation_click", { target_section: id, cta_source: source });
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const openLead = (overlay: LeadOverlay) => {
     setMenuOpen(false);
+    setMenuClosing(false);
     trackEvent("lead_sheet_open", {
       lead_action: overlay.intent,
       cta_source: overlay.ctaSource,
@@ -677,41 +820,37 @@ export function LandingPage() {
     setLeadOverlay(overlay);
   };
 
+  const openMobileEnquiry = () => {
+    const overlay: LeadOverlay = {
+      intent: "general_enquiry",
+      ctaSource: "mobile-sticky-enquire",
+      title: "Enquire now",
+      description: "Tell us what you would like to know about Poulomi Florique.",
+      selectedPlan,
+    };
+
+    if (mobileCtaCompact) {
+      setMobileCtaCompact(false);
+      if (mobileCtaOpenTimerRef.current) {
+        window.clearTimeout(mobileCtaOpenTimerRef.current);
+      }
+      mobileCtaOpenTimerRef.current = window.setTimeout(() => {
+        openLead(overlay);
+        mobileCtaOpenTimerRef.current = null;
+      }, 420);
+      return;
+    }
+
+    openLead(overlay);
+  };
+
   const resetViewer = () => setViewerZoom(1);
   const zoomIn = () => setViewerZoom((zoom) => Math.min(2.4, Number((zoom + 0.2).toFixed(2))));
   const zoomOut = () => setViewerZoom((zoom) => Math.max(0.8, Number((zoom - 0.2).toFixed(2))));
-  const scrollAmenityTo = (index: number, source = "amenity-control") => {
-    const track = amenityTrackRef.current;
-    const cards = track ? Array.from(track.querySelectorAll<HTMLElement>(".amenity-card")) : [];
-    const nextIndex = Math.max(0, Math.min(index, amenityHighlights.length - 1));
-
-    setAmenityIndex(nextIndex);
-    cards[nextIndex]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
-    trackEvent("amenity_carousel_select", { amenity: amenityHighlights[nextIndex]?.label, cta_source: source });
-  };
-  const syncAmenityIndex = () => {
-    const track = amenityTrackRef.current;
-    if (!track) return;
-
-    const cards = Array.from(track.querySelectorAll<HTMLElement>(".amenity-card"));
-    const current = cards.reduce(
-      (closest, card, index) => {
-        const distance = Math.abs(card.offsetLeft - track.scrollLeft);
-        return distance < closest.distance ? { distance, index } : closest;
-      },
-      { distance: Number.POSITIVE_INFINITY, index: 0 },
-    );
-
-    setAmenityIndex(current.index);
-  };
 
   return (
     <div className="florique-page">
       <header className="florique-header">
-        <div className="announcement">
-          <span>Exclusive preview for a select few. Private appointments only.</span>
-          <span>RERA Reg. No. {projectFacts.rera.registration}</span>
-        </div>
         <div className="nav-shell">
           <button type="button" className="brand-button" aria-label="Poulomi Florique home" onClick={() => scrollTo("top", "brand")}>
             <ProjectLogo light />
@@ -738,7 +877,7 @@ export function LandingPage() {
           >
             Book a Private Viewing
           </button>
-          <button type="button" className="menu-button" aria-label="Open menu" onClick={() => setMenuOpen(true)}>
+          <button type="button" className="menu-button" aria-label="Open menu" onClick={openMenu}>
             <Menu />
           </button>
         </div>
@@ -752,71 +891,25 @@ export function LandingPage() {
             <img src={projectFacts.images.heroMobile} alt="Poulomi Florique landscaped residential tower at dusk" />
           </picture>
           <div className="hero-card">
-            <BotanicalMask name="cornerTop" className="card-botanical" />
-            <p>Thanisandra · North Bengaluru</p>
             <h1>Where architecture blooms.</h1>
-            <i />
             <span>Botanical living, thoughtfully designed. Homes that feel private. Spaces that inspire.</span>
-            <div className="hero-actions">
-              <button type="button" className="rose-cta" onClick={() => scrollTo("residences", "hero-explore-residences")}>
-                <BotanicalMark />
-                Explore Residences
-              </button>
-              <button
-                type="button"
-                className="text-cta"
-                onClick={() =>
-                  openLead({
-                    intent: "brochure",
-                    ctaSource: "hero-brochure",
-                    title: "Download brochure",
-                    description: "Share your details to receive the latest Florique brochure.",
-                    selectedPlan,
-                  })
-                }
-              >
-                Download Brochure
-                <Download size={16} />
-              </button>
-            </div>
-            <div className="mobile-quick-facts">
-              <span><BrandIcon name="proof-residence-led" /> 3 BHK-led homes</span>
-              <span><FileText /> Private price sheet</span>
-              <span><BrandIcon name="proof-curated-landscape" /> Curated landscapes</span>
-            </div>
           </div>
-          <div className="hero-index" aria-hidden="true"><span>01</span><i /></div>
-          <button
-            type="button"
-            className="enquire-tab"
-            onClick={() =>
-              openLead({
-                intent: "general_enquiry",
-                ctaSource: "hero-enquire-tab",
-                title: "Enquire now",
-                description: "Tell us what you would like to know about Poulomi Florique.",
-                selectedPlan,
-              })
-            }
-          >
-            <BotanicalMark />
-            Enquire Now
-          </button>
+          <QuickEnquiryForm selectedPlan={selectedPlan} />
         </section>
-
-        <QuickEnquiryForm selectedPlan={selectedPlan} />
 
         <section id="usp" className="usp-section" aria-labelledby="usp-title">
           <BotanicalMask name="cornerTop" className="usp-botanical usp-botanical--corner" />
           <BotanicalMask name="divider" className="usp-botanical usp-botanical--divider" />
           <div className="usp-copy">
-            <h2 id="usp-title">Why Choose Poulomi</h2>
+            <h2 id="usp-title">Why Choose Poulomi Florique?</h2>
+            <p>Thoughtful planning, privacy and everyday wellness come together in a green North Bengaluru community.</p>
           </div>
           <div className="usp-grid">
-            {proofFacts.map((fact) => (
-              <article key={fact.label}>
-                <span className="usp-icon"><ProofIcon label={fact.label} /></span>
-                <h3>{uspLabels[fact.label]}</h3>
+            {whyChooseItems.map(({ title, description, Icon }) => (
+              <article key={title}>
+                <span className="usp-icon"><Icon /></span>
+                <h3>{title}</h3>
+                <p>{description}</p>
               </article>
             ))}
           </div>
@@ -825,50 +918,21 @@ export function LandingPage() {
         <section id="bloomscapes" className="editorial-section amenities-section">
           <BotanicalMask name="cornerBottom" className="amenity-botanical" />
           <BotanicalMask name="dividerAlt" className="amenity-divider-botanical" />
-          <SectionLabel index="03" eyebrow="Amenities bloomscape" />
+          <SectionLabel index="03" eyebrow="Core amenities" />
           <div className="amenity-copy">
-            <h2>Spaces that nourish every part of you.</h2>
+            <h2>Amenities Designed Around Your Life</h2>
+            <p>Ten carefully placed amenity experiences for fitness, work, family, celebration and quiet restoration.</p>
           </div>
-          <div className="amenity-track" ref={amenityTrackRef} onScroll={syncAmenityIndex} aria-label="Amenity highlights">
-            {amenityHighlights.map((amenity, index) => (
-              <article key={amenity.label} className={index === amenityIndex ? "amenity-card active" : "amenity-card"}>
-                <Image src={amenity.image} alt={amenity.label} fill sizes="(min-width: 1024px) 22vw, 70vw" className="object-cover" />
+          <div className="amenity-grid" aria-label="Core amenity highlights">
+            {amenityItems.map(({ title, description, Icon }) => (
+              <article key={title} className="amenity-tile">
+                <span className="amenity-icon"><Icon /></span>
                 <div>
-                  <small>{String(index + 1).padStart(2, "0")} / {String(amenityHighlights.length).padStart(2, "0")}</small>
-                  <strong>{amenity.label}</strong>
-                  <span>{amenity.text}</span>
-                  <ul>
-                    {amenity.features.map((feature) => (
-                      <li key={feature}>{feature}</li>
-                    ))}
-                  </ul>
+                  <strong>{title}</strong>
+                  <p>{description}</p>
                 </div>
               </article>
             ))}
-          </div>
-          <div className="amenity-controls" aria-label="Amenity carousel controls">
-            <div className="amenity-progress" aria-hidden="true">
-              <span style={{ width: `${((amenityIndex + 1) / amenityHighlights.length) * 100}%` }} />
-            </div>
-            <div className="gallery-dots">
-              {amenityHighlights.map((amenity, index) => (
-                <button
-                  key={amenity.label}
-                  type="button"
-                  aria-label={`Show ${amenity.label}`}
-                  className={index === amenityIndex ? "active" : ""}
-                  onClick={() => scrollAmenityTo(index, "amenity-dot")}
-                />
-              ))}
-            </div>
-            <div className="amenity-arrows">
-              <button type="button" aria-label="Previous amenity" onClick={() => scrollAmenityTo(amenityIndex - 1, "amenity-prev")}>
-                <ArrowLeft size={17} />
-              </button>
-              <button type="button" aria-label="Next amenity" onClick={() => scrollAmenityTo(amenityIndex + 1, "amenity-next")}>
-                <ArrowRight size={17} />
-              </button>
-            </div>
           </div>
         </section>
 
@@ -897,8 +961,8 @@ export function LandingPage() {
           <BotanicalMask name="divider" className="residence-divider-botanical" />
           <SectionLabel index="05" eyebrow="Choose your home" />
           <div className="residence-intro">
-            <h2>Choose Your Florique Home.</h2>
-            <p className="residence-note">Select from eleven approved plan variants. All areas below are shown as sq ft SBUA.</p>
+            <h2>Three 3 BHK Home Formats</h2>
+            <p className="residence-note">Choose the core format that fits your lifestyle. Areas shown in sq. ft. SBUA.</p>
             <div className="residence-tabs" role="tablist" aria-label="Residence families">
               {residenceFamilies.map((family) => (
                 <button
@@ -909,7 +973,7 @@ export function LandingPage() {
                   className={family.label === selectedFamily ? "active" : ""}
                   onClick={() => {
                     setSelectedFamily(family.label);
-                    const nextPlan = residencePlans.find((plan) => plan.family === family.label) ?? residencePlans[0];
+                    const nextPlan = getRepresentativePlan(family.label);
                     setSelectedPlan(nextPlan);
                     trackEvent("residence_family_select", { residence: family.label });
                   }}
@@ -918,26 +982,10 @@ export function LandingPage() {
                     <span className="family-label-full">{family.label}</span>
                     <span className="family-label-compact">{familyCompactLabels[family.label]}</span>
                   </strong>
-                  <span>{family.summary}</span>
+                  <span>{family.summary} | {getRepresentativePlan(family.label).areaSqFt.toLocaleString("en-IN")} sq. ft.</span>
                 </button>
               ))}
             </div>
-          </div>
-          <div className="area-tabs" aria-label="Plan areas">
-            {filteredPlans.map((plan) => (
-              <button
-                key={plan.id}
-                type="button"
-                className={plan.id === selectedPlan.id ? "active" : ""}
-                onClick={() => {
-                  setSelectedPlan(plan);
-                  trackEvent("residence_variant_select", { plan_id: plan.id, area_sqft: plan.areaSqFt });
-                }}
-              >
-                <strong>{plan.areaSqFt.toLocaleString("en-IN")}</strong>
-                <span>sq. ft.</span>
-              </button>
-            ))}
           </div>
           <div className="residence-browser">
             <article className="plan-stage">
@@ -947,7 +995,7 @@ export function LandingPage() {
                 <h3>{selectedPlan.areaSqFt.toLocaleString("en-IN")} sq. ft. {selectedPlan.areaType}</h3>
                 <span>Blocks {selectedPlan.blocks.join("/")} | Unit {selectedPlan.unitTypes.join(", ")} | {selectedPlan.status === "derived-from-approved-sheet" ? "Derived from approved overview sheet" : "Supplied individual plan"}</span>
               </div>
-              <button type="button" className="plan-image-button" onClick={() => { resetViewer(); setPlanOpen(true); }}>
+              <button type="button" className="plan-image-button" aria-label={`View ${selectedPlan.family} ${selectedPlan.areaSqFt.toLocaleString("en-IN")} sq. ft. floor plan`} onClick={() => { resetViewer(); setPlanOpen(true); }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={selectedPlan.src}
@@ -998,8 +1046,11 @@ export function LandingPage() {
             </button>
           </div>
           <div className="master-image-wrap">
-            <button type="button" className="master-image" onClick={() => { resetViewer(); setMasterPlanOpen(true); }}>
-              <Image src={projectFacts.images.masterPlanLayout} alt="Poulomi Florique official master plan layout preview" fill sizes="(min-width: 1024px) 42vw, 100vw" className="object-contain" />
+            <button type="button" className="master-image" aria-label="View full Poulomi Florique master plan" onClick={() => { resetViewer(); setMasterPlanOpen(true); }}>
+              <picture>
+                <source media="(min-width: 1024px)" srcSet={projectFacts.images.masterPlan} />
+                <img src={projectFacts.images.masterPlanLayout} alt="Poulomi Florique horizontal master plan layout preview" />
+              </picture>
             </button>
           </div>
           <aside className="master-legend">
@@ -1032,23 +1083,12 @@ export function LandingPage() {
             <h2>Well connected. Well placed.</h2>
             <p>Located in Thanisandra, close to major business hubs, schools, healthcare and everyday conveniences.</p>
           </div>
-          <div className="location-visual" aria-label="Poulomi Florique landmark access summary">
-            <div className="location-pin">
-              <MapPin size={24} />
-              <ProjectLogo light />
-              <span>Thanisandra</span>
-            </div>
-            {locationClusters.map((cluster) => (
-              <article key={cluster.label}>
-                <span className="location-icon"><LocationIcon label={cluster.label} /></span>
-                <strong>{cluster.label}</strong>
-                <span>{cluster.items[0]?.name}</span>
-              </article>
-            ))}
-            <button type="button" className="text-cta" onClick={() => { resetViewer(); setLocationMapOpen(true); }}>
-              View official location map <Eye size={16} />
-            </button>
-          </div>
+          <button type="button" className="location-visual location-map-card" aria-label="View Poulomi Florique location map" onClick={() => { resetViewer(); setLocationMapOpen(true); }}>
+            <picture>
+              <source media="(min-width: 768px)" srcSet="/florique/location/poulomi-florique-google-map-1x1.png" />
+              <img src="/florique/location/poulomi-florique-google-map-4x3.png" alt="Poulomi Florique actual Google map connectivity view" />
+            </picture>
+          </button>
           <aside className="commute-card">
             <p>Indicative non-peak access</p>
             <div className="commute-tabs">
@@ -1082,11 +1122,14 @@ export function LandingPage() {
         <section id="faqs" className="faq-section">
           <BotanicalMask name="cornerBottom" className="faq-botanical" />
           <SectionLabel index="08" eyebrow="Frequently asked questions" />
+          <div className="faq-copy">
+            <h2>Frequently Asked Questions About Poulomi Florique</h2>
+          </div>
           <div className="faq-list">
-            {faqItems.slice(0, 5).map((faq) => {
+            {faqItems.map((faq) => {
               const open = openFaq === faq.question;
               return (
-                <article key={faq.question}>
+                <article key={faq.question} className={open ? "open" : ""}>
                   <button
                     type="button"
                     aria-expanded={open}
@@ -1096,9 +1139,11 @@ export function LandingPage() {
                     }}
                   >
                     {faq.question}
-                    <span>{open ? "-" : "+"}</span>
+                    <span aria-hidden="true">{open ? "-" : "+"}</span>
                   </button>
-                  {open ? <p>{faq.answer}</p> : null}
+                  <div className="faq-answer" aria-hidden={!open}>
+                    <p>{faq.answer}</p>
+                  </div>
                 </article>
               );
             })}
@@ -1110,8 +1155,8 @@ export function LandingPage() {
           <div className="green-quote">
             <BotanicalMask name="cluster" />
             <ProjectLogo light context="hero" />
-            <Sparkles size={24} />
-            <h2>Homes that bloom with possibility.</h2>
+            <Quote className="quote-mark" size={34} />
+            <h2><span>Homes that bloom</span><span>with possibility.</span></h2>
             <p>Book your private viewing today.</p>
           </div>
           <aside className="final-form-card">
@@ -1132,57 +1177,26 @@ export function LandingPage() {
           <p>{projectFacts.locationShort}</p>
           <small>RERA Reg. No. {projectFacts.rera.registration}</small>
         </div>
-        <div className="footer-actions footer-icon-actions" aria-label="Footer enquiry actions">
-          <button
-            type="button"
-            aria-label="Send enquiry"
-            onClick={() =>
-              openLead({
-                intent: "general_enquiry",
-                ctaSource: "footer-enquiry",
-                title: "Enquire now",
-                description: "Tell us what you would like to know about Poulomi Florique.",
-                selectedPlan,
-              })
-            }
-          >
-            <Mail size={18} />
-          </button>
-          <a href={projectFacts.contactPhoneHref} aria-label="Call Poulomi Florique" onClick={() => trackEvent("call_click", { cta_source: "footer-call" })}>
-            <Phone size={18} />
-          </a>
-        </div>
         <p className="footer-disclaimer">
           {micrositeDisclaimer}
         </p>
       </footer>
 
-      <div className="mobile-action-bar">
+      <div className={`mobile-action-bar ${mobileCtaCompact ? "is-compact" : ""}`}>
         <button
           type="button"
-          onClick={() =>
-            openLead({
-              intent: "general_enquiry",
-              ctaSource: "mobile-sticky-enquire",
-              title: "Enquire now",
-              description: "Tell us what you would like to know about Poulomi Florique.",
-              selectedPlan,
-            })
-          }
+          aria-label="Open enquiry form"
+          onClick={openMobileEnquiry}
         >
           <Mail size={18} />
           Enquire
         </button>
-        <a href={projectFacts.contactPhoneHref} onClick={() => trackEvent("call_click", { cta_source: "mobile-sticky-call" })}>
-          <Phone size={18} />
-          Call
-        </a>
       </div>
 
       {menuOpen ? (
-        <div className="menu-overlay" role="dialog" aria-modal="true" aria-label="Navigation menu">
-          <button type="button" aria-label="Close menu" onClick={() => setMenuOpen(false)}><X /></button>
-          <ProjectLogo />
+        <div className={`menu-overlay ${menuClosing ? "is-closing" : ""}`} role="dialog" aria-modal="true" aria-label="Navigation menu">
+          <button type="button" className="menu-close" aria-label="Close menu" onClick={closeMenu}><X /></button>
+          <div className="menu-logo"><ProjectLogo /></div>
           {navItems.map((item) => (
             <button key={`menu-${item.id}-${item.label}`} type="button" onClick={() => scrollTo(item.id, `menu-${item.label.toLowerCase()}`)}>
               {item.label}
@@ -1255,7 +1269,7 @@ export function LandingPage() {
         <div className="image-lightbox" role="dialog" aria-modal="true" aria-label="Master plan viewer">
           <ZoomControls onClose={() => setMasterPlanOpen(false)} onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={resetViewer} closeLabel="Close master plan" />
           <div className="lightbox-canvas">
-            <Image src={projectFacts.images.masterPlan} alt="Poulomi Florique master plan enlarged" width={2160} height={3840} sizes="100vw" className="object-contain" style={{ transform: `scale(${viewerZoom})` }} />
+            <Image src={projectFacts.images.masterPlan} alt="Poulomi Florique horizontal master plan enlarged" width={2048} height={1152} sizes="100vw" className="object-contain" style={{ transform: `scale(${viewerZoom})` }} />
           </div>
         </div>
       ) : null}
@@ -1264,7 +1278,7 @@ export function LandingPage() {
         <div className="image-lightbox" role="dialog" aria-modal="true" aria-label="Official location map viewer">
           <ZoomControls onClose={() => setLocationMapOpen(false)} onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={resetViewer} closeLabel="Close location map" />
           <div className="lightbox-canvas">
-            <Image src={projectFacts.images.locationDesktop} alt="Poulomi Florique official location map" width={2160} height={3840} sizes="100vw" className="object-contain" style={{ transform: `scale(${viewerZoom})` }} />
+            <Image src="/florique/location/poulomi-florique-google-map-4x3.png" alt="Poulomi Florique actual Google map connectivity view enlarged" width={2048} height={1536} sizes="100vw" className="object-contain" style={{ transform: `scale(${viewerZoom})` }} />
           </div>
         </div>
       ) : null}

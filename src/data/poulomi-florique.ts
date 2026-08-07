@@ -30,11 +30,8 @@ export const projectFacts = {
     elevation: "/florique/optimized/tower-elevation-official.webp",
     arrivalDesktop: "/florique/optimized/arrival-entrance-desktop.webp",
     botanicalMacro: "/florique/optimized/botanical-macro-mobile.webp",
-    masterPlan: "/florique/official/masterplan-official.jpg",
-    masterPlanLayout: "/florique/optimized/masterplan-layout-only.webp",
-    locationDesktop: "/florique/official/location-map-official-desktop.jpg",
-    locationTablet: "/florique/official/location-map-official-tablet.jpg",
-    locationMobile: "/florique/official/location-map-official-mobile.jpg",
+    masterPlan: "/florique/masterplan/poulomi-florique-masterplan-horizontal-16x9.png",
+    masterPlanLayout: "/florique/masterplan/poulomi-florique-masterplan-horizontal-4x3.png",
     floorPlanOverview: "/florique/official/floor-plan-blossom-cascade-official.jpg",
   },
 } as const;
@@ -44,14 +41,6 @@ export const micrositeDisclaimer =
 
 export const consentText =
   "I agree to receive updates about Poulomi Florique and understand the";
-
-export const proofFacts = [
-  { value: "8.66", label: "Acres", sourceLabel: "Official project material", verifiedAt: "2026-07-19", status: "needs-confirmation" },
-  { value: "85%", label: "Open space", sourceLabel: "Official project material", verifiedAt: "2026-07-19", status: "needs-confirmation" },
-  { value: "720", label: "Residences", sourceLabel: "Official project material", verifiedAt: "2026-07-19", status: "needs-confirmation" },
-  { value: "37,800 sq ft", label: "Clubhouse", sourceLabel: "Official project material", verifiedAt: "2026-07-19", status: "needs-confirmation" },
-  { value: "27,500 sq ft", label: "Sports zone", sourceLabel: "Official project material", verifiedAt: "2026-07-19", status: "needs-confirmation" },
-] as const;
 
 export type ResidenceFamilyLabel = "3 BHK" | "3 BHK + Maid" | "3 BHK + Study + Maid";
 
@@ -306,52 +295,45 @@ export const locationClusters = [
   },
 ] as const;
 
-export const trustItems = [
-  "RERA registered project",
-  "Official project details",
-  "Poulomi Estates enquiry",
-  "Verify approvals before booking",
-] as const;
-
 export const faqItems = [
   {
-    question: "Where is Poulomi Florique located?",
+    question: "Where is Poulomi Florique located in Bengaluru?",
     answer:
-      "Poulomi Florique is presented for Thanisandra, North Bengaluru. The registered project address and survey details should be checked against Karnataka RERA before booking.",
+      "Poulomi Florique is located in Kannuru, off Thanisandra Main Road in North Bengaluru. It is close to Bhartiya City and offers convenient access to Manyata Tech Park, Hebbal and the airport corridor.",
   },
   {
-    question: "What residence configurations are available?",
+    question: "What apartment configurations are available at Poulomi Florique?",
     answer:
-      "The current working presentation is for 3 BHK-led homes, including 3 BHK, 3 BHK + Maid and 3 BHK + Study + Maid families. Exact inventory should be reconfirmed with the sales team.",
+      "Poulomi Florique offers spacious 3 BHK homes ranging from approximately 1,585 to 2,740 sq. ft. Select layouts include a maid's room or an additional study for larger and multigenerational families.",
   },
   {
-    question: "What are the available apartment sizes?",
+    question: "What makes Poulomi Florique unique?",
     answer:
-      "Area ranges are shared through the official area sheet and approved floor-plan material. Request the latest sheet before comparing plans.",
+      "The project combines no-common-wall residences, 100% Vastu-compliant planning, a vehicle-free podium, water-sensitive landscaping and more than 40 lifestyle amenities within an 8.66-acre community.",
+  },
+  {
+    question: "What are the main amenities at Poulomi Florique?",
+    answer:
+      "Key amenities include a grand clubhouse, 25-metre lap pool, sports and wellness zone, co-working lounge, amphitheatre, children's activity areas, landscaped gardens and dedicated senior and pet spaces.",
+  },
+  {
+    question: "Is Poulomi Florique suitable for families?",
+    answer:
+      "Yes. Spacious homes, a vehicle-free podium, creche, children's play areas, sports facilities, senior-friendly gardens and co-working spaces make Poulomi Florique suitable for families across generations.",
+  },
+  {
+    question: "Is Poulomi Florique a sustainable development?",
+    answer:
+      "Poulomi Florique is IGBC Platinum pre-certified and incorporates rainwater capture, groundwater recharge, treated-water reuse, efficient common-area lighting, waste management and EV-charging provision.",
+  },
+  {
+    question: "How well connected is Poulomi Florique?",
+    answer:
+      "The project is well positioned near Bhartiya City, educational institutions, healthcare facilities and North Bengaluru's major employment hubs. Manyata Tech Park, Hebbal and Kempegowda International Airport are accessible through the surrounding road network.",
   },
   {
     question: "Is Poulomi Florique RERA registered?",
     answer:
-      "The displayed RERA registration number is PRM/KA/RERA/1251/446/PR/180326/008539. Verify the latest project details directly on Karnataka RERA.",
-  },
-  {
-    question: "How can I receive the current price sheet?",
-    answer:
-      "Submit the enquiry form with your preferred configuration. Current pricing is shared on request so floor-wise charges and applicable costs remain up to date.",
-  },
-  {
-    question: "How can I schedule a private site visit?",
-    answer:
-      "Submit the private-viewing form or call the enquiry number. The project team will coordinate brochure, floor-plan and site-visit details.",
-  },
-  {
-    question: "What additional charges should a buyer verify?",
-    answer:
-      "Buyers should verify floor-rise, parking, maintenance, statutory charges, taxes, corpus, registration and any other applicable charges in the official cost sheet.",
-  },
-  {
-    question: "Where can I obtain approved floor plans and the brochure?",
-    answer:
-      "Use the brochure or plan CTAs to request the latest official material. Do not rely on cropped images or third-party reposts for booking decisions.",
+      "Yes. Poulomi Florique is registered with Karnataka RERA under registration number PRM/KA/RERA/1251/446/PR/180326/008539. Buyers should verify the latest approvals, possession schedule and project details on the Karnataka RERA portal before purchasing.",
   },
 ] as const;
