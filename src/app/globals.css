@@ -24,6 +24,7 @@
   --ring: rgba(181, 111, 120, 0.28);
   --font-body: "Manrope", "Segoe UI", Arial, sans-serif;
   --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-hero: var(--font-poiret-one), "Poiret One", "Cormorant Garamond", Georgia, serif;
   --font-number: "Segoe UI", "Manrope", Arial, sans-serif;
 }
 
@@ -101,10 +102,10 @@ textarea:focus-visible {
 .hero-seo-title {
   position: relative;
   z-index: 1;
-  max-width: 12ch;
+  max-width: 11ch;
   margin: 0;
-  font-family: var(--font-display), serif;
-  font-size: clamp(2.8rem, 12vw, 3.75rem);
+  font-family: var(--font-hero);
+  font-size: clamp(3.15rem, 13.5vw, 4.25rem);
   font-weight: 400;
   line-height: 0.9;
   overflow: visible;
@@ -352,12 +353,13 @@ select {
   z-index: 1;
   display: block;
   max-width: 28rem;
-  margin-top: 12px;
+  margin-top: 10px;
   color: var(--florique-rose);
-  font-size: 0.78rem;
-  font-weight: 900;
-  line-height: 1.2;
-  text-transform: uppercase;
+  font-family: var(--font-display), serif;
+  font-size: clamp(2.35rem, 10.8vw, 3.1rem);
+  font-weight: 400;
+  line-height: 0.96;
+  text-transform: none;
 }
 
 .hero-card > i {
@@ -3054,16 +3056,22 @@ select {
   }
 
   .hero-card::after,
-  .hero-card .hero-tagline,
   .hero-card > span:not(.botanical-mask):not(.hero-tagline) {
     display: none;
   }
 
   .hero-seo-title {
-    max-width: 14ch;
+    max-width: 11ch;
     color: var(--florique-forest-deep);
-    font-size: clamp(2.05rem, 8.4vw, 2.7rem);
+    font-size: clamp(2.35rem, 9.4vw, 3.05rem);
     line-height: 0.94;
+  }
+
+  .hero-card .hero-tagline {
+    max-width: 14ch;
+    color: var(--florique-rose);
+    font-size: clamp(1.88rem, 7.5vw, 2.44rem);
+    line-height: 0.96;
   }
 
   .hero-card-mobile-image {
@@ -3371,7 +3379,7 @@ select {
     max-width: none;
     margin-top: 0;
     color: white;
-    font-size: clamp(2.3rem, 4.95vw, 3.05rem);
+    font-size: clamp(2.7rem, 5.6vw, 3.55rem);
     line-height: 0.98;
     text-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
     text-wrap: balance;
@@ -3379,10 +3387,10 @@ select {
 
   .hero-card .hero-tagline {
     max-width: none;
-    margin-top: 9px;
+    margin-top: 8px;
     color: rgba(255, 255, 255, 0.84);
-    font-size: clamp(0.76rem, 1.3vw, 0.88rem);
-    line-height: 1.2;
+    font-size: clamp(2.16rem, 4.48vw, 2.84rem);
+    line-height: 0.98;
     text-shadow: 0 3px 12px rgba(0, 0, 0, 0.24);
     white-space: nowrap;
   }
@@ -3551,7 +3559,7 @@ select {
     max-width: 100%;
     color: white;
     margin-top: 0;
-    font-size: clamp(2.6rem, 3.65vw, 4.15rem);
+    font-size: clamp(3.1rem, 4.35vw, 4.9rem);
     line-height: 0.98;
     text-shadow:
       0 4px 16px rgba(0, 0, 0, 0.32),
@@ -3562,9 +3570,9 @@ select {
   .hero-card .hero-tagline {
     max-width: none;
     color: rgba(255, 255, 255, 0.84);
-    margin-top: 10px;
-    font-size: clamp(0.82rem, 0.85vw, 0.98rem);
-    line-height: 1.25;
+    margin-top: 8px;
+    font-size: clamp(2.48rem, 3.48vw, 3.92rem);
+    line-height: 0.98;
     text-shadow:
       0 3px 12px rgba(0, 0, 0, 0.28);
     white-space: nowrap;
@@ -4318,7 +4326,7 @@ select {
   }
 
   .hero-seo-title {
-    font-size: 2rem;
+    font-size: 2.16rem;
   }
 
 }

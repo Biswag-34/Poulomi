@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Poiret_One } from "next/font/google";
 import Script from "next/script";
 
 import { absoluteUrl, siteDescription, siteName, siteUrl } from "@/lib/site";
@@ -11,6 +12,13 @@ const GOOGLE_TAG_ID =
   process.env.NEXT_PUBLIC_GTAG_ID?.trim() ||
   process.env.NEXT_PUBLIC_GA_ID?.trim() ||
   "";
+
+const poiretOne = Poiret_One({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-poiret-one",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -75,7 +83,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="antialiased"
+      className={`antialiased ${poiretOne.variable}`}
     >
     <head>
     <link

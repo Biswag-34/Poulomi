@@ -992,9 +992,8 @@ export function LandingPage() {
             />
           </picture>
           <div className="hero-card">
-            <h1 className="hero-seo-title">Poulomi Florique: Premium 3 BHK Apartments in Thanisandra, North Bengaluru</h1>
-            <span className="hero-tagline">Where architecture blooms.</span>
-            <span>Botanical living, thoughtfully designed. Homes that feel private. Spaces that inspire.</span>
+            <h1 className="hero-seo-title">Poulomi Florique</h1>
+            <span className="hero-tagline">Where Architecture Blooms</span>
             <Image
               className="hero-card-mobile-image"
               src={projectFacts.images.heroCardMobileWebp}
