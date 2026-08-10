@@ -1,13 +1,31 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Home } from "lucide-react";
 
-export const metadata = {
-  title: "Thank You | Poulomi Florique",
+export const metadata: Metadata = {
+  title: {
+    absolute: "Thank You | Poulomi Florique",
+  },
   description: "Thank you for enquiring about Poulomi Florique.",
+  alternates: {
+    canonical: "/thank-you",
+  },
   robots: {
     index: false,
     follow: false,
+  },
+  openGraph: {
+    title: "Thank You | Poulomi Florique",
+    description: "Thank you for enquiring about Poulomi Florique.",
+    url: "/thank-you",
+    siteName: "Poulomi Florique",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Thank You | Poulomi Florique",
+    description: "Thank you for enquiring about Poulomi Florique.",
   },
 };
 

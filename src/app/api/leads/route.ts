@@ -51,6 +51,38 @@ function shouldWriteLocalBackup() {
   return !process.env.VERCEL && process.env.NODE_ENV !== "production";
 }
 
+function normaliseIndianPhone(value: string) {
+  const digits = value.replace(/\D/g, "");
+  const mobile = digits.length > 10 && digits.startsWith("91") ? digits.slice(2) : digits;
+
+  return mobile.length === 10 ? `+91${mobile}` : value.trim();
+}
+
+function validateLeadPayload(payload: LeadPayload) {
+  const name = String(payload.name ?? payload.lead_name ?? "").trim();
+  const phone = normaliseIndianPhone(String(payload.phone ?? payload.lead_phone ?? ""));
+  const email = String(payload.email ?? "").trim();
+  const budget = String((payload as LeadPayload & { budget?: string; lead_budget?: string }).budget ?? (payload as LeadPayload & { budget?: string; lead_budget?: string }).lead_budget ?? "").trim();
+
+  if (!/^[A-Za-z][A-Za-z .'-]{1,79}$/.test(name)) {
+    return { ok: false as const, error: "Enter a valid full name." };
+  }
+
+  if (!/^\+91[6-9]\d{9}$/.test(phone)) {
+    return { ok: false as const, error: "Enter a valid Indian mobile number." };
+  }
+
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { ok: false as const, error: "Enter a valid email address." };
+  }
+
+  if (budget && !/^\d+(\.\d{1,2})?\s*cr$/i.test(budget)) {
+    return { ok: false as const, error: "Enter budget as a number with Cr suffix." };
+  }
+
+  return { ok: true as const, name, phone, email };
+}
+
 async function sendLeadWebhook(
   webhookUrl: string,
   destination: "google_sheets" | "crm",
@@ -143,20 +175,20 @@ async function handlePost(request: Request) {
     return json({ error: "Invalid lead payload." }, { status: 400 });
   }
 
-  const leadName = payload.name ?? payload.lead_name;
-  const leadPhone = payload.phone ?? payload.lead_phone;
+  const validation = validateLeadPayload(payload);
 
-  if (!leadName || !leadPhone) {
+  if (!validation.ok) {
     return json(
-      { error: "Missing required lead fields." },
+      { error: validation.error },
       { status: 400 },
     );
   }
 
   const savedPayload = {
     ...payload,
-    name: leadName,
-    phone: leadPhone,
+    name: validation.name,
+    phone: validation.phone,
+    email: validation.email || payload.email,
     source: payload.source ?? "website",
     interest:
       payload.interest ??

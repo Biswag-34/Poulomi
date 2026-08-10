@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -307,6 +307,7 @@ function ProjectLogo({ light = false, context = "default" }: { light?: boolean; 
       alt="Poulomi Florique"
       width={951}
       height={762}
+      sizes="(max-width: 767px) 132px, (max-width: 1023px) 150px, 190px"
     />
   );
 }
@@ -402,6 +403,15 @@ function LeadForm({
     }
   }, [selectedPlan, setValue]);
 
+  useEffect(() => {
+    if (status === "idle") {
+      return;
+    }
+
+    const timer = window.setTimeout(() => setStatus("idle"), 5000);
+    return () => window.clearTimeout(timer);
+  }, [status]);
+
   const onFocus = () => {
     if (started) {
       return;
@@ -461,6 +471,13 @@ function LeadForm({
         plan_id: activePlan?.id,
         area_sqft: activePlan?.areaSqFt,
       });
+      trackEvent("generate_lead", {
+        form_name: formName,
+        cta_source: ctaSource,
+        lead_action: intent,
+        plan_id: activePlan?.id,
+        area_sqft: activePlan?.areaSqFt,
+      });
 
       setStatus("success");
       onSuccess?.();
@@ -479,11 +496,11 @@ function LeadForm({
   };
 
   return (
-    <form className={`visit-form ${compact ? "visit-form--compact" : ""}`} onFocus={onFocus} onSubmit={handleSubmit(onSubmit)}>
+    <form className={`visit-form ${compact ? "visit-form--compact" : ""}`} method="post" onFocus={onFocus} onSubmit={handleSubmit(onSubmit)}>
       <div className="form-grid">
         <label>
           <span>Full Name</span>
-          <input aria-label="Full name" autoComplete="name" placeholder="Your full name" {...register("name")} />
+          <input aria-label="Full name" autoComplete="name" placeholder="Your full name" required {...register("name")} />
           {errors.name ? <small>{errors.name.message}</small> : null}
         </label>
         <label>
@@ -496,6 +513,7 @@ function LeadForm({
               inputMode="numeric"
               maxLength={10}
               placeholder="10-digit mobile"
+              required
               type="tel"
               {...register("phone")}
               onInput={(event) => {
@@ -515,7 +533,7 @@ function LeadForm({
       <div className="form-grid form-grid--wide">
         <label>
           <span>I&apos;m interested in</span>
-          <select aria-label="Interested in" {...register("configuration")}>
+          <select aria-label="Interested in" required {...register("configuration")}>
             {leadPlanOptions.map((plan) => (
               <option key={plan.id} value={formatPlanOption(plan)}>
                 {formatPlanOption(plan)}
@@ -536,7 +554,7 @@ function LeadForm({
       {showConsent ? (
         <>
           <label className="consent-line">
-            <input type="checkbox" {...register("consent")} aria-label="Consent to receive project updates" />
+            <input type="checkbox" required {...register("consent")} aria-label="Consent to receive project updates" />
             <span>
               {consentText} <a href="#legal">Privacy, terms and disclaimer</a>.
             </span>
@@ -551,7 +569,7 @@ function LeadForm({
       </button>
 
       {status === "success" ? (
-        <p className="form-success" role="status">
+        <p className="lead-toast lead-toast--success form-success" role="status">
           Thank you. Your request has been received.
         </p>
       ) : null}
@@ -584,6 +602,15 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
 
   const formName = "banner-quick-enquiry";
   const ctaSource = "hero-enquiry-form";
+
+  useEffect(() => {
+    if (status === "idle") {
+      return;
+    }
+
+    const timer = window.setTimeout(() => setStatus("idle"), 5000);
+    return () => window.clearTimeout(timer);
+  }, [status]);
 
   const onFocus = () => {
     if (started) {
@@ -644,6 +671,13 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
         plan_id: selectedPlan.id,
         area_sqft: selectedPlan.areaSqFt,
       });
+      trackEvent("generate_lead", {
+        form_name: formName,
+        cta_source: ctaSource,
+        lead_action: "general_enquiry",
+        plan_id: selectedPlan.id,
+        area_sqft: selectedPlan.areaSqFt,
+      });
 
       setStatus("success");
       reset();
@@ -665,10 +699,10 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
         <h2>Enquire About the Project</h2>
         <span>Share your details below, and our team will get in touch with the complete project details.</span>
       </div>
-      <form className="quick-enquiry-form" onFocus={onFocus} onSubmit={handleSubmit(onSubmit)}>
+      <form className="quick-enquiry-form" method="post" onFocus={onFocus} onSubmit={handleSubmit(onSubmit)}>
         <label>
           <span>Name</span>
-          <input aria-label="Name" autoComplete="name" placeholder="Your name" {...register("name")} />
+          <input aria-label="Name" autoComplete="name" placeholder="Your name" required {...register("name")} />
           {errors.name ? <small>{errors.name.message}</small> : null}
         </label>
         <label>
@@ -681,6 +715,7 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
               inputMode="numeric"
               maxLength={10}
               placeholder="10-digit mobile"
+              required
               type="tel"
               {...register("phone")}
               onInput={(event) => {
@@ -692,7 +727,7 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
         </label>
         <label>
           <span>Email Address</span>
-          <input aria-label="Email address" autoComplete="email" inputMode="email" placeholder="name@example.com" type="email" {...register("email")} />
+          <input aria-label="Email address" autoComplete="email" inputMode="email" placeholder="name@example.com" required type="email" {...register("email")} />
           {errors.email ? <small>{errors.email.message}</small> : null}
         </label>
         <label>
@@ -703,6 +738,7 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
               aria-label="Budget in crores"
               inputMode="decimal"
               placeholder="2.5"
+              required
               {...register("budget")}
               onInput={(event) => {
                 event.currentTarget.value = formatBudgetInput(event.currentTarget.value);
@@ -716,7 +752,7 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
           <BotanicalMark />
           {isSubmitting ? "Sending..." : "Submit"}
         </button>
-        {status === "success" ? <p className="form-success" role="status">Thank you. Your enquiry has been received.</p> : null}
+        {status === "success" ? <p className="lead-toast lead-toast--success form-success" role="status">Thank you. Your enquiry has been received.</p> : null}
         {status === "error" ? (
           <p className="lead-toast lead-toast--error" role="alert">
             We could not submit your enquiry. Please check your details and try again.
@@ -743,9 +779,11 @@ export function LandingPage() {
     locationClusters[0].label,
   );
   const [openFaq, setOpenFaq] = useState<string>(faqItems[0].question);
+  const [storyVideoReady, setStoryVideoReady] = useState(false);
   const menuCloseTimerRef = useRef<number | null>(null);
   const mobileCtaIdleTimerRef = useRef<number | null>(null);
   const mobileCtaOpenTimerRef = useRef<number | null>(null);
+  const storySectionRef = useRef<HTMLElement | null>(null);
 
   const selectedLocation = useMemo(
     () => locationClusters.find((cluster) => cluster.label === locationTab) ?? locationClusters[0],
@@ -758,6 +796,27 @@ export function LandingPage() {
       document.body.style.overflow = "";
     };
   }, [leadOverlay, locationMapOpen, masterPlanOpen, menuOpen, planOpen]);
+
+  useEffect(() => {
+    const section = storySectionRef.current;
+
+    if (!section || storyVideoReady) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStoryVideoReady(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "360px 0px" },
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [storyVideoReady]);
 
   useEffect(() => {
     const clearIdleTimer = () => {
@@ -834,6 +893,12 @@ export function LandingPage() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const handleNavLinkClick = (event: MouseEvent<HTMLAnchorElement>, id: string, source: string) => {
+    event.preventDefault();
+    scrollTo(id, source);
+    window.history.pushState(null, "", `#${id}`);
+  };
+
   const openLead = (overlay: LeadOverlay) => {
     setMenuOpen(false);
     setMenuClosing(false);
@@ -878,14 +943,14 @@ export function LandingPage() {
     <div className="florique-page">
       <header className="florique-header">
         <div className="nav-shell">
-          <button type="button" className="brand-button" aria-label="Poulomi Florique home" onClick={() => scrollTo("top", "brand")}>
+          <a href="#top" className="brand-button" aria-label="Poulomi Florique home" onClick={(event) => handleNavLinkClick(event, "top", "brand")}>
             <ProjectLogo light />
-          </button>
+          </a>
           <nav className="desktop-nav" aria-label="Primary navigation">
             {navItems.map((item) => (
-              <button key={`${item.id}-${item.label}`} type="button" onClick={() => scrollTo(item.id, `nav-${item.label.toLowerCase()}`)}>
+              <a key={`${item.id}-${item.label}`} href={`#${item.id}`} onClick={(event) => handleNavLinkClick(event, item.id, `nav-${item.label.toLowerCase()}`)}>
                 {item.label}
-              </button>
+              </a>
             ))}
           </nav>
           <button
@@ -912,21 +977,32 @@ export function LandingPage() {
       <main id="top">
         <section className="hero">
           <picture>
-            <source media="(min-width: 1024px)" srcSet={projectFacts.images.heroDesktop} />
-            <source media="(min-width: 768px)" srcSet={projectFacts.images.heroTablet} />
-            <img src={projectFacts.images.heroMobile} alt="Poulomi Florique landscaped residential tower at dusk" />
+            <source media="(min-width: 768px)" srcSet={projectFacts.images.heroDesktopAvif} type="image/avif" />
+            <source media="(min-width: 768px)" srcSet={projectFacts.images.heroDesktopWebp} type="image/webp" />
+            <source srcSet={projectFacts.images.heroMobileAvif} type="image/avif" />
+            <source srcSet={projectFacts.images.heroMobileWebp} type="image/webp" />
+            <img
+              src={projectFacts.images.heroMobile}
+              alt="Poulomi Florique landscaped residential tower at dusk"
+              width={1220}
+              height={1520}
+              sizes="100vw"
+              fetchPriority="high"
+              decoding="async"
+            />
           </picture>
           <div className="hero-card">
-            <h1>Where architecture blooms.</h1>
+            <h1 className="hero-seo-title">Poulomi Florique: Premium 3 BHK Apartments in Thanisandra, North Bengaluru</h1>
+            <span className="hero-tagline" aria-hidden="true">Where architecture blooms.</span>
             <span>Botanical living, thoughtfully designed. Homes that feel private. Spaces that inspire.</span>
             <Image
               className="hero-card-mobile-image"
-              src={projectFacts.images.heroCardMobile}
+              src={projectFacts.images.heroCardMobileWebp}
               alt="Poulomi Florique project highlights"
               width={2400}
               height={1800}
               sizes="(max-width: 767px) calc(100vw - 40px), 1px"
-              loading="eager"
+              loading="lazy"
             />
           </div>
           <QuickEnquiryForm selectedPlan={selectedPlan} />
@@ -971,7 +1047,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section id="florique-life" className="editorial-section story-section">
+        <section id="florique-life" className="editorial-section story-section" ref={storySectionRef}>
           <BotanicalMask name="branch" className="story-botanical" />
           <BotanicalMask name="cluster" className="story-cluster-botanical" />
           <SectionLabel index="04" eyebrow="The Florique Life" />
@@ -990,14 +1066,18 @@ export function LandingPage() {
             <p>
               Poulomi Florique is a sanctuary of green and light. Where modern architecture rises gently from landscaped gardens, and every space is designed to help you live well, every day.
             </p>
-            <button type="button" className="text-cta" onClick={() => scrollTo("masterplan", "story-discover")}>
+            <a href="#masterplan" className="text-cta" onClick={(event) => handleNavLinkClick(event, "masterplan", "story-discover")}>
               Discover the Story <ArrowRight size={16} />
-            </button>
+            </a>
           </div>
           <div className="story-media">
-            <video className="story-main" autoPlay muted loop playsInline preload="metadata" aria-label="Poulomi Florique landscaped residential experience video">
-              <source media="(min-width: 768px)" src={projectFacts.videos.storyDesktop} type="video/mp4" />
-              <source src={projectFacts.videos.storyMobile} type="video/mp4" />
+            <video className="story-main" autoPlay muted loop playsInline preload={storyVideoReady ? "metadata" : "none"} poster={projectFacts.images.elevation} aria-label="Poulomi Florique landscaped residential experience video">
+              {storyVideoReady ? (
+                <>
+                  <source media="(min-width: 768px)" src={projectFacts.videos.storyDesktop} type="video/mp4" />
+                  <source src={projectFacts.videos.storyMobile} type="video/mp4" />
+                </>
+              ) : null}
             </video>
             <Image src={projectFacts.images.botanicalMacro} alt="" width={180} height={230} className="story-inset" aria-hidden="true" />
           </div>
@@ -1051,7 +1131,7 @@ export function LandingPage() {
                   width={selectedPlan.width}
                   height={selectedPlan.height}
                   className="object-contain"
-                  loading="eager"
+                  loading="lazy"
                   decoding="async"
                   style={{ display: "block", width: "100%", maxWidth: "100%", height: "auto", objectFit: "contain" }}
                 />
@@ -1092,8 +1172,18 @@ export function LandingPage() {
           <div className="master-image-wrap">
             <button type="button" className="master-image" aria-label="View full Poulomi Florique master plan" onClick={() => { resetViewer(); setMasterPlanOpen(true); }}>
               <picture>
-                <source media="(min-width: 1024px)" srcSet={projectFacts.images.masterPlan} />
-                <img src={projectFacts.images.masterPlanLayout} alt="Poulomi Florique horizontal master plan layout preview" />
+                <source media="(min-width: 1024px)" srcSet={projectFacts.images.masterPlanAvif} type="image/avif" />
+                <source media="(min-width: 1024px)" srcSet={projectFacts.images.masterPlanWebp} type="image/webp" />
+                <source srcSet={projectFacts.images.masterPlanLayoutAvif} type="image/avif" />
+                <source srcSet={projectFacts.images.masterPlanLayoutWebp} type="image/webp" />
+                <img
+                  src={projectFacts.images.masterPlanLayout}
+                  alt="Poulomi Florique horizontal master plan layout preview"
+                  width={2048}
+                  height={1536}
+                  loading="lazy"
+                  decoding="async"
+                />
               </picture>
             </button>
           </div>
@@ -1128,8 +1218,18 @@ export function LandingPage() {
           </div>
           <button type="button" className="location-visual location-map-card" aria-label="View Poulomi Florique location map" onClick={() => { resetViewer(); setLocationMapOpen(true); }}>
             <picture>
-              <source media="(min-width: 768px)" srcSet="/florique/location/poulomi-florique-location-map-desktop-1x1.png" />
-              <img src="/florique/location/poulomi-florique-location-map-mobile-1x1.png" alt="Poulomi Florique actual neighbourhood map connectivity view" />
+              <source media="(min-width: 768px)" srcSet={projectFacts.images.locationMapDesktopAvif} type="image/avif" />
+              <source media="(min-width: 768px)" srcSet={projectFacts.images.locationMapDesktopWebp} type="image/webp" />
+              <source srcSet={projectFacts.images.locationMapMobileAvif} type="image/avif" />
+              <source srcSet={projectFacts.images.locationMapMobileWebp} type="image/webp" />
+              <img
+                src={projectFacts.images.locationMapMobile}
+                alt="Poulomi Florique actual neighbourhood map connectivity view"
+                width={1200}
+                height={1200}
+                loading="lazy"
+                decoding="async"
+              />
             </picture>
           </button>
           <aside className="commute-card">
@@ -1244,9 +1344,9 @@ export function LandingPage() {
           <button type="button" className="menu-close" aria-label="Close menu" onClick={closeMenu}><X /></button>
           <div className="menu-logo"><ProjectLogo /></div>
           {navItems.map((item) => (
-            <button key={`menu-${item.id}-${item.label}`} type="button" onClick={() => scrollTo(item.id, `menu-${item.label.toLowerCase()}`)}>
+            <a key={`menu-${item.id}-${item.label}`} href={`#${item.id}`} onClick={(event) => handleNavLinkClick(event, item.id, `menu-${item.label.toLowerCase()}`)}>
               {item.label}
-            </button>
+            </a>
           ))}
           <button
             type="button"
@@ -1316,7 +1416,7 @@ export function LandingPage() {
         <div className="image-lightbox" role="dialog" aria-modal="true" aria-label="Master plan viewer">
           <ZoomControls onClose={() => setMasterPlanOpen(false)} onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={resetViewer} closeLabel="Close master plan" />
           <div className="lightbox-canvas">
-            <Image src={projectFacts.images.masterPlan} alt="Poulomi Florique horizontal master plan enlarged" width={2048} height={1152} sizes="100vw" className="object-contain" style={{ transform: `scale(${viewerZoom})` }} />
+            <Image src={projectFacts.images.masterPlanWebp} alt="Poulomi Florique horizontal master plan enlarged" width={2048} height={1152} sizes="100vw" className="object-contain" style={{ transform: `scale(${viewerZoom})` }} />
           </div>
         </div>
       ) : null}
@@ -1325,7 +1425,7 @@ export function LandingPage() {
         <div className="image-lightbox" role="dialog" aria-modal="true" aria-label="Official location map viewer">
           <ZoomControls onClose={() => setLocationMapOpen(false)} onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={resetViewer} closeLabel="Close location map" />
           <div className="lightbox-canvas">
-            <Image src="/florique/location/poulomi-florique-location-map-desktop-1x1.png" alt="Poulomi Florique actual neighbourhood map connectivity view enlarged" width={2400} height={2400} sizes="100vw" className="object-contain" style={{ transform: `scale(${viewerZoom})` }} />
+            <Image src={projectFacts.images.locationMapDesktopWebp} alt="Poulomi Florique actual neighbourhood map connectivity view enlarged" width={2400} height={2400} sizes="100vw" className="object-contain" style={{ transform: `scale(${viewerZoom})` }} />
           </div>
         </div>
       ) : null}

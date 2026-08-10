@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 
-import { absoluteUrl, siteDescription, siteKeywords, siteName, siteUrl } from "@/lib/site";
+import { absoluteUrl, siteDescription, siteName, siteUrl } from "@/lib/site";
 
 import "./globals.css";
 
@@ -16,13 +16,16 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   applicationName: siteName,
   title: {
-    default: "Poulomi Florique Thanisandra | 3 BHK Residences & Site Visit",
-    template: "%s | Poulomi Florique Thanisandra",
+    default: "Poulomi Florique Thanisandra | 3 BHK Apartments Bengaluru",
+    template: "%s | Poulomi Florique",
   },
   description: siteDescription,
-  keywords: siteKeywords,
   alternates: {
     canonical: "/",
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
   },
   robots: {
     index: true,
@@ -36,7 +39,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Poulomi Florique Thanisandra | 3 BHK Residences & Site Visit",
+    title: "Poulomi Florique Thanisandra | 3 BHK Apartments Bengaluru",
     description: siteDescription,
     images: [
       {
@@ -49,11 +52,11 @@ export const metadata: Metadata = {
     locale: "en_IN",
     siteName,
     type: "website",
-    url: siteUrl,
+    url: absoluteUrl("/"),
   },
   twitter: {
     card: "summary_large_image",
-    title: "Poulomi Florique Thanisandra | 3 BHK Residences & Site Visit",
+    title: "Poulomi Florique Thanisandra | 3 BHK Apartments Bengaluru",
     description: siteDescription,
     images: [absoluteUrl("/florique/hero/poulomi-florique-hero-desktop.png")],
   },
@@ -75,8 +78,24 @@ export default function RootLayout({
       className="antialiased"
     >
     <head>
+    <link
+      rel="preload"
+      as="image"
+      href="/florique/hero/poulomi-florique-hero-desktop.avif"
+      type="image/avif"
+      media="(min-width: 768px)"
+      fetchPriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="/florique/hero/poulomi-florique-hero-mobile.avif"
+      type="image/avif"
+      media="(max-width: 767px)"
+      fetchPriority="high"
+    />
     {GTM_ID ? (
-        <Script id="google-tag-manager" strategy="beforeInteractive">
+        <Script id="google-tag-manager" strategy="afterInteractive">
           {`
             (function(w,d,s,l,i){
               w[l]=w[l]||[];

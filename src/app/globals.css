@@ -98,6 +98,17 @@ textarea:focus-visible {
   outline-offset: 3px;
 }
 
+.hero-seo-title {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 .florique-page {
   min-height: 100vh;
   max-width: 100vw;
@@ -334,9 +345,10 @@ select {
   display: none;
 }
 
-.hero-card h1 {
+.hero-card .hero-tagline {
   position: relative;
   z-index: 1;
+  display: block;
   max-width: 11.5ch;
   margin-top: 14px;
   font-family: var(--font-display), serif;
@@ -355,7 +367,7 @@ select {
   background: var(--florique-rose);
 }
 
-.hero-card > span:not(.botanical-mask) {
+.hero-card > span:not(.botanical-mask):not(.hero-tagline) {
   position: relative;
   z-index: 1;
   display: block;
@@ -2396,6 +2408,12 @@ select {
     var(--florique-error);
 }
 
+.lead-toast--success {
+  background:
+    linear-gradient(135deg, rgba(71, 111, 94, 0.96), rgba(23, 60, 49, 0.96)),
+    var(--florique-success);
+}
+
 @keyframes toast-rise {
   from {
     opacity: 0;
@@ -2601,7 +2619,9 @@ select {
   max-height: 116px;
 }
 
-.menu-overlay > button:not(.menu-close):not(.rose-cta) {
+.menu-overlay > a {
+  display: grid;
+  place-items: center;
   min-height: 44px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
@@ -2611,7 +2631,7 @@ select {
   text-transform: uppercase;
 }
 
-.menu-overlay > button:not(.menu-close):not(.rose-cta):last-of-type {
+.menu-overlay > a:last-of-type {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -2832,8 +2852,8 @@ select {
   }
 
   .hero-card::after,
-  .hero-card h1,
-  .hero-card > span:not(.botanical-mask) {
+  .hero-card .hero-tagline,
+  .hero-card > span:not(.botanical-mask):not(.hero-tagline) {
     display: none;
   }
 
@@ -3137,7 +3157,7 @@ select {
     display: none;
   }
 
-  .hero-card h1 {
+  .hero-card .hero-tagline {
     max-width: none;
     margin-top: 0;
     color: white;
@@ -3147,7 +3167,7 @@ select {
     white-space: nowrap;
   }
 
-  .hero-card > span:not(.botanical-mask) {
+  .hero-card > span:not(.botanical-mask):not(.hero-tagline) {
     max-width: none;
     color: rgba(255, 255, 255, 0.9);
     font-size: clamp(0.78rem, 1.35vw, 0.92rem);
@@ -3206,14 +3226,14 @@ select {
     gap: clamp(14px, 2vw, 34px);
   }
 
-  .desktop-nav button {
+  .desktop-nav a {
     color: rgba(255, 255, 255, 0.78);
     font-size: 0.7rem;
     font-weight: 800;
     text-transform: uppercase;
   }
 
-  .desktop-nav button:hover {
+  .desktop-nav a:hover {
     color: white;
   }
 
@@ -3307,7 +3327,7 @@ select {
     display: none;
   }
 
-  .hero-card h1 {
+  .hero-card .hero-tagline {
     max-width: 100%;
     color: white;
     margin-top: 0;
@@ -3319,7 +3339,7 @@ select {
     white-space: nowrap;
   }
 
-  .hero-card > span:not(.botanical-mask) {
+  .hero-card > span:not(.botanical-mask):not(.hero-tagline) {
     max-width: none;
     color: rgba(255, 255, 255, 0.9);
     font-size: clamp(0.86rem, 0.95vw, 1rem);
@@ -4066,7 +4086,7 @@ select {
     padding: 4px;
   }
 
-  .hero-card h1 {
+  .hero-card .hero-tagline {
     font-size: 2.8rem;
   }
 

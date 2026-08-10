@@ -3,12 +3,12 @@ import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+  const lastModified = new Date("2026-08-10");
 
   return [
     {
       url: absoluteUrl("/"),
-      lastModified: now,
+      lastModified,
       changeFrequency: "weekly",
       priority: 1,
     },
