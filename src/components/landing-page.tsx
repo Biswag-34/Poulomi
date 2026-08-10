@@ -556,7 +556,7 @@ function LeadForm({
           <label className="consent-line">
             <input type="checkbox" required {...register("consent")} aria-label="Consent to receive project updates" />
             <span>
-              {consentText} <a href="#legal">Privacy, terms and disclaimer</a>.
+              {consentText} <a href="/privacy-policy">Privacy Policy</a> and <a href="/terms-and-conditions">Terms & Conditions</a>.
             </span>
           </label>
           {errors.consent ? <small className="form-error">{errors.consent.message}</small> : null}
@@ -993,7 +993,7 @@ export function LandingPage() {
           </picture>
           <div className="hero-card">
             <h1 className="hero-seo-title">Poulomi Florique: Premium 3 BHK Apartments in Thanisandra, North Bengaluru</h1>
-            <span className="hero-tagline" aria-hidden="true">Where architecture blooms.</span>
+            <span className="hero-tagline">Where architecture blooms.</span>
             <span>Botanical living, thoughtfully designed. Homes that feel private. Spaces that inspire.</span>
             <Image
               className="hero-card-mobile-image"
@@ -1323,6 +1323,10 @@ export function LandingPage() {
           <p>{projectFacts.locationShort}</p>
           <small>RERA Reg. No. {projectFacts.rera.registration}</small>
         </div>
+        <nav className="footer-links" aria-label="Legal pages">
+          <a href="/privacy-policy">Privacy Policy</a>
+          <a href="/terms-and-conditions">Terms & Conditions</a>
+        </nav>
         <p className="footer-disclaimer">
           {micrositeDisclaimer}
         </p>
