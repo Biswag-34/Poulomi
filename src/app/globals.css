@@ -246,6 +246,7 @@ textarea:focus-visible {
 .hero {
   position: relative;
   isolation: isolate;
+  margin-top: 0;
   background: var(--florique-forest-deep);
 }
 
@@ -365,6 +366,10 @@ select {
   line-height: 1.55;
 }
 
+.hero-card-mobile-image {
+  display: none;
+}
+
 .rose-cta,
 .text-cta,
 .outline-nav-cta {
@@ -418,7 +423,6 @@ select {
   padding-inline: 2px;
 }
 
-.plan-stage-actions .text-cta,
 .outline-nav-cta {
   border: 1px solid rgba(23, 60, 49, 0.42);
   padding-inline: 22px;
@@ -441,8 +445,6 @@ select {
 @media (max-width: 1023px) {
   .hero-card {
     margin-bottom: 10px;
-    border-radius: 28px 28px 18px 18px;
-    padding-bottom: 28px;
   }
 }
 
@@ -495,9 +497,10 @@ select {
   max-width: none;
   width: 100%;
   font-family: var(--font-display), serif;
-  font-size: clamp(1.72rem, 7vw, 2.25rem);
+  font-size: clamp(1.42rem, 5.2vw, 2.05rem);
   font-weight: 400;
   line-height: 0.98;
+  white-space: nowrap;
 }
 
 .hero-enquiry-copy span {
@@ -705,11 +708,13 @@ select {
 }
 
 .usp-copy p {
-  max-width: 36rem;
+  max-width: none;
   margin-inline: auto;
-  color: #5f655d;
-  font-size: 0.94rem;
-  line-height: 1.6;
+  color: #38443b;
+  font-size: clamp(0.86rem, 1.4vw, 1.02rem);
+  font-weight: 600;
+  line-height: 1.55;
+  white-space: nowrap;
 }
 
 .usp-grid {
@@ -844,6 +849,23 @@ select {
   line-height: 0.98;
 }
 
+.story-heading {
+  display: block;
+}
+
+.story-heading span {
+  display: inline;
+}
+
+.story-heading--large {
+  display: none;
+}
+
+.location-copy h2 {
+  max-width: 15ch;
+  font-size: clamp(2rem, 8vw, 3rem);
+}
+
 .story-copy p,
 .location-copy p,
 .green-quote p {
@@ -890,6 +912,10 @@ select {
 }
 
 .story-media .story-main {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   border-radius: 8px;
   object-fit: cover;
 }
@@ -1176,13 +1202,11 @@ select {
   max-width: 100%;
 }
 
-.unit-plan-actions .text-cta,
-.plan-stage-actions .text-cta {
+.unit-plan-actions .text-cta {
   justify-content: center;
 }
 
-.plan-stage-actions .rose-cta,
-.plan-stage-actions .text-cta {
+.plan-stage-actions .rose-cta {
   width: 100%;
 }
 
@@ -1237,20 +1261,6 @@ select {
   height: 260px;
   color: var(--florique-rose);
   opacity: 0.22;
-}
-
-.plan-overview-link {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  width: max-content;
-  max-width: 100%;
-  align-items: center;
-  gap: 8px;
-  color: var(--florique-forest);
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: uppercase;
 }
 
 .amenities-section {
@@ -1688,14 +1698,6 @@ select {
   font-size: 0.72rem;
 }
 
-.master-legend .legend-view {
-  grid-column: 1 / -1;
-  justify-content: space-between;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
-  padding-top: 10px;
-  text-transform: uppercase;
-}
-
 .master-detail {
   grid-column: 1 / -1;
   margin-top: 4px;
@@ -2023,9 +2025,9 @@ select {
 }
 
 .faq-copy h2 {
-  max-width: 16ch;
+  max-width: 100%;
   font-family: var(--font-display), serif;
-  font-size: clamp(2.15rem, 9vw, 3.25rem);
+  font-size: clamp(1.9rem, 7.8vw, 2.9rem);
   font-weight: 400;
   line-height: 0.98;
 }
@@ -2221,11 +2223,24 @@ select {
   margin-inline: auto;
   color: var(--florique-forest);
   font-family: var(--font-display), serif;
-  font-size: clamp(1.85rem, 8vw, 2.7rem);
+  max-width: 100%;
+  font-size: clamp(0.92rem, 3.35vw, 1.78rem);
   font-weight: 400;
   line-height: 0.98;
+  overflow-wrap: normal;
   text-align: center;
   text-transform: none;
+  white-space: nowrap;
+}
+
+.final-form-subcopy {
+  display: block;
+  max-width: 42rem;
+  margin: 8px auto 0;
+  color: #626c62;
+  font-size: clamp(0.94rem, 2.2vw, 1.05rem);
+  line-height: 1.55;
+  text-align: center;
 }
 
 .final-form-card .rose-cta {
@@ -2233,6 +2248,54 @@ select {
   width: fit-content;
   min-width: 190px;
   padding-inline: 30px;
+}
+
+@media (max-width: 767px) {
+  .enquiry-section {
+    border-color: rgba(23, 60, 49, 0.48);
+    background:
+      linear-gradient(155deg, rgba(23, 60, 49, 0.96), rgba(43, 86, 68, 0.96)),
+      var(--florique-forest);
+    color: white;
+  }
+
+  .enquiry-section .enquiry-botanical {
+    color: rgba(255, 255, 255, 0.72);
+    opacity: 0.16;
+  }
+
+  .green-quote {
+    display: none;
+  }
+
+  .final-form-card {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .final-form-card > p {
+    color: white;
+  }
+
+  .final-form-subcopy {
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .final-form-card .visit-form label > span {
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .final-form-card .phone-input,
+  .final-form-card .visit-form input,
+  .final-form-card .visit-form select {
+    background: rgba(255, 253, 252, 0.96);
+  }
+
+  .final-form-card .rose-cta {
+    justify-self: center;
+  }
 }
 
 .visit-form {
@@ -2610,6 +2673,11 @@ select {
   box-shadow: 0 -22px 50px rgba(12, 41, 33, 0.22);
 }
 
+.lead-panel--floor-plan {
+  max-height: calc(100svh - 24px);
+  overflow: hidden;
+}
+
 .panel-close,
 .lightbox-controls button {
   display: grid;
@@ -2650,6 +2718,22 @@ select {
   color: #5f655d;
   font-size: 0.92rem;
   line-height: 1.55;
+}
+
+.lead-panel--floor-plan h2 {
+  max-width: none;
+}
+
+.lead-panel--floor-plan .visit-form {
+  gap: 8px;
+}
+
+.lead-panel--floor-plan .visit-form input,
+.lead-panel--floor-plan .visit-form select,
+.lead-panel--floor-plan .phone-input,
+.lead-panel--floor-plan .phone-input b,
+.lead-panel--floor-plan .phone-input input {
+  min-height: 40px;
 }
 
 .image-lightbox {
@@ -2695,7 +2779,136 @@ select {
   }
 }
 
+@media (min-width: 768px) {
+  .final-form-card .visit-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .final-form-card .visit-form .form-grid,
+  .final-form-card .visit-form .form-grid--wide {
+    display: contents;
+  }
+
+  .final-form-card .visit-form .rose-cta,
+  .final-form-card .visit-form .form-success,
+  .final-form-card .visit-form .lead-toast {
+    grid-column: 1 / -1;
+  }
+
+  .story-heading--large {
+    display: block;
+  }
+
+  .story-heading--large span {
+    display: block;
+  }
+
+  .story-heading--small {
+    display: none;
+  }
+
+  .story-copy h2 {
+    max-width: 17ch;
+    font-size: clamp(2rem, 3.35vw, 3.15rem);
+    line-height: 0.94;
+  }
+}
+
 @media (max-width: 767px) {
+  .hero picture img {
+    height: 66svh;
+    min-height: 370px;
+    max-height: 554px;
+    object-position: center top;
+  }
+
+  .hero-card {
+    width: min(calc(100% - 24px), 44rem);
+    overflow: hidden;
+    border-radius: 18px;
+    background: var(--florique-white);
+    padding: 4px;
+  }
+
+  .hero-card::after,
+  .hero-card h1,
+  .hero-card > span:not(.botanical-mask) {
+    display: none;
+  }
+
+  .hero-card-mobile-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .usp-copy p {
+    display: none;
+  }
+
+  .usp-grid {
+    gap: 8px;
+  }
+
+  .usp-grid article {
+    min-height: 142px;
+    padding: 14px 12px;
+  }
+
+  .usp-grid h3 {
+    color: var(--florique-forest-deep);
+    font-size: 0.98rem;
+    line-height: 1.12;
+  }
+
+  .usp-grid p {
+    color: #38443b;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.38;
+  }
+
+  .amenity-copy h2 {
+    max-width: 16ch;
+    margin-inline: auto;
+    font-size: clamp(2rem, 9vw, 2.45rem);
+    text-wrap: balance;
+  }
+
+  .story-copy h2 {
+    max-width: 22ch;
+    margin-inline: auto;
+    font-size: clamp(1.85rem, 8.2vw, 2.3rem);
+    text-align: center;
+  }
+
+  .story-heading--large {
+    display: none;
+  }
+
+  .story-heading--small {
+    display: block;
+  }
+
+  .story-heading--small span {
+    display: block;
+  }
+
+  .enquiry-section {
+    margin-bottom: 14px;
+  }
+
+  .footer {
+    margin-top: 14px;
+    padding-bottom: calc(22px + env(safe-area-inset-bottom));
+  }
+
+  .florique-page {
+    padding-bottom: 0;
+  }
+
   .residences-section {
     gap: 10px;
     padding: 24px 14px 18px;
@@ -2799,23 +3012,18 @@ select {
   }
 
   .plan-stage-actions {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
+    grid-template-columns: 1fr;
     margin-top: 4px;
   }
 
-  .plan-stage-actions .rose-cta,
-  .plan-stage-actions .text-cta {
+  .plan-stage-actions .rose-cta {
+    justify-self: center;
+    width: min(100%, 240px);
     min-height: 42px;
-    padding-inline: 8px;
-    font-size: 0.64rem;
-    line-height: 1.15;
-    white-space: normal;
-  }
-
-  .plan-overview-link {
-    margin-top: 0;
+    padding-inline: 16px;
     font-size: 0.68rem;
+    line-height: 1.15;
+    white-space: nowrap;
   }
 }
 
@@ -2828,6 +3036,25 @@ select {
   .faq-form-section,
   .footer {
     padding-inline: 36px;
+  }
+
+  .nav-shell {
+    height: 56px;
+  }
+
+  .brand-button .brand-logo {
+    width: 90px;
+    max-height: 34px;
+  }
+
+  .menu-button {
+    width: 38px;
+    height: 38px;
+  }
+
+  .menu-button svg {
+    width: 21px;
+    height: 21px;
   }
 
   .hero-card {
@@ -2847,6 +3074,113 @@ select {
   }
 }
 
+@media (min-width: 768px) and (max-width: 1023px) {
+  .faq-copy h2 {
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    white-space: nowrap;
+  }
+
+  .final-form-card > p {
+    font-size: clamp(1.55rem, 2.7vw, 2rem);
+    white-space: nowrap;
+  }
+
+  .hero {
+    height: calc(100svh - 56px);
+    min-height: 620px;
+    overflow: hidden;
+  }
+
+  .hero picture {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .hero picture img {
+    height: 100%;
+    min-height: 0;
+    max-height: none;
+    object-position: center;
+  }
+
+  .hero::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background:
+      linear-gradient(180deg, rgba(12, 41, 33, 0.08), transparent 40%),
+      linear-gradient(90deg, transparent 44%, rgba(12, 41, 33, 0.12));
+    pointer-events: none;
+  }
+
+  .hero-card {
+    position: absolute;
+    right: 36px;
+    top: 18px;
+    left: auto;
+    width: min(48vw, 440px);
+    margin: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 18px;
+    background:
+      radial-gradient(ellipse at center, rgba(12, 41, 33, 0.18), rgba(12, 41, 33, 0.08) 48%, transparent 78%);
+    padding: 12px 14px;
+    color: white;
+    box-shadow: none;
+    backdrop-filter: blur(2px);
+  }
+
+  .hero-card::after,
+  .hero-card::before {
+    display: none;
+  }
+
+  .hero-card h1 {
+    max-width: none;
+    margin-top: 0;
+    color: white;
+    font-size: clamp(2rem, 4.4vw, 2.7rem);
+    line-height: 0.98;
+    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+    white-space: nowrap;
+  }
+
+  .hero-card > span:not(.botanical-mask) {
+    max-width: none;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(0.78rem, 1.35vw, 0.92rem);
+    line-height: 1.42;
+    text-shadow: 0 3px 12px rgba(0, 0, 0, 0.24);
+    white-space: nowrap;
+  }
+
+  .hero-enquiry-card {
+    position: absolute;
+    right: 28px;
+    bottom: clamp(150px, 22vh, 210px);
+    width: min(46vw, 390px);
+    margin: 0;
+    padding: 16px;
+    transform: none;
+  }
+
+  .hero-enquiry-copy h2 {
+    font-size: clamp(1.42rem, 2.55vw, 1.72rem);
+  }
+
+  .hero-enquiry-card .quick-enquiry-form {
+    gap: 8px;
+  }
+
+  .hero-enquiry-card .quick-enquiry-form input,
+  .hero-enquiry-card .phone-input,
+  .hero-enquiry-card .budget-input input {
+    min-height: 40px;
+  }
+}
+
 @media (min-width: 1024px) {
   .florique-page {
     padding-bottom: 0;
@@ -2857,13 +3191,13 @@ select {
   }
 
   .nav-shell {
-    height: 82px;
+    height: 66px;
     padding-inline: clamp(36px, 5vw, 78px);
   }
 
   .brand-button .brand-logo {
-    width: clamp(184px, 14vw, 238px);
-    max-height: 76px;
+    width: clamp(147px, 11.2vw, 190px);
+    max-height: 61px;
   }
 
   .desktop-nav {
@@ -2887,13 +3221,15 @@ select {
     position: relative;
     display: inline-flex;
     align-items: center;
+    min-height: 44px;
     overflow: hidden;
     border: 1px solid rgba(244, 202, 195, 0.68);
     background:
       linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.18) 44%, transparent 64%) -140% 0 / 70% 100% no-repeat,
       rgba(255, 253, 252, 0.12);
     color: white;
-    padding-inline: 24px;
+    padding-inline: 18px;
+    font-size: 0.68rem;
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.16),
       0 12px 28px rgba(0, 0, 0, 0.12);
@@ -2916,7 +3252,7 @@ select {
   }
 
   .hero {
-    height: clamp(620px, 76svh, 820px);
+    height: clamp(620px, calc(100svh - 66px), 760px);
     min-height: 0;
   }
 
@@ -2937,24 +3273,29 @@ select {
     position: absolute;
     inset: 0;
     content: "";
-    background: linear-gradient(90deg, rgba(12, 41, 33, 0.34), transparent 42%);
+    background:
+      linear-gradient(180deg, rgba(12, 41, 33, 0.08), transparent 40%),
+      linear-gradient(90deg, transparent 48%, rgba(12, 41, 33, 0.1));
     pointer-events: none;
   }
 
   .hero-card {
     position: absolute;
-    left: clamp(40px, 5vw, 80px);
-    top: 50%;
-    width: min(48vw, 660px);
+    right: clamp(40px, 5vw, 80px);
+    top: clamp(18px, 3vh, 34px);
+    left: auto;
+    width: min(43vw, 590px);
     margin: 0;
-    transform: translateY(-50%);
+    transform: none;
     overflow: visible;
     border: 0;
-    border-radius: 0;
-    background: transparent;
-    padding: 0;
+    border-radius: 22px;
+    background:
+      radial-gradient(ellipse at center, rgba(12, 41, 33, 0.17), rgba(12, 41, 33, 0.08) 48%, transparent 78%);
+    padding: 14px 16px;
     box-shadow: none;
     color: white;
+    backdrop-filter: blur(2px);
     isolation: isolate;
   }
 
@@ -2963,53 +3304,45 @@ select {
   }
 
   .hero-card::before {
-    position: absolute;
-    inset: -30px -44px -34px -36px;
-    z-index: -1;
-    display: block;
-    border-radius: 50%;
-    background:
-      radial-gradient(ellipse at 34% 50%, rgba(0, 0, 0, 0.64), rgba(0, 0, 0, 0.34) 42%, transparent 72%);
-    content: "";
-    filter: blur(10px);
-    pointer-events: none;
+    display: none;
   }
 
   .hero-card h1 {
     max-width: 100%;
     color: white;
-    font-size: clamp(2.85rem, 3.7vw, 4.1rem);
+    margin-top: 0;
+    font-size: clamp(2.2rem, 3.1vw, 3.45rem);
     line-height: 0.98;
     text-shadow:
-      0 5px 18px rgba(0, 0, 0, 0.68),
-      0 18px 42px rgba(0, 0, 0, 0.46);
+      0 4px 16px rgba(0, 0, 0, 0.32),
+      0 10px 28px rgba(0, 0, 0, 0.18);
     white-space: nowrap;
   }
 
   .hero-card > span:not(.botanical-mask) {
     max-width: none;
-    color: rgba(255, 255, 255, 0.88);
-    font-size: clamp(0.92rem, 1.05vw, 1.08rem);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(0.86rem, 0.95vw, 1rem);
     line-height: 1.5;
     text-shadow:
-      0 3px 14px rgba(0, 0, 0, 0.72),
-      0 12px 30px rgba(0, 0, 0, 0.48);
+      0 3px 12px rgba(0, 0, 0, 0.28);
     white-space: nowrap;
   }
 
   .hero-enquiry-card {
     position: absolute;
-    right: clamp(40px, 5vw, 80px);
-    top: 50%;
-    width: clamp(390px, 30vw, 470px);
+    right: clamp(28px, 3.8vw, 62px);
+    top: auto;
+    bottom: clamp(150px, 22vh, 230px);
+    width: clamp(380px, 29vw, 450px);
     margin: 0;
     border-color: rgba(255, 255, 255, 0.34);
     padding: clamp(20px, 1.8vw, 28px);
-    transform: translateY(-50%);
+    transform: none;
   }
 
   .hero-enquiry-copy h2 {
-    font-size: clamp(1.85rem, 2.1vw, 2.45rem);
+    font-size: clamp(1.45rem, 1.75vw, 1.9rem);
   }
 
   .hero-enquiry-botanical {
@@ -3329,11 +3662,6 @@ select {
     opacity: 0.3;
   }
 
-  .plan-overview-link {
-    grid-column: 1;
-    align-self: end;
-  }
-
   .plan-stage-actions {
     grid-column: 1;
     grid-row: 2;
@@ -3553,13 +3881,6 @@ select {
     color: #f0c9c6;
   }
 
-  .master-legend .legend-view {
-    min-height: 32px;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-    margin-top: 0;
-    padding-top: 6px;
-  }
-
   .location-section {
     grid-template-columns: minmax(210px, 0.72fr) minmax(0, 1.8fr) minmax(250px, 0.72fr);
   }
@@ -3602,7 +3923,8 @@ select {
   .faq-copy h2 {
     max-width: none;
     margin-inline: auto;
-    font-size: clamp(2.8rem, 4vw, 4.5rem);
+    font-size: clamp(2rem, 2.9vw, 3.35rem);
+    white-space: nowrap;
   }
 
   .faq-section .faq-list {
@@ -3691,10 +4013,57 @@ select {
   }
 }
 
+@media (min-width: 768px) {
+  .lead-panel--floor-plan {
+    inset: 50% auto auto 50%;
+    width: min(430px, calc(100vw - 32px));
+    max-height: calc(100svh - 32px);
+    overflow: hidden;
+    border-radius: 14px;
+    padding: 18px;
+    transform: translate(-50%, -50%);
+  }
+
+  .lead-panel--floor-plan .brand-logo {
+    width: 150px;
+    max-height: 58px;
+  }
+
+  .lead-panel--floor-plan h2 {
+    margin-top: 6px;
+    font-size: clamp(2rem, 3.2vw, 2.55rem);
+    line-height: 0.95;
+  }
+
+  .lead-panel--floor-plan > span {
+    margin-top: 7px;
+    font-size: 0.82rem;
+    line-height: 1.42;
+  }
+
+  .lead-panel--floor-plan .form-grid {
+    gap: 8px;
+  }
+
+  .lead-panel--floor-plan .form-grid:first-child label:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .lead-panel--floor-plan .visit-form label > span {
+    font-size: 0.66rem;
+  }
+
+  .lead-panel--floor-plan .rose-cta {
+    justify-self: center;
+    min-height: 42px;
+    min-width: 190px;
+  }
+}
+
 @media (max-width: 390px) {
   .hero-card {
     width: min(calc(100% - 18px), 44rem);
-    padding-inline: 18px;
+    padding: 4px;
   }
 
   .hero-card h1 {

@@ -11,15 +11,14 @@ import {
   Download,
   Droplets,
   Dumbbell,
-  Eye,
   Flower2,
   Footprints,
   Laptop,
-  Mail,
   Maximize2,
   Menu,
   Music2,
   PawPrint,
+  PhoneCall,
   Quote,
   RotateCcw,
   School,
@@ -58,6 +57,8 @@ type LeadOverlay = {
   title: string;
   description: string;
   selectedPlan?: ResidencePlan;
+  downloadUrl?: string;
+  downloadFileName?: string;
 };
 
 const nameSchema = z
@@ -106,7 +107,7 @@ const actionLabels: Record<LeadIntent, string> = {
   site_visit: "Schedule My Visit",
   price_sheet: "Request Current Price",
   brochure: "Download Brochure",
-  floor_plan: "Request Plan Details",
+  floor_plan: "Download Floor Plan",
   general_enquiry: "Send Enquiry",
 };
 
@@ -251,6 +252,15 @@ function redirectToThankYou() {
   window.location.assign("/thank-you");
 }
 
+function downloadFile(url: string, fileName: string) {
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = fileName;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+}
+
 function captureAttribution(ctaSource: string, formName: string) {
   if (typeof window === "undefined") {
     return {};
@@ -350,6 +360,10 @@ function LeadForm({
   formName,
   selectedPlan,
   compact = false,
+  showMessage = true,
+  showConsent = true,
+  submitLabel,
+  downloadOnSuccess,
   onSuccess,
 }: {
   intent: LeadIntent;
@@ -357,6 +371,10 @@ function LeadForm({
   formName: string;
   selectedPlan?: ResidencePlan;
   compact?: boolean;
+  showMessage?: boolean;
+  showConsent?: boolean;
+  submitLabel?: string;
+  downloadOnSuccess?: { url: string; fileName: string };
   onSuccess?: () => void;
 }) {
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
@@ -446,6 +464,9 @@ function LeadForm({
 
       setStatus("success");
       onSuccess?.();
+      if (downloadOnSuccess) {
+        downloadFile(downloadOnSuccess.url, downloadOnSuccess.fileName);
+      }
       redirectToThankYou();
     } catch {
       trackEvent("lead_submit_error", {
@@ -503,24 +524,30 @@ function LeadForm({
           </select>
           {errors.configuration ? <small>{errors.configuration.message}</small> : null}
         </label>
-        <label>
-          <span>Message (Optional)</span>
-          <input aria-label="Message" {...register("message")} />
-          {errors.message ? <small>{errors.message.message}</small> : null}
-        </label>
+        {showMessage ? (
+          <label>
+            <span>Message (Optional)</span>
+            <input aria-label="Message" {...register("message")} />
+            {errors.message ? <small>{errors.message.message}</small> : null}
+          </label>
+        ) : null}
       </div>
 
-      <label className="consent-line">
-        <input type="checkbox" {...register("consent")} aria-label="Consent to receive project updates" />
-        <span>
-          {consentText} <a href="#legal">Privacy, terms and disclaimer</a>.
-        </span>
-      </label>
-      {errors.consent ? <small className="form-error">{errors.consent.message}</small> : null}
+      {showConsent ? (
+        <>
+          <label className="consent-line">
+            <input type="checkbox" {...register("consent")} aria-label="Consent to receive project updates" />
+            <span>
+              {consentText} <a href="#legal">Privacy, terms and disclaimer</a>.
+            </span>
+          </label>
+          {errors.consent ? <small className="form-error">{errors.consent.message}</small> : null}
+        </>
+      ) : null}
 
       <button type="submit" className="rose-cta" disabled={isSubmitting}>
         <BotanicalMark />
-        {isSubmitting ? "Scheduling..." : actionLabels[intent]}
+        {isSubmitting ? "Submitting..." : submitLabel ?? actionLabels[intent]}
       </button>
 
       {status === "success" ? (
@@ -635,8 +662,8 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
     <aside className="hero-enquiry-card" aria-label="Quick enquiry form">
       <BotanicalMask name="dividerAlt" className="hero-enquiry-botanical" />
       <div className="hero-enquiry-copy">
-        <h2>Begin Your Florique Enquiry</h2>
-        <span>Get pricing, plans and private viewing slots from the project team.</span>
+        <h2>Enquire About the Project</h2>
+        <span>Share your details below, and our team will get in touch with the complete project details.</span>
       </div>
       <form className="quick-enquiry-form" onFocus={onFocus} onSubmit={handleSubmit(onSubmit)}>
         <label>
@@ -687,7 +714,7 @@ function QuickEnquiryForm({ selectedPlan }: { selectedPlan: ResidencePlan }) {
         </label>
         <button type="submit" className="rose-cta" disabled={isSubmitting}>
           <BotanicalMark />
-          {isSubmitting ? "Sending..." : "Enquire"}
+          {isSubmitting ? "Sending..." : "Submit"}
         </button>
         {status === "success" ? <p className="form-success" role="status">Thank you. Your enquiry has been received.</p> : null}
         {status === "error" ? (
@@ -709,7 +736,6 @@ export function LandingPage() {
   const [leadOverlay, setLeadOverlay] = useState<LeadOverlay | null>(null);
   const [planOpen, setPlanOpen] = useState(false);
   const [masterPlanOpen, setMasterPlanOpen] = useState(false);
-  const [overviewOpen, setOverviewOpen] = useState(false);
   const [locationMapOpen, setLocationMapOpen] = useState(false);
   const [viewerZoom, setViewerZoom] = useState(1);
   const [selectedMasterPoint, setSelectedMasterPoint] = useState<(typeof masterPlanPoints)[number]>(masterPlanPoints[2]);
@@ -727,11 +753,11 @@ export function LandingPage() {
   );
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen || leadOverlay || planOpen || masterPlanOpen || overviewOpen || locationMapOpen ? "hidden" : "";
+    document.body.style.overflow = menuOpen || leadOverlay || planOpen || masterPlanOpen || locationMapOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [leadOverlay, locationMapOpen, masterPlanOpen, menuOpen, overviewOpen, planOpen]);
+  }, [leadOverlay, locationMapOpen, masterPlanOpen, menuOpen, planOpen]);
 
   useEffect(() => {
     const clearIdleTimer = () => {
@@ -893,6 +919,15 @@ export function LandingPage() {
           <div className="hero-card">
             <h1>Where architecture blooms.</h1>
             <span>Botanical living, thoughtfully designed. Homes that feel private. Spaces that inspire.</span>
+            <Image
+              className="hero-card-mobile-image"
+              src={projectFacts.images.heroCardMobile}
+              alt="Poulomi Florique project highlights"
+              width={2400}
+              height={1800}
+              sizes="(max-width: 767px) calc(100vw - 40px), 1px"
+              loading="eager"
+            />
           </div>
           <QuickEnquiryForm selectedPlan={selectedPlan} />
         </section>
@@ -941,7 +976,17 @@ export function LandingPage() {
           <BotanicalMask name="cluster" className="story-cluster-botanical" />
           <SectionLabel index="04" eyebrow="The Florique Life" />
           <div className="story-copy">
-            <h2>A world that blossoms around you.</h2>
+            <h2>
+              <span className="story-heading story-heading--large">
+                <span>A world that</span>
+                <span>blossoms around</span>
+                <span>you.</span>
+              </span>
+              <span className="story-heading story-heading--small">
+                <span>A world that blossoms</span>
+                <span>around you.</span>
+              </span>
+            </h2>
             <p>
               Poulomi Florique is a sanctuary of green and light. Where modern architecture rises gently from landscaped gardens, and every space is designed to help you live well, every day.
             </p>
@@ -950,7 +995,10 @@ export function LandingPage() {
             </button>
           </div>
           <div className="story-media">
-            <Image src={projectFacts.images.arrivalDesktop} alt="Poulomi Florique landscaped arrival experience" fill sizes="(min-width: 1024px) 54vw, 100vw" className="story-main" />
+            <video className="story-main" autoPlay muted loop playsInline preload="metadata" aria-label="Poulomi Florique landscaped residential experience video">
+              <source media="(min-width: 768px)" src={projectFacts.videos.storyDesktop} type="video/mp4" />
+              <source src={projectFacts.videos.storyMobile} type="video/mp4" />
+            </video>
             <Image src={projectFacts.images.botanicalMacro} alt="" width={180} height={230} className="story-inset" aria-hidden="true" />
           </div>
         </section>
@@ -1009,28 +1057,24 @@ export function LandingPage() {
                 />
               </button>
               <div className="plan-stage-actions">
-                <button type="button" className="text-cta" onClick={() => { resetViewer(); setPlanOpen(true); }}>
-                  View Full Plan <ArrowRight size={16} />
-                </button>
                 <button
                   type="button"
                   className="rose-cta"
                   onClick={() =>
                     openLead({
-                      intent: "price_sheet",
-                      ctaSource: `plan-${selectedPlan.id}`,
-                      title: "Request current price",
-                      description: `${selectedPlan.family}, ${selectedPlan.areaSqFt.toLocaleString("en-IN")} sq. ft. ${selectedPlan.areaType}. Share your details for the latest cost sheet.`,
+                      intent: "floor_plan",
+                      ctaSource: `floor-plan-${selectedPlan.id}`,
+                      title: "Download Floor Plan",
+                      description: `${selectedPlan.family}, ${selectedPlan.areaSqFt.toLocaleString("en-IN")} sq. ft. ${selectedPlan.areaType}. Share your details to download the floor plan.`,
                       selectedPlan,
+                      downloadUrl: selectedPlan.src,
+                      downloadFileName: `poulomi-florique-${selectedPlan.id}-floor-plan.${selectedPlan.src.split(".").pop() ?? "webp"}`,
                     })
                   }
                 >
-                  Request Current Price
+                  Download Floor Plan
                 </button>
               </div>
-              <button type="button" className="plan-overview-link" onClick={() => { resetViewer(); setOverviewOpen(true); }}>
-                View typical floor overview <Eye size={16} />
-              </button>
             </article>
           </div>
         </section>
@@ -1072,7 +1116,6 @@ export function LandingPage() {
               <strong>{selectedMasterPoint.category}</strong>
               {selectedMasterPoint.description}
             </p>
-            <button type="button" className="legend-view" onClick={() => { resetViewer(); setMasterPlanOpen(true); }}>View Legend <Eye size={14} /></button>
           </aside>
         </section>
 
@@ -1085,8 +1128,8 @@ export function LandingPage() {
           </div>
           <button type="button" className="location-visual location-map-card" aria-label="View Poulomi Florique location map" onClick={() => { resetViewer(); setLocationMapOpen(true); }}>
             <picture>
-              <source media="(min-width: 768px)" srcSet="/florique/location/poulomi-florique-google-map-1x1.png" />
-              <img src="/florique/location/poulomi-florique-google-map-4x3.png" alt="Poulomi Florique actual Google map connectivity view" />
+              <source media="(min-width: 768px)" srcSet="/florique/location/poulomi-florique-location-map-desktop-1x1.png" />
+              <img src="/florique/location/poulomi-florique-location-map-mobile-1x1.png" alt="Poulomi Florique actual neighbourhood map connectivity view" />
             </picture>
           </button>
           <aside className="commute-card">
@@ -1160,12 +1203,15 @@ export function LandingPage() {
             <p>Book your private viewing today.</p>
           </div>
           <aside className="final-form-card">
-            <p>Book a Private Viewing</p>
+            <p>Ready to Experience Poulomi Florique?</p>
+            <span className="final-form-subcopy">Please provide your details so our team can coordinate and schedule your project site visit.</span>
             <LeadForm
               intent="site_visit"
               ctaSource="final-form"
               formName="private-viewing"
               selectedPlan={selectedPlan}
+              showMessage={false}
+              showConsent={false}
             />
           </aside>
         </section>
@@ -1188,7 +1234,7 @@ export function LandingPage() {
           aria-label="Open enquiry form"
           onClick={openMobileEnquiry}
         >
-          <Mail size={18} />
+          <PhoneCall size={18} />
           Enquire
         </button>
       </div>
@@ -1223,7 +1269,7 @@ export function LandingPage() {
       {leadOverlay ? (
         <div className="lead-overlay" role="dialog" aria-modal="true" aria-labelledby="lead-title">
           <button type="button" className="overlay-backdrop" aria-label="Close enquiry form" onClick={() => setLeadOverlay(null)} />
-          <aside className="lead-panel">
+          <aside className={`lead-panel ${leadOverlay.intent === "floor_plan" ? "lead-panel--floor-plan" : ""}`}>
             <button type="button" className="panel-close" aria-label="Close enquiry form" onClick={() => setLeadOverlay(null)}><X size={18} /></button>
             <ProjectLogo context="hero" />
             <h2 id="lead-title">{leadOverlay.title}</h2>
@@ -1233,6 +1279,16 @@ export function LandingPage() {
               ctaSource={leadOverlay.ctaSource}
               formName="lead-overlay"
               selectedPlan={leadOverlay.selectedPlan}
+              downloadOnSuccess={
+                leadOverlay.downloadUrl
+                  ? {
+                      url: leadOverlay.downloadUrl,
+                      fileName: leadOverlay.downloadFileName ?? "poulomi-florique-floor-plan.webp",
+                    }
+                  : undefined
+              }
+              showMessage={leadOverlay.intent !== "floor_plan"}
+              showConsent={leadOverlay.intent !== "floor_plan"}
               compact
             />
           </aside>
@@ -1256,15 +1312,6 @@ export function LandingPage() {
         </div>
       ) : null}
 
-      {overviewOpen ? (
-        <div className="image-lightbox" role="dialog" aria-modal="true" aria-label="Typical floor overview viewer">
-          <ZoomControls onClose={() => setOverviewOpen(false)} onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={resetViewer} closeLabel="Close typical floor overview" />
-          <div className="lightbox-canvas">
-            <Image src={projectFacts.images.floorPlanOverview} alt="Poulomi Florique approved typical floor overview" width={2160} height={3840} sizes="100vw" className="object-contain" style={{ transform: `scale(${viewerZoom})` }} />
-          </div>
-        </div>
-      ) : null}
-
       {masterPlanOpen ? (
         <div className="image-lightbox" role="dialog" aria-modal="true" aria-label="Master plan viewer">
           <ZoomControls onClose={() => setMasterPlanOpen(false)} onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={resetViewer} closeLabel="Close master plan" />
@@ -1278,7 +1325,7 @@ export function LandingPage() {
         <div className="image-lightbox" role="dialog" aria-modal="true" aria-label="Official location map viewer">
           <ZoomControls onClose={() => setLocationMapOpen(false)} onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={resetViewer} closeLabel="Close location map" />
           <div className="lightbox-canvas">
-            <Image src="/florique/location/poulomi-florique-google-map-4x3.png" alt="Poulomi Florique actual Google map connectivity view enlarged" width={2048} height={1536} sizes="100vw" className="object-contain" style={{ transform: `scale(${viewerZoom})` }} />
+            <Image src="/florique/location/poulomi-florique-location-map-desktop-1x1.png" alt="Poulomi Florique actual neighbourhood map connectivity view enlarged" width={2400} height={2400} sizes="100vw" className="object-contain" style={{ transform: `scale(${viewerZoom})` }} />
           </div>
         </div>
       ) : null}

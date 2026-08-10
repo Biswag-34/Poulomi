@@ -40,9 +40,9 @@ export const metadata: Metadata = {
     description: siteDescription,
     images: [
       {
-        url: absoluteUrl("/florique/optimized/arrival-entrance-desktop.webp"),
-        width: 1920,
-        height: 1080,
+        url: absoluteUrl("/florique/hero/poulomi-florique-hero-desktop.png"),
+        width: 1672,
+        height: 941,
         alt: "Poulomi Florique Thanisandra garden arrival and residential tower",
       },
     ],
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Poulomi Florique Thanisandra | 3 BHK Residences & Site Visit",
     description: siteDescription,
-    images: [absoluteUrl("/florique/optimized/arrival-entrance-desktop.webp")],
+    images: [absoluteUrl("/florique/hero/poulomi-florique-hero-desktop.png")],
   },
   category: "real estate",
   other: {
