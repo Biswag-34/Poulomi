@@ -3056,28 +3056,15 @@ select {
   }
 
   .hero-card::after,
+  .hero-seo-title,
+  .hero-card .hero-tagline,
   .hero-card > span:not(.botanical-mask):not(.hero-tagline) {
     display: none;
-  }
-
-  .hero-seo-title {
-    max-width: 11ch;
-    color: var(--florique-forest-deep);
-    font-size: clamp(2.35rem, 9.4vw, 3.05rem);
-    line-height: 0.94;
-  }
-
-  .hero-card .hero-tagline {
-    max-width: 14ch;
-    color: var(--florique-rose);
-    font-size: clamp(1.88rem, 7.5vw, 2.44rem);
-    line-height: 0.96;
   }
 
   .hero-card-mobile-image {
     display: block;
     width: 100%;
-    margin-top: 10px;
     height: auto;
     object-fit: contain;
   }
@@ -4323,10 +4310,6 @@ select {
   .hero-card {
     width: min(calc(100% - 18px), 44rem);
     padding: 4px;
-  }
-
-  .hero-seo-title {
-    font-size: 2.16rem;
   }
 
 }
