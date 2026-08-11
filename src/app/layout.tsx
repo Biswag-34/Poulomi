@@ -6,7 +6,7 @@ import { absoluteUrl, siteDescription, siteName, siteUrl } from "@/lib/site";
 
 import "./globals.css";
 
-const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID?.trim() || "GTM-5BVDMXBN";
+const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID?.trim() || "GTM-NN5W5DD6";
 const GOOGLE_TAG_ID =
   process.env.NEXT_PUBLIC_GOOGLE_TAG_ID?.trim() ||
   process.env.NEXT_PUBLIC_GTAG_ID?.trim() ||

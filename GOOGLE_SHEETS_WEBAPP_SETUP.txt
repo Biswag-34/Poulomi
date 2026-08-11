@@ -7,7 +7,7 @@ GOOGLE_SHEETS_WEBAPP_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/e
 Vercel production environment variables:
 
 GOOGLE_SHEETS_WEBAPP_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec
-NEXT_PUBLIC_GTM_ID=GTM-5BVDMXBN
+NEXT_PUBLIC_GTM_ID=GTM-NN5W5DD6
 
 Optional, only if you use a direct Google tag / GA4 tag in addition to GTM:
 
