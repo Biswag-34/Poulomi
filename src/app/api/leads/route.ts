@@ -1,13 +1,21 @@
 type LeadPayload = {
+  [key: string]: unknown;
+  budget?: string;
   callbackTime?: string;
   email?: string;
   interestedIn?: string;
   interest?: string;
   lead_action?: string;
+  lead_area_sqft?: number | string;
+  lead_area_type?: string;
+  lead_blocks?: string;
+  lead_budget?: string;
   lead_callback_time?: string;
   lead_name?: string;
+  lead_plan_id?: string;
   lead_phone?: string;
   lead_unit_type?: string;
+  lead_unit_types?: string;
   metadata?: Record<string, unknown>;
   name?: string;
   note?: string;
@@ -16,7 +24,12 @@ type LeadPayload = {
   source?: string;
 };
 
-const ROUTE_VERSION = "2026-07-15-leads-vercel-safe-v2";
+const ROUTE_VERSION = "2026-08-11-leadrat-crm-v1";
+const LEADRAT_DEFAULT_WEBHOOK_URL = "https://connect.leadrat.com/api/v1/integration/Website";
+const PROJECT_NAME = "Poulomi Florique";
+const PROJECT_CITY = "Bengaluru";
+const PROJECT_STATE = "Karnataka";
+const PROJECT_LOCATION = "Thanisandra";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -32,14 +45,30 @@ function json(body: Record<string, unknown>, init: ResponseInit = {}) {
   });
 }
 
+function getEnvValue(...names: string[]) {
+  for (const name of names) {
+    const value = process.env[name]?.trim();
+
+    if (value) {
+      return value;
+    }
+  }
+
+  return "";
+}
+
 function getWebhookConfig() {
-  const sheetsUrl = process.env.GOOGLE_SHEETS_WEBAPP_URL?.trim() ?? "";
-  const crmUrl = process.env.CRM_WEBHOOK_URL?.trim() ?? "";
+  const sheetsUrl = getEnvValue("GOOGLE_SHEETS_WEBAPP_URL");
+  const crmApiKey = getEnvValue("LEADRAT_API_KEY", "CRM_API_KEY");
+  const configuredCrmUrl = getEnvValue("LEADRAT_WEBHOOK_URL", "CRM_WEBHOOK_URL");
+  const crmUrl = configuredCrmUrl || (crmApiKey ? LEADRAT_DEFAULT_WEBHOOK_URL : "");
 
   return {
-    destination: sheetsUrl ? "google_sheets" : crmUrl ? "crm" : "none",
+    destination: crmUrl ? "leadrat_crm" : sheetsUrl ? "google_sheets" : "none",
+    crmApiKey,
+    crmUrl,
     sheetsUrl,
-    webhookUrl: sheetsUrl || crmUrl,
+    webhookUrl: crmUrl || sheetsUrl,
   };
 }
 
@@ -58,11 +87,129 @@ function normaliseIndianPhone(value: string) {
   return mobile.length === 10 ? `+91${mobile}` : value.trim();
 }
 
+function getIndianMobile(value: string) {
+  const digits = value.replace(/\D/g, "");
+  const mobile = digits.length > 10 && digits.startsWith("91") ? digits.slice(2) : digits;
+
+  return mobile.slice(-10);
+}
+
+function getIndiaDateTimeParts(date: Date) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    hour: "2-digit",
+    hour12: false,
+    hourCycle: "h23",
+    minute: "2-digit",
+    month: "2-digit",
+    second: "2-digit",
+    timeZone: "Asia/Kolkata",
+    year: "2-digit",
+  }).formatToParts(date);
+  const byType = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+
+  return {
+    date: `${byType.day}-${byType.month}-${byType.year}`,
+    time: `${byType.hour}:${byType.minute}:${byType.second}`,
+  };
+}
+
+function normaliseBudgetToRupees(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return "";
+  }
+
+  const croreMatch = trimmed.match(/^(\d+(?:\.\d{1,2})?)\s*cr$/i);
+
+  if (croreMatch) {
+    return String(Math.round(Number(croreMatch[1]) * 10000000));
+  }
+
+  return trimmed.replace(/[^\d.]/g, "");
+}
+
+function getLeadRatStatus(action: string) {
+  return action === "site_visit" ? "Schedule Site Visit" : "Schedule Meeting";
+}
+
+function getNoOfBhk(unitType: string) {
+  const match = unitType.match(/(\d+)\s*BHK/i);
+
+  return match?.[1] ?? "";
+}
+
+function getLeadRatPayload(payload: LeadPayload & { createdAt: string }) {
+  const submitted = getIndiaDateTimeParts(new Date(payload.createdAt));
+  const action = String(payload.lead_action ?? payload.preferredAction ?? payload.interest ?? "general_enquiry");
+  const unitType = String(payload.lead_unit_type ?? payload.interestedIn ?? "");
+  const budget = normaliseBudgetToRupees(String(payload.lead_budget ?? payload.budget ?? ""));
+  const metadata = payload.metadata ?? {};
+
+  return [
+    {
+      name: String(payload.name ?? payload.lead_name ?? "").trim(),
+      state: PROJECT_STATE,
+      city: PROJECT_CITY,
+      location: PROJECT_LOCATION,
+      budget,
+      notes: String(payload.note ?? ""),
+      email: String(payload.email ?? "").trim(),
+      countryCode: "91",
+      mobile: getIndianMobile(String(payload.phone ?? payload.lead_phone ?? "")),
+      project: PROJECT_NAME,
+      property: unitType || "3 BHK",
+      leadExpectedBudget: budget,
+      propertyType: "Flat",
+      submittedDate: submitted.date,
+      submittedTime: submitted.time,
+      source: String(payload.utm_source ?? payload.source ?? "website"),
+      subSource: String(payload.utm_medium ?? payload.cta_source ?? ""),
+      agencyName: String(payload.agencyName ?? ""),
+      leadScheduledDate: "",
+      leadScheduleTime: "",
+      leadStatus: getLeadRatStatus(action),
+      leadBookedDate: "",
+      leadBookedTime: "",
+      additionalProperties: {
+        EnquiredFor: "Buy",
+        BHKType: unitType,
+        NoOfBHK: getNoOfBhk(unitType),
+        Action: action,
+        FormName: String(payload.form_name ?? ""),
+        CtaSource: String(payload.cta_source ?? payload.source ?? ""),
+        UnitType: unitType,
+        PlanId: String(payload.lead_plan_id ?? ""),
+        AreaSqFt: String(payload.lead_area_sqft ?? ""),
+        AreaType: String(payload.lead_area_type ?? ""),
+        Blocks: String(payload.lead_blocks ?? ""),
+        UnitNumbers: String(payload.lead_unit_types ?? ""),
+        LandingPage: String(payload.landing_page ?? ""),
+        Referrer: String(payload.referrer ?? ""),
+        DeviceType: String(payload.device_type ?? ""),
+        UtmCampaign: String(payload.utm_campaign ?? ""),
+        UtmTerm: String(payload.utm_term ?? ""),
+        UtmContent: String(payload.utm_content ?? ""),
+        Gclid: String(payload.gclid ?? ""),
+        Fbclid: String(payload.fbclid ?? ""),
+        Msclkid: String(payload.msclkid ?? ""),
+        Metadata: JSON.stringify(metadata),
+      },
+      primaryUser: "",
+      secondaryUser: "",
+      CampaignName: String(payload.utm_campaign ?? ""),
+      AgencyName: "",
+      ChannelPartnerName: "",
+    },
+  ];
+}
+
 function validateLeadPayload(payload: LeadPayload) {
   const name = String(payload.name ?? payload.lead_name ?? "").trim();
   const phone = normaliseIndianPhone(String(payload.phone ?? payload.lead_phone ?? ""));
   const email = String(payload.email ?? "").trim();
-  const budget = String((payload as LeadPayload & { budget?: string; lead_budget?: string }).budget ?? (payload as LeadPayload & { budget?: string; lead_budget?: string }).lead_budget ?? "").trim();
+  const budget = String(payload.budget ?? payload.lead_budget ?? "").trim();
 
   if (!/^[A-Za-z][A-Za-z .'-]{1,79}$/.test(name)) {
     return { ok: false as const, error: "Enter a valid full name." };
@@ -85,15 +232,22 @@ function validateLeadPayload(payload: LeadPayload) {
 
 async function sendLeadWebhook(
   webhookUrl: string,
-  destination: "google_sheets" | "crm",
+  destination: "google_sheets" | "leadrat_crm",
+  crmApiKey: string,
   payload: LeadPayload & { createdAt: string },
 ) {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (destination === "leadrat_crm" && crmApiKey) {
+    headers["API-Key"] = crmApiKey;
+  }
+
   const webhookResponse = await fetch(webhookUrl, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
+    headers,
+    body: JSON.stringify(destination === "leadrat_crm" ? getLeadRatPayload(payload) : payload),
     redirect: "follow",
   });
 
@@ -198,13 +352,21 @@ async function handlePost(request: Request) {
     createdAt: new Date().toISOString(),
   } as LeadPayload & { createdAt: string };
 
-  const { destination, sheetsUrl, webhookUrl } = getWebhookConfig();
+  const { crmApiKey, crmUrl, destination, sheetsUrl, webhookUrl } = getWebhookConfig();
+
+  if (destination === "leadrat_crm" && !crmApiKey) {
+    return json(
+      { error: "CRM API key is not configured." },
+      { status: 503 },
+    );
+  }
 
   if (webhookUrl) {
     try {
       await sendLeadWebhook(
         webhookUrl,
-        destination === "google_sheets" ? "google_sheets" : "crm",
+        destination === "google_sheets" ? "google_sheets" : "leadrat_crm",
+        crmApiKey,
         savedPayload,
       );
     } catch (error) {
@@ -235,6 +397,7 @@ async function handlePost(request: Request) {
   return json({
     ok: true,
     routeVersion: ROUTE_VERSION,
+    crmConfigured: Boolean(crmUrl),
     sheetsConfigured: Boolean(sheetsUrl),
     webhookConfigured: Boolean(webhookUrl),
     localBackupSaved,
@@ -242,11 +405,13 @@ async function handlePost(request: Request) {
 }
 
 export function GET() {
-  const { sheetsUrl, webhookUrl } = getWebhookConfig();
+  const { crmApiKey, crmUrl, sheetsUrl, webhookUrl } = getWebhookConfig();
 
   return json({
     ok: true,
     routeVersion: ROUTE_VERSION,
+    crmConfigured: Boolean(crmUrl),
+    crmApiKeyConfigured: Boolean(crmApiKey),
     sheetsConfigured: Boolean(sheetsUrl),
     webhookConfigured: Boolean(webhookUrl),
     localBackupEnabled: shouldWriteLocalBackup(),
